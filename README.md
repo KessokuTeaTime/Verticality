@@ -1,8 +1,8 @@
-### <p align=right>[`→` Modrinth](https://modrinth.com/mod/fabric-api)</p>
+### <p align=right>[`→` Modrinth](https://modrinth.com/mod/verticality)</p>
 
-# Example Mod
+# Verticality
 
-This is an example mod.
+**Verticality** verticals your hotbar.
 
 ## License
 

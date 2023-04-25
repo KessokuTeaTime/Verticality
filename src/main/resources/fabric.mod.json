@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "verticality",
   "version": "${version}",
 
-  "name": "Example Mod",
+  "name": "Verticality",
   "description": "",
   "authors": [
     "KrLite"
@@ -14,16 +14,16 @@
   },
 
   "license": "GPL-3.0",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/verticality/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.krlite.modid.ExampleMod"
+      "net.krlite.verticality.Verticality"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+	"verticality.mixins.json"
   ],
 
   "depends": {
