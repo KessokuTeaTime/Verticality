@@ -9,8 +9,15 @@ import net.krlite.equator.visual.animation.Interpolation;
 import net.krlite.equator.visual.animation.Slice;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +26,28 @@ public class Verticality implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 	public static final int HOTBAR_HEIGHT = 23, SPECTATOR_BAR_HEIGHT = 22, OFFHAND_WIDTH = 29, CENTER_DISTANCE_TO_BORDER = 11, TOOLTIP_OFFSET = 7;
 	public static final float SCALAR = 1.5F, FONT_GAP_OFFSET = 0.5F;
+
+	public static class Sounds {
+		public static final SoundEvent GATE_LATCH = SoundEvent.of(new Identifier(ID, "gate_latch"));
+		public static final SoundEvent LIGHT_SWITCH = SoundEvent.of(new Identifier(ID, "light_switch"));
+
+		static void register() {
+			Registry.register(Registries.SOUND_EVENT, GATE_LATCH.getId(), GATE_LATCH);
+			Registry.register(Registries.SOUND_EVENT, LIGHT_SWITCH.getId(), LIGHT_SWITCH);
+		}
+
+		public static void playGateLatch() {
+			play(GATE_LATCH);
+		}
+
+		public static void playLightSwitch() {
+			play(LIGHT_SWITCH);
+		}
+
+		private static void play(SoundEvent sound) {
+			MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(sound, 1.0F));
+		}
+	}
 
 	private static final HotbarPreferences PREFERENCES = new HotbarPreferences();
 	private static final Animation
@@ -80,6 +109,7 @@ public class Verticality implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		Sounds.register();
 	}
 
 	public static int height() {

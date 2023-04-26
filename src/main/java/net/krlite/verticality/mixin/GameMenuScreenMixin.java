@@ -95,21 +95,15 @@ public class GameMenuScreenMixin extends Screen {
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (isInEnabled(mouseX, mouseY)) {
-			playSound();
+			Verticality.Sounds.playGateLatch();
 			Verticality.switchEnabled();
 		}
 
 		if (isInUpsideDown(mouseX, mouseY)) {
-			playSound();
+			Verticality.Sounds.playLightSwitch();
 			Verticality.switchUpsideDown();
 		}
 
 		return super.mouseClicked(mouseX, mouseY, button);
-	}
-
-	private void playSound() {
-		if (client != null) {
-			client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_COMPARATOR_CLICK, 1.0F));
-		}
 	}
 }

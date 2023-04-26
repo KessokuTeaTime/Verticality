@@ -1,0 +1,12 @@
+{
+  "gate_latch": {
+	"sounds": [
+	  "verticality:gate_latch"
+	]
+  },
+  "light_switch": {
+	"sounds": [
+	  "verticality:light_switch"
+	]
+  }
+}
