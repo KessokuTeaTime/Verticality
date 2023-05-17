@@ -8,7 +8,7 @@ import net.krlite.pierced.config.Pierced;
 import java.io.File;
 
 class HotbarPreferences extends Pierced {
-	private static final @Silent File file = FabricLoader.getInstance().getConfigDir().resolve("verticality.toml").toFile();
+	private static final @Silent File file = FabricLoader.getInstance().getConfigDir().resolve(Verticality.ID + ".toml").toFile();
 
 	public HotbarPreferences() {
 		super(HotbarPreferences.class, file);
