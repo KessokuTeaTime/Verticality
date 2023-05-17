@@ -8,8 +8,10 @@ import net.krlite.pierced.config.Pierced;
 import java.io.File;
 
 class HotbarPreferences extends Pierced {
+	private static final @Silent File file = FabricLoader.getInstance().getConfigDir().resolve("verticality.toml").toFile();
+
 	public HotbarPreferences() {
-		super(HotbarPreferences.class, config);
+		super(HotbarPreferences.class, file);
 		load();
 	}
 
@@ -23,8 +25,6 @@ class HotbarPreferences extends Pierced {
 	@Comment("	Main hand right	- false: top,		true: bottom")
 	@Comment("	Main hand left	- false: bottom,	true: top")
 	private boolean upsideDown = false;
-
-	private static final @Silent File config = FabricLoader.getInstance().getConfigDir().resolve("verticality.toml").toFile();
 
 	public boolean enabled() {
 		return enabled;
