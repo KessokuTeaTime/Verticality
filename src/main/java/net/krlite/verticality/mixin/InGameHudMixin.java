@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 public class InGameHudMixin extends DrawableHelper {
 	@Inject(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/util/Identifier;)V", shift = At.Shift.AFTER))
 	private void renderHotbar(float tickDelta, MatrixStack matrixStack, CallbackInfo ci) {
+		matrixStack.push();
 		if (Verticality.enabled()) {
 			matrixStack.translate(
 					 Verticality.CENTER_DISTANCE_TO_BORDER
@@ -68,21 +69,19 @@ public class InGameHudMixin extends DrawableHelper {
 @Mixin(InGameHud.class)
 abstract
 class ItemAdjustor extends DrawableHelper {
-	@Shadow protected abstract void renderHotbarItem(MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed);
+	@Shadow protected abstract void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed);
 
 	@Redirect(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbarItem(IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V"))
 	private void renderHotbarItem(InGameHud inGameHud, int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed) {
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		if (Verticality.enabled()) {
 			double xRelative = (x + 8) - Verticality.width() / 2.0, yRelative = (y + 8) - (Verticality.height() - Verticality.CENTER_DISTANCE_TO_BORDER);
 			renderHotbarItem(
-					matrixStack,
 					(int) Math.round(Verticality.CENTER_DISTANCE_TO_BORDER - yRelative) - 8,
 					(int) Math.round(Verticality.height() / 2.0 + xRelative) - 8,
 					tickDelta, playerEntity, itemStack, seed
 			);
 		}
-		else renderHotbarItem(matrixStack, x, y, tickDelta, playerEntity, itemStack, seed);
+		else renderHotbarItem(x, y, tickDelta, playerEntity, itemStack, seed);
 	}
 
 	@ModifyArgs(
