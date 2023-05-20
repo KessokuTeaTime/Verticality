@@ -1,5 +1,6 @@
 package net.krlite.verticality.mixin;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.krlite.verticality.Verticality;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -38,8 +39,8 @@ public class InGameHudMixin extends DrawableHelper {
 	}
 
 	@Redirect(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V", ordinal = 1))
-	private void drawSelectedSlot(MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {
-		Verticality.drawSelectedSlot(matrixStack, x, y, u, v, width, height);
+	private void drawSelectedSlot(InGameHud inGameHud, MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {
+		Verticality.drawSelectedSlot(inGameHud, matrixStack, x, y, u, v, width, height);
 	}
 
 	@Redirect(
@@ -50,10 +51,10 @@ public class InGameHudMixin extends DrawableHelper {
 			),
 			slice = @Slice(
 					from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 0),
-					to = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V")
+					to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V")
 			)
 	)
-	private void drawOffhandSlot(MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {
+	private void drawOffhandSlot(InGameHud inGameHud, MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {
 		if (Verticality.enabled()) {
 			if ((MinecraftClient.getInstance().options.getMainArm().getValue().getOpposite() == Arm.LEFT) == !Verticality.upsideDown()) {
 				drawTexture(matrixStack, (int) (Verticality.width() / 2.0 - 91 - 29), Verticality.height() - 23, 24, 22, 29, 24); // Left
@@ -69,8 +70,9 @@ abstract
 class ItemAdjustor extends DrawableHelper {
 	@Shadow protected abstract void renderHotbarItem(MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed);
 
-	@Redirect(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbarItem(Lnet/minecraft/client/util/math/MatrixStack;IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V"))
-	private void renderHotbarItem(InGameHud inGameHud, MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed) {
+	@Redirect(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbarItem(IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V"))
+	private void renderHotbarItem(InGameHud inGameHud, int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed) {
+		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		if (Verticality.enabled()) {
 			double xRelative = (x + 8) - Verticality.width() / 2.0, yRelative = (y + 8) - (Verticality.height() - Verticality.CENTER_DISTANCE_TO_BORDER);
 			renderHotbarItem(
@@ -87,12 +89,9 @@ class ItemAdjustor extends DrawableHelper {
 			method = "renderHotbar",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbarItem(Lnet/minecraft/client/util/math/MatrixStack;IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V"
+					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbarItem(IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V"
 			),
-			slice = @Slice(
-					from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 1),
-					to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V")
-			)
+			slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 1))
 	)
 	private void fixOffhandItem(Args args) {
 		int x = args.get(2);
@@ -109,44 +108,45 @@ class ItemAdjustor extends DrawableHelper {
 					target = "Lnet/minecraft/item/ItemStack;getBobbingAnimationTime()I"
 			)
 	)
-	private void renderHotbarItemPre(MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed, CallbackInfo ci) {
-		matrixStack.push();
-		Verticality.translateIcon(matrixStack, y, false);
+	private void renderHotbarItemPre(int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed, CallbackInfo ci) {
+		RenderSystem.getModelViewStack().push();
+		Verticality.translateIcon(RenderSystem.getModelViewStack(), y, false);
 	}
 
 	@Inject(
 			method = "renderHotbarItem",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItemOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V"
+					target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V"
 			)
 	)
-	private void renderHotbarItemPost(MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed, CallbackInfo ci) {
-		matrixStack.pop();
+	private void renderHotbarItemPost(int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed, CallbackInfo ci) {
+		RenderSystem.getModelViewStack().pop();
 	}
 
 	@Inject(
 			method = "renderHotbarItem",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItemOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V"
+					target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V"
 			)
 	)
-	private void renderHotbarItemOverlayPre(MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed, CallbackInfo ci) {
-		matrixStack.push();
-		Verticality.translateIcon(matrixStack, y, false);
+	private void renderHotbarItemOverlayPre(int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed, CallbackInfo ci) {
+		RenderSystem.getModelViewStack().push();
+		Verticality.translateIcon(RenderSystem.getModelViewStack(), y, false);
 	}
 
 	@Inject(
 			method = "renderHotbarItem",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItemOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V",
+					target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V",
 					shift = At.Shift.AFTER
 			)
 	)
-	private void renderHotbarItemOverlayPost(MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed, CallbackInfo ci) {
-		matrixStack.pop();
+	private void renderHotbarItemOverlayPost(int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed, CallbackInfo ci) {
+		RenderSystem.getModelViewStack().pop();
+		RenderSystem.applyModelViewMatrix();
 	}
 }
 

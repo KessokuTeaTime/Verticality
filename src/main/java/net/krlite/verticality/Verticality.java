@@ -9,6 +9,7 @@ import net.krlite.equator.visual.animation.Interpolation;
 import net.krlite.equator.visual.animation.Slice;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.registry.Registries;
@@ -208,7 +209,7 @@ public class Verticality implements ModInitializer {
 		}
 	}
 
-	public static void drawSelectedSlot(MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {
+	public static void drawSelectedSlot(InGameHud inGameHud, MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {
 		if (enabled()) {
 			double offset = -2 * ((x + width / 2.0) - (int) (width() / 2.0));
 
@@ -219,7 +220,7 @@ public class Verticality implements ModInitializer {
 			);
 		}
 
-		DrawableHelper.drawTexture(matrixStack, x, y, u, v, width, height);
+		inGameHud.drawTexture(matrixStack, x, y, u, v, width, height);
 
 		if (enabled()) {
 			matrixStack.pop();
