@@ -109,6 +109,7 @@ public class Verticality implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		PREFERENCES.save();
 		Sounds.register();
 	}
 

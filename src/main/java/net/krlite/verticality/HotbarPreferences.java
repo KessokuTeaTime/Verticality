@@ -13,7 +13,6 @@ class HotbarPreferences extends Pierced {
 	public HotbarPreferences() {
 		super(HotbarPreferences.class, file);
 		load();
-		save();
 	}
 
 	@Comment("Whether or not the vertical hotbar is enabled")
