@@ -80,7 +80,7 @@ public class Verticality implements ModInitializer {
 				// Zero (offset)		: no offset
 				// Negative (offset)	: moving upwards
 				if (!client.player.getOffHandStack().isEmpty()) {
-					if (client.options.getMainArm().getValue().getOpposite() == Arm.LEFT) {
+					if (client.options.mainArm.getOpposite() == Arm.LEFT) {
 						offset.targetValue(upsideDown() ? -1 : 1);
 					}
 					else offset.targetValue(upsideDown() ? 1 : -1);
@@ -89,7 +89,7 @@ public class Verticality implements ModInitializer {
 
 				// Positive (swap)		: enable swap
 				// Zero (swap)			: disable swap
-				if (client.options.getMainArm().getValue().getOpposite() == Arm.LEFT) {
+				if (client.options.mainArm.getOpposite() == Arm.LEFT) {
 					swap.targetValue(upsideDown() ? 1 : 0);
 				}
 				else swap.targetValue(upsideDown() ? 0 : 1);

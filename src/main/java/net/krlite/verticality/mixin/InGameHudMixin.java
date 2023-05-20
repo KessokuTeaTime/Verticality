@@ -64,7 +64,7 @@ private void renderHotbarPre(float tickDelta, MatrixStack matrixStack, CallbackI
 	)
 	private void drawOffhandSlot(InGameHud inGameHud, MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {
 		if (Verticality.enabled()) {
-			if ((MinecraftClient.getInstance().options.getMainArm().getValue().getOpposite() == Arm.LEFT) == !Verticality.upsideDown()) {
+			if ((MinecraftClient.getInstance().options.mainArm.getOpposite() == Arm.LEFT) == !Verticality.upsideDown()) {
 				drawTexture(matrixStack, (int) (Verticality.width() / 2.0 - 91 - 29), Verticality.height() - 23, 24, 22, 29, 24); // Left
 			}
 			else drawTexture(matrixStack, (int) (Verticality.width() / 2.0 + 91), Verticality.height() - 23, 53, 22, 29, 24); // Right
