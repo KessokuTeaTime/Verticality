@@ -18,10 +18,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(InGameHud.class)
-public class InGameHudMixin extends DrawableHelper {
-	@Inject(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/util/Identifier;)V", shift = At.Shift.AFTER))
+public class InGameHudMixin extends DrawableHelper {@Inject(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;setZOffset(I)V", ordinal = 0, shift = At.Shift.AFTER))
+private void renderHotbarPre(float tickDelta, MatrixStack matrixStack, CallbackInfo ci) {
+	matrixStack.push();
+}
+
+	@Inject(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;setZOffset(I)V", ordinal = 0, shift = At.Shift.AFTER))
 	private void renderHotbar(float tickDelta, MatrixStack matrixStack, CallbackInfo ci) {
-		matrixStack.push();
 		if (Verticality.enabled()) {
 			matrixStack.translate(
 					 Verticality.CENTER_DISTANCE_TO_BORDER
@@ -37,6 +40,11 @@ public class InGameHudMixin extends DrawableHelper {
 		else {
 			matrixStack.translate(0, Verticality.HOTBAR_HEIGHT * Verticality.hotbar(), 0);
 		}
+	}
+
+	@Inject(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;setZOffset(I)V", ordinal = 1, shift = At.Shift.BEFORE))
+	private void renderHotbarPost(float tickDelta, MatrixStack matrixStack, CallbackInfo ci) {
+		matrixStack.pop();
 	}
 
 	@Redirect(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V", ordinal = 1))
