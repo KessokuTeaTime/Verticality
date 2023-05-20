@@ -209,7 +209,7 @@ public class Verticality implements ModInitializer {
 		}
 	}
 
-	public static void drawSelectedSlot(InGameHud inGameHud, MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {
+	public static void drawSelectedSlot(DrawableHelper drawableHelper, MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {
 		if (enabled()) {
 			double offset = -2 * ((x + width / 2.0) - (int) (width() / 2.0));
 
@@ -220,7 +220,7 @@ public class Verticality implements ModInitializer {
 			);
 		}
 
-		inGameHud.drawTexture(matrixStack, x, y, u, v, width, height);
+		drawableHelper.drawTexture(matrixStack, x, y, u, v, width, height);
 
 		if (enabled()) {
 			matrixStack.pop();

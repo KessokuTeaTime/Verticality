@@ -67,8 +67,8 @@ public abstract class SpectatorHudMixin {
 					ordinal = 1
 			)
 	)
-	private void drawSelectedSlot(MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {
-		Verticality.drawSelectedSlot(matrixStack, x, y, u, v, width, height);
+	private void drawSelectedSlot(SpectatorHud spectatorHud, MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {
+		Verticality.drawSelectedSlot(spectatorHud, matrixStack, x, y, u, v, width, height);
 	}
 
 	@Redirect(
