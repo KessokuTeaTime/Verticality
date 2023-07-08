@@ -2,14 +2,13 @@ package net.krlite.verticality.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.krlite.verticality.Verticality;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.RotationAxis;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -18,6 +17,7 @@ import java.awt.*;
 
 @Mixin(GameMenuScreen.class)
 public class GameMenuScreenMixin extends Screen {
+	@Unique
 	private static final Text left = Text.of("<"), right = Text.of(">"), both = left.copy().append(" ").append(right);
 
 	protected GameMenuScreenMixin(Text title) {
@@ -25,7 +25,7 @@ public class GameMenuScreenMixin extends Screen {
 	}
 
 	@Inject(method = "render", at = @At("RETURN"))
-	private void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+	private void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
 		double progress = Math.pow(Verticality.progress(), 2);
 		int alphaHovered = 255, alpha = 75;
 		Color colorEnabled = new Color(255, 255, 255, (int) Math.max(5, (isInEnabled(mouseX, mouseY) ? alphaHovered : alpha) * (1 - progress)));
@@ -36,40 +36,41 @@ public class GameMenuScreenMixin extends Screen {
 			RenderSystem.disableCull();
 
 			// 'Disable' widget
-			matrixStack.push();
-			matrixStack.translate(13 * (1 - Verticality.hotbar()), height / 2.0F, 0);
-			matrixStack.scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
-			matrixStack.translate(0, Verticality.FONT_GAP_OFFSET, 0);
+			context.getMatrices().push();
+			context.getMatrices().translate(13 * (1 - Verticality.hotbar()), height / 2.0F, 0);
+			context.getMatrices().scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
+			context.getMatrices().translate(0, Verticality.FONT_GAP_OFFSET, 0);
 
-			textRenderer.draw(matrixStack, right, -textRenderer.getWidth(right) / 2.0F * (float) (1 - Verticality.hotbar()), -(textRenderer.fontHeight - 1) / 2.0F, colorEnabled.getRGB());
+			context.drawText(textRenderer, right, (int) (-textRenderer.getWidth(right) / 2.0F * (float) (1 - Verticality.hotbar())), (int) (-(textRenderer.fontHeight - 1) / 2.0F), colorEnabled.getRGB(), false);
 
-			matrixStack.pop();
+			context.getMatrices().pop();
 
 			// 'Upside Down' widget
-			matrixStack.push();
-			matrixStack.translate(13 + 17 * (1 - Verticality.hotbar()), height / 2.0F, 500);
-			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float) (180 * Verticality.swap())));
+			context.getMatrices().push();
+			context.getMatrices().translate(13 + 17 * (1 - Verticality.hotbar()), height / 2.0F, 500);
+			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
+			context.getMatrices().multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float) (180 * Verticality.swap())));
 
-			textRenderer.draw(matrixStack, both, -textRenderer.getWidth(both) / 2.0F, -textRenderer.fontHeight / 2.0F * (float) (1 - Verticality.hotbar()), colorUpsideDown.getRGB());
+			context.drawText(textRenderer, both, (int) (-textRenderer.getWidth(both) / 2.0F), (int) (-textRenderer.fontHeight / 2.0F * (float) (1 - Verticality.hotbar())), colorUpsideDown.getRGB(), false);
 
-			matrixStack.pop();
+			context.getMatrices().pop();
 
 			RenderSystem.enableCull();
 		}
 		else {
 			// 'Enable' widget
-			matrixStack.push();
-			matrixStack.translate(width / 2.0F, height - 10 * (1 - Verticality.hotbar()), 0);
-			matrixStack.scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
-			matrixStack.translate(0, Verticality.FONT_GAP_OFFSET, 0);
+			context.getMatrices().push();
+			context.getMatrices().translate(width / 2.0F, height - 10 * (1 - Verticality.hotbar()), 0);
+			context.getMatrices().scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
+			context.getMatrices().translate(0, Verticality.FONT_GAP_OFFSET, 0);
 
-			textRenderer.draw(matrixStack, left, -textRenderer.getWidth(left) / 2.0F, -textRenderer.fontHeight / 2.0F * (float) (1 - Verticality.hotbar()), colorEnabled.getRGB());
+			context.drawText(textRenderer, left, (int) (-textRenderer.getWidth(left) / 2.0F), (int) (-textRenderer.fontHeight / 2.0F * (float) (1 - Verticality.hotbar())), colorEnabled.getRGB(), false);
 
-			matrixStack.pop();
+			context.getMatrices().pop();
 		}
 	}
 
+	@Unique
 	private boolean isInEnabled(double mouseX, double mouseY) {
 		if (Verticality.unavailable()) return false;
 
@@ -84,6 +85,7 @@ public class GameMenuScreenMixin extends Screen {
 		}
 	}
 
+	@Unique
 	private boolean isInUpsideDown(double mouseX, double mouseY) {
 		if (Verticality.unavailable()) return false;
 

@@ -8,14 +8,11 @@ import net.krlite.equator.visual.animation.Animation;
 import net.krlite.equator.visual.animation.Interpolation;
 import net.krlite.equator.visual.animation.Slice;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -194,35 +191,35 @@ public class Verticality implements ModInitializer {
 		PREFERENCES.switchUpsideDown();
 	}
 
-	public static void translateIcon(MatrixStack matrixStack, double y, boolean ignoreOffhand) {
+	public static void translateIcon(DrawContext context, double y, boolean ignoreOffhand) {
 		if (enabled()) {
 			double offset = -2 * ((y + 8) - height() / 2.0);
-			matrixStack.translate(
+			context.getMatrices().translate(
 					-HOTBAR_HEIGHT * hotbar(),
 					Theory.lerp(0, offset, swap()) + (ignoreOffhand ? 0 : (OFFHAND_WIDTH * offset() / 2)),
 					0
 			);
 		}
 		else {
-			matrixStack.translate(0, HOTBAR_HEIGHT * hotbar(), 0);
+			context.getMatrices().translate(0, HOTBAR_HEIGHT * hotbar(), 0);
 		}
 	}
 
-	public static void drawSelectedSlot(MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {
+	public static void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int u, int v, int width, int height) {
 		if (enabled()) {
 			double offset = -2 * ((x + width / 2.0) - (int) (width() / 2.0));
 
-			matrixStack.push();
-			matrixStack.translate(
+			context.getMatrices().push();
+			context.getMatrices().translate(
 					Theory.lerp(0, offset, swap()),
 					0, 0
 			);
 		}
 
-		DrawableHelper.drawTexture(matrixStack, x, y, u, v, width, height);
+		context.drawTexture(identifier, x, y, u, v, width, height);
 
 		if (enabled()) {
-			matrixStack.pop();
+			context.getMatrices().pop();
 		}
 	}
 }
