@@ -52,11 +52,11 @@ public class Verticality implements ModInitializer {
 			hotbar = new AnimatedDouble(1, 0, 450, Curves.Back.OUT.reverse()),
 			chat = new AnimatedDouble(1, 0, 710, Curves.Back.ease(3.75).reverse());
 	private static final InterpolatedDouble
-			offset = new InterpolatedDouble(0, 72),
-			swap = new InterpolatedDouble(0, 65);
+			offset = new InterpolatedDouble(0, 0.013),
+			swap = new InterpolatedDouble(0, 0.015);
 	private static final InterpolatedDouble
-			later = new InterpolatedDouble(0, 72),
-			earlier = new InterpolatedDouble(0, 72);
+			later = new InterpolatedDouble(0, 0.013),
+			earlier = new InterpolatedDouble(0, 0.013);
 	private static boolean enabled;
 	private static float spectatorMenuHeight = 0;
 
