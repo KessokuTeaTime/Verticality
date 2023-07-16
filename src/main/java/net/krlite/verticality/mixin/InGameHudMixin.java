@@ -59,7 +59,7 @@ private void renderHotbarPre(float tickDelta, MatrixStack matrixStack, CallbackI
 			),
 			slice = @Slice(
 					from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 0),
-					to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V")
+					to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V", remap = false)
 			)
 	)
 	private void drawOffhandSlot(InGameHud inGameHud, MatrixStack matrixStack, int x, int y, int u, int v, int width, int height) {

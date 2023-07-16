@@ -9,6 +9,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -17,6 +18,7 @@ import java.awt.*;
 
 @Mixin(GameMenuScreen.class)
 public class GameMenuScreenMixin extends Screen {
+	@Unique
 	private static final Text left = Text.of("<"), right = Text.of(">"), both = left.copy().append(" ").append(right);
 
 	protected GameMenuScreenMixin(Text title) {
@@ -61,7 +63,7 @@ public class GameMenuScreenMixin extends Screen {
 			matrixStack.push();
 			matrixStack.translate(width / 2.0F, height - 10 * (1 - Verticality.hotbar()), 0);
 			matrixStack.scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
-			matrixStack.translate(0, Verticality.FONT_GAP_OFFSET, 0);
+			matrixStack.translate(-Verticality.FONT_GAP_OFFSET, 0, 0);
 
 			textRenderer.draw(matrixStack, left, -textRenderer.getWidth(left) / 2.0F, -textRenderer.fontHeight / 2.0F * (float) (1 - Verticality.hotbar()), colorEnabled.getRGB());
 
@@ -69,6 +71,7 @@ public class GameMenuScreenMixin extends Screen {
 		}
 	}
 
+	@Unique
 	private boolean isInEnabled(double mouseX, double mouseY) {
 		if (Verticality.unavailable()) return false;
 
@@ -83,6 +86,7 @@ public class GameMenuScreenMixin extends Screen {
 		}
 	}
 
+	@Unique
 	private boolean isInUpsideDown(double mouseX, double mouseY) {
 		if (Verticality.unavailable()) return false;
 

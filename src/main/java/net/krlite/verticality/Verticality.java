@@ -4,9 +4,9 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.krlite.equator.math.algebra.Curves;
 import net.krlite.equator.math.algebra.Theory;
-import net.krlite.equator.visual.animation.Animation;
-import net.krlite.equator.visual.animation.Interpolation;
 import net.krlite.equator.visual.animation.Slice;
+import net.krlite.equator.visual.animation.animated.AnimatedDouble;
+import net.krlite.equator.visual.animation.interpolated.InterpolatedDouble;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -47,30 +47,28 @@ public class Verticality implements ModInitializer {
 	}
 
 	private static final HotbarPreferences PREFERENCES = new HotbarPreferences();
-	private static final Animation
-			hotbar = new Animation(1, 0, 450, Curves.Back.OUT.reverse()),
-			chat = new Animation(1, 0, 710, Curves.Back.ease(3.75).reverse());
-	private static final Interpolation
-			offset = new Interpolation(0, 0, 72),
-			swap = new Interpolation(0, 0, 65);
-	private static final Interpolation
-			later = new Interpolation(0, 0, 72),
-			earlier = new Interpolation(0, 0, 72);
+	private static final AnimatedDouble
+			hotbar = new AnimatedDouble(1, 0, 450, Curves.Back.OUT.reverse()),
+			chat = new AnimatedDouble(1, 0, 710, Curves.Back.ease(3.75).reverse());
+	private static final InterpolatedDouble
+			offset = new InterpolatedDouble(0, 0.013),
+			swap = new InterpolatedDouble(0, 0.015);
+	private static final InterpolatedDouble
+			later = new InterpolatedDouble(0, 0.013),
+			earlier = new InterpolatedDouble(0, 0.013);
 	private static boolean enabled;
 	private static float spectatorMenuHeight = 0;
 
 	static {
-		Animation.Callbacks.Start.EVENT.register(animation -> {
-			if (animation == hotbar) {
-				hotbar.slice(Slice::reverse);
-				if (chat.isCompleted()) chat.start();
-			}
+		hotbar.onPlay(() -> {
+			hotbar.slice(Slice::reverse);
+			if (chat.isCompleted()) chat.play();
 		});
 
-		Animation.Callbacks.Complete.EVENT.register(a -> {
-			if (a == hotbar && notCompleted()) {
+		hotbar.onTermination(() -> {
+			if (notCompleted()) {
 				PREFERENCES.enabled(enabled);
-				hotbar.start();
+				hotbar.play();
 			}
 		});
 
@@ -81,26 +79,26 @@ public class Verticality implements ModInitializer {
 				// Negative (offset)	: moving upwards
 				if (!client.player.getOffHandStack().isEmpty()) {
 					if (client.options.mainArm.getOpposite() == Arm.LEFT) {
-						offset.targetValue(upsideDown() ? -1 : 1);
+						offset.target(upsideDown() ? -1 : 1);
 					}
-					else offset.targetValue(upsideDown() ? 1 : -1);
+					else offset.target(upsideDown() ? 1 : -1);
 				}
-				else offset.targetValue(0);
+				else offset.target(0);
 
 				// Positive (swap)		: enable swap
 				// Zero (swap)			: disable swap
 				if (client.options.mainArm.getOpposite() == Arm.LEFT) {
-					swap.targetValue(upsideDown() ? 1 : 0);
+					swap.target(upsideDown() ? 1 : 0);
 				}
-				else swap.targetValue(upsideDown() ? 0 : 1);
+				else swap.target(upsideDown() ? 0 : 1);
 			}
 
-			later.targetValue(fullyEnabled() ? 1 : 0);
-			earlier.targetValue(fullyDisabled() ? 0 : 1);
+			later.target(fullyEnabled() ? 1 : 0);
+			earlier.target(fullyDisabled() ? 0 : 1);
 		});
 
-		hotbar.start();
-		chat.start();
+		hotbar.play();
+		chat.play();
 		enabled = PREFERENCES.enabled();
 	}
 
@@ -184,7 +182,7 @@ public class Verticality implements ModInitializer {
 
 	public static void switchEnabled() {
 		enabled = !enabled;
-		hotbar.start();
+		hotbar.play();
 	}
 
 	public static void switchUpsideDown() {
