@@ -105,7 +105,7 @@ class ItemAdjustor {
 			),
 			slice = @Slice(
 					from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 1),
-					to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V")
+					to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V", remap = false)
 			)
 	)
 	private void fixOffhandItem(Args args) {

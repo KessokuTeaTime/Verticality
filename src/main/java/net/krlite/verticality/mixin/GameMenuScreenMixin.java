@@ -62,7 +62,7 @@ public class GameMenuScreenMixin extends Screen {
 			context.getMatrices().push();
 			context.getMatrices().translate(width / 2.0F, height - 10 * (1 - Verticality.hotbar()), 0);
 			context.getMatrices().scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
-			context.getMatrices().translate(0, Verticality.FONT_GAP_OFFSET, 0);
+			context.getMatrices().translate(-Verticality.FONT_GAP_OFFSET, 0, 0);
 
 			context.drawText(textRenderer, left, (int) (-textRenderer.getWidth(left) / 2.0F), (int) (-textRenderer.fontHeight / 2.0F * (float) (1 - Verticality.hotbar())), colorEnabled.getRGB(), false);
 
