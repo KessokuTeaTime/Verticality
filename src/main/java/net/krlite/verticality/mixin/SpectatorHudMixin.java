@@ -8,6 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -19,6 +20,7 @@ public abstract class SpectatorHudMixin {
 
 	@Shadow protected abstract float getSpectatorMenuHeight();
 
+	@Unique
 	private float antiAliasingOffset() {
 		return -(1 - (Verticality.SPECTATOR_BAR_HEIGHT * getSpectatorMenuHeight()) % 1) % 1;
 	}

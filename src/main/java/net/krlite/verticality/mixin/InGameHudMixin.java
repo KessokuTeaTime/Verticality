@@ -91,7 +91,7 @@ class ItemAdjustor extends DrawableHelper {
 			),
 			slice = @Slice(
 					from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 1),
-					to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V")
+					to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V", remap = false)
 			)
 	)
 	private void fixOffhandItem(Args args) {
@@ -106,7 +106,7 @@ class ItemAdjustor extends DrawableHelper {
 			method = "renderHotbarItem",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/item/ItemStack;getBobbingAnimationTime()I"
+					target = "Lnet/minecraft/item/ItemStack;getBobbingAnimatedDoubleTime()I"
 			)
 	)
 	private void renderHotbarItemPre(MatrixStack matrixStack, int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed, CallbackInfo ci) {
