@@ -10,4 +10,4 @@ To toggle the function, just press `⎋ Escape` to access the game menu, then yo
 
 ## License
 
-This repository is available under the **[GNU Public License.](LICENSE)**
+**Verticality** is available under the **[GNU Public License.](LICENSE)**
