@@ -1,6 +1,6 @@
 ### <p align=right>[`→` Modrinth](https://modrinth.com/mod/verticality)</p>
 
-![Magic Happens!](artwork/content/magic.png)
+![Magic Happens!](https://github.com/KrLite/Verticality/blob/artwork/content/magic.png)
 
 # Verticality
 
