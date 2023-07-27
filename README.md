@@ -10,4 +10,4 @@ To toggle the function, just press `⎋ Escape` to access the game menu, then yo
 
 ## License
 
-**Verticality** is available under the **[GNU Public License.](LICENSE)**
+**Verticality** is licensed under the **[GNU General Public License v3.](LICENSE)**
