@@ -20,6 +20,6 @@ public class ChatHudMixin extends DrawableHelper {
 						? Verticality.later() : 0
 		);
 
-		matrixStack.translate(Verticality.CENTER_DISTANCE_TO_BORDER * offset, 0, 0);
+		matrixStack.translate((Verticality.CENTER_DISTANCE_TO_BORDER + Verticality.raisedShift() / 2.0) * offset, 0, 0);
 	}
 }
