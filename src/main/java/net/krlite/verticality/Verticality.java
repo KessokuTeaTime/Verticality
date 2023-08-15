@@ -1,7 +1,9 @@
 package net.krlite.verticality;
 
+import dev.yurisuika.raised.Raised;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.krlite.equator.math.algebra.Curves;
 import net.krlite.equator.math.algebra.Theory;
 import net.krlite.equator.visual.animation.Slice;
@@ -18,6 +20,8 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.function.Supplier;
 
 public class Verticality implements ModInitializer {
 	public static final String NAME = "Verticality", ID = "verticality";
@@ -59,6 +63,7 @@ public class Verticality implements ModInitializer {
 			earlier = new InterpolatedDouble(0, 0.013);
 	private static boolean enabled;
 	private static float spectatorMenuHeight = 0;
+	private static Supplier<Integer> raisedShift = () -> 0;
 
 	static {
 		hotbar.onPlay(() -> {
@@ -107,6 +112,14 @@ public class Verticality implements ModInitializer {
 	public void onInitialize() {
 		PREFERENCES.save();
 		Sounds.register();
+
+		if (FabricLoader.getInstance().isModLoaded("raised")) {
+			raisedShift = Raised::getHud;
+		}
+	}
+
+	public static int raisedShift() {
+		return raisedShift.get();
 	}
 
 	public static int height() {

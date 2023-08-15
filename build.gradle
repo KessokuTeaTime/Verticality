@@ -9,6 +9,7 @@ group = project.maven_group
 
 repositories {
 	maven { url "https://jitpack.io" }
+	maven { url "https://api.modrinth.com/maven" }
 }
 
 dependencies {
@@ -19,6 +20,8 @@ dependencies {
 
 	implementation include("com.github.KrLite:Pierced:${project.pierced_version}")
 	modImplementation include("com.github.KrLite.Equator-v2:Animation:${project.minecraft_version}-${project.equator_version}")
+
+	compileOnly "maven.modrinth:raised:${project.raised_version}"
 }
 
 processResources {
