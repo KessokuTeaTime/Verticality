@@ -8,6 +8,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3f;
+import org.lwjgl.system.CallbackI;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,6 +37,9 @@ public class GameMenuScreenMixin extends Screen {
 			RenderSystem.enableDepthTest();
 			RenderSystem.disableCull();
 
+			matrixStack.push();
+			matrixStack.translate(Verticality.raisedShift(), 0, 0);
+
 			// 'Disable' widget
 			matrixStack.push();
 			matrixStack.translate(13 * (1 - Verticality.hotbar()), height / 2.0F, 0);
@@ -56,11 +60,14 @@ public class GameMenuScreenMixin extends Screen {
 
 			matrixStack.pop();
 
+			matrixStack.pop();
+
 			RenderSystem.enableCull();
 		}
 		else {
 			// 'Enable' widget
 			matrixStack.push();
+			matrixStack.translate(0, -Verticality.raisedShift(), 0);
 			matrixStack.translate(width / 2.0F, height - 10 * (1 - Verticality.hotbar()), 0);
 			matrixStack.scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
 			matrixStack.translate(-Verticality.FONT_GAP_OFFSET, 0, 0);
@@ -77,11 +84,11 @@ public class GameMenuScreenMixin extends Screen {
 
 		if (Verticality.enabled()) {
 			// 'Disable'
-			double xCentered = 13, yCentered = height / 2.0F, w = textRenderer.getWidth(right) * Verticality.SCALAR, h = textRenderer.fontHeight * Verticality.SCALAR;
+			double xCentered = 13 + Verticality.raisedShift(), yCentered = height / 2.0F, w = textRenderer.getWidth(right) * Verticality.SCALAR, h = textRenderer.fontHeight * Verticality.SCALAR;
 			return mouseX >= xCentered - w / 2 && mouseX <= xCentered + w / 2 && mouseY >= yCentered - h / 2 && mouseY <= yCentered + h / 2;
 		} else {
 			// 'Enable'
-			double xCentered = width / 2.0F, yCentered = height - 10, w = textRenderer.getWidth(left) * Verticality.SCALAR, h = textRenderer.fontHeight * Verticality.SCALAR;
+			double xCentered = width / 2.0F, yCentered = height - 10 - Verticality.raisedShift(), w = textRenderer.getWidth(left) * Verticality.SCALAR, h = textRenderer.fontHeight * Verticality.SCALAR;
 			return mouseX >= xCentered - w / 2 && mouseX <= xCentered + w / 2 && mouseY >= yCentered - h / 2 && mouseY <= yCentered + h / 2;
 		}
 	}
@@ -91,7 +98,7 @@ public class GameMenuScreenMixin extends Screen {
 		if (Verticality.unavailable()) return false;
 
 		// 'Upside Down'
-		double xCentered = 30, yCentered = height / 2.0F, w = textRenderer.fontHeight, h = textRenderer.getWidth(both);
+		double xCentered = 30 + Verticality.raisedShift(), yCentered = height / 2.0F, w = textRenderer.fontHeight, h = textRenderer.getWidth(both);
 		return mouseX >= xCentered - w / 2 && mouseX <= xCentered + w / 2 && mouseY >= yCentered - h / 2 && mouseY <= yCentered + h / 2;
 	}
 
