@@ -110,10 +110,9 @@ class ItemAdjustor {
 	)
 	private void fixOffhandItem(Args args) {
 		int x = args.get(2);
-		if (MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.getMainArm() == Arm.LEFT)
+		if (MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.getMainArm() == Arm.LEFT && Verticality.enabled())
 			// Don't use 'MinecraftClient.getInstance().options.getMainArm()' as vanilla doesn't use it neither, otherwise causing the offhand item out-of-phase
 			args.set(2, (int) Math.round(x - 2 * ((x + 8) - Verticality.width() / 2.0))); // Revert the x-coordinate of the item
-		else args.set(2, x);
 	}
 
 	@Inject(
