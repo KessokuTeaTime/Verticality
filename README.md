@@ -6,7 +6,7 @@
 
 **Verticality** verticals your hotbar. Simple enough? Fascinating enough!
 
-To toggle the function, just press `⎋ Escape` to access the game menu, then you'shall see arrows on the hotbar area. Click them to see what happens!
+To toggle the function, just press <kbd>Escape</kbd> to access the game menu, then you'shall see arrows on the hotbar area. Click them to see what happens!
 
 ## License
 
