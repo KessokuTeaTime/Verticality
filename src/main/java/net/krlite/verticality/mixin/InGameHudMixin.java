@@ -63,10 +63,13 @@ public class InGameHudMixin {
 	)
 	private void drawOffhandSlot(DrawContext context, Identifier identifier, int x, int y, int u, int v, int width, int height) {
 		if (Verticality.enabled()) {
-			if ((MinecraftClient.getInstance().options.getMainArm().getValue().getOpposite() == Arm.LEFT) == !Verticality.upsideDown()) {
-				context.drawTexture(identifier, (int) (Verticality.width() / 2.0 - 91 - 29), Verticality.height() - 23, 24, 22, 29, 24); // Left
+			final boolean offhandLeft = (MinecraftClient.getInstance().options.getMainArm().getValue().getOpposite() == Arm.LEFT) == !Verticality.upsideDown();
+
+			if (offhandLeft) {
+				context.drawTexture(identifier, (int) (Verticality.width() / 2.0 - 91 - 29), Verticality.height() - 23, 24, 22, 29, 24);
+			} else {
+				context.drawTexture(identifier, (int) (Verticality.width() / 2.0 + 91), Verticality.height() - 23, 53, 22, 29, 24);
 			}
-			else context.drawTexture(identifier, (int) (Verticality.width() / 2.0 + 91), Verticality.height() - 23, 53, 22, 29, 24); // Right
 		}
 		else context.drawTexture(identifier, x, y, u, v, width, height);
 	}

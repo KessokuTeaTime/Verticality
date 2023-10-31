@@ -1,6 +1,7 @@
 package net.krlite.verticality;
 
 import dev.yurisuika.raised.Raised;
+import dev.yurisuika.raised.client.option.RaisedConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
@@ -128,7 +129,7 @@ public class Verticality implements ModInitializer {
 		Sounds.register();
 
 		if (FabricLoader.getInstance().isModLoaded("raised")) {
-			raisedShift = Raised::getHud;
+			raisedShift = RaisedConfig::getHud;
 		}
 	}
 
