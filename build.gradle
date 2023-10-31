@@ -19,7 +19,7 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	api include("com.github.KrLite:Pierced:${project.pierced_version}")
-	modImplementation include("com.github.KrLite.Equator-v2:Animation:${project.equator_version}-mc${project.minecraft_version}")
+	modImplementation include("com.github.KrLite.Equator-v2:Animation:${project.equator_version}-mc1.20")
 
 	modCompileOnly "maven.modrinth:raised:${project.raised_version}"
 }

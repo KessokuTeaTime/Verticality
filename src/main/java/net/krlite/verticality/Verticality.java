@@ -1,6 +1,6 @@
 package net.krlite.verticality;
 
-import dev.yurisuika.raised.Raised;
+import dev.yurisuika.raised.client.option.RaisedConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
@@ -20,7 +20,6 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Verticality implements ModInitializer {
@@ -78,20 +77,6 @@ public class Verticality implements ModInitializer {
 			}
 		});
 
-		/*Animation.Callbacks.Start.EVENT.register(animation -> {
-			if (animation == hotbar) {
-				hotbar.slice(Slice::reverse);
-				chat.play();
-			}
-		});
-
-		Animation.Callbacks.Complete.EVENT.register(animation -> {
-			if (animation == hotbar && notCompleted()) {
-				PREFERENCES.enabled(enabled);
-				hotbar.play();
-			}
-		});*/
-
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (client.player != null) {
 				// Positive (offset)	: moving downwards
@@ -128,7 +113,7 @@ public class Verticality implements ModInitializer {
 		Sounds.register();
 
 		if (FabricLoader.getInstance().isModLoaded("raised")) {
-			raisedShift = Raised::getHud;
+			raisedShift = RaisedConfig::getHud;
 		}
 	}
 
@@ -231,7 +216,7 @@ public class Verticality implements ModInitializer {
 		}
 	}
 
-	public static void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int u, int v, int width, int height) {
+	public static void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int width, int height) {
 		if (enabled()) {
 			double offset = -2 * ((x + width / 2.0) - (int) (width() / 2.0));
 
@@ -242,7 +227,7 @@ public class Verticality implements ModInitializer {
 			);
 		}
 
-		context.drawTexture(identifier, x, y, u, v, width, height);
+		context.drawGuiTexture(identifier, x, y, width, height);
 
 		if (enabled()) {
 			context.getMatrices().pop();

@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
@@ -19,6 +20,10 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
+	@Shadow @Final private static Identifier HOTBAR_OFFHAND_LEFT_TEXTURE;
+
+	@Shadow @Final private static Identifier HOTBAR_OFFHAND_RIGHT_TEXTURE;
+
 	@Inject(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", shift = At.Shift.AFTER))
 	private void renderHotbar(float tickDelta, DrawContext context, CallbackInfo ci) {
 		if (Verticality.enabled()) {
@@ -42,33 +47,36 @@ public class InGameHudMixin {
 			method = "renderHotbar",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+					target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
 					ordinal = 1
 			)
 	)
-	private void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int u, int v, int width, int height) {
-		Verticality.drawSelectedSlot(context, identifier, x, y, u, v, width, height);
+	private void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int width, int height) {
+		Verticality.drawSelectedSlot(context, identifier, x, y, width, height);
 	}
 
 	@Redirect(
 			method = "renderHotbar",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
+					target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
 			),
 			slice = @Slice(
 					from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 0),
 					to = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V")
 			)
 	)
-	private void drawOffhandSlot(DrawContext context, Identifier identifier, int x, int y, int u, int v, int width, int height) {
+	private void drawOffhandSlot(DrawContext context, Identifier identifier, int x, int y, int width, int height) {
 		if (Verticality.enabled()) {
-			if ((MinecraftClient.getInstance().options.getMainArm().getValue().getOpposite() == Arm.LEFT) == !Verticality.upsideDown()) {
-				context.drawTexture(identifier, (int) (Verticality.width() / 2.0 - 91 - 29), Verticality.height() - 23, 24, 22, 29, 24); // Left
+			final boolean offhandLeft = (MinecraftClient.getInstance().options.getMainArm().getValue().getOpposite() == Arm.LEFT) == !Verticality.upsideDown();
+
+			if (offhandLeft) {
+				context.drawGuiTexture(HOTBAR_OFFHAND_LEFT_TEXTURE, (int) (Verticality.width() / 2.0 - 91 - 29), Verticality.height() - 23, width, height);
+			} else {
+				context.drawGuiTexture(HOTBAR_OFFHAND_RIGHT_TEXTURE, (int) (Verticality.width() / 2.0 + 91), Verticality.height() - 23, width, height);
 			}
-			else context.drawTexture(identifier, (int) (Verticality.width() / 2.0 + 91), Verticality.height() - 23, 53, 22, 29, 24); // Right
 		}
-		else context.drawTexture(identifier, x, y, u, v, width, height);
+		else context.drawGuiTexture(identifier, x, y, width, height);
 	}
 }
 
@@ -169,7 +177,7 @@ class BarAdjustor {
 			method = "renderStatusBars",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
+					target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
 			)
 	)
 	private void renderStatusBarsPre(DrawContext context, CallbackInfo ci) {
@@ -181,7 +189,7 @@ class BarAdjustor {
 			method = "renderStatusBars",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+					target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
 					shift = At.Shift.AFTER
 			)
 	)
@@ -217,7 +225,7 @@ class BarAdjustor {
 			method = "renderMountHealth",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
+					target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
 			)
 	)
 	private void renderMountHealthPre(DrawContext context, CallbackInfo ci) {
@@ -228,7 +236,7 @@ class BarAdjustor {
 	@Inject(
 			method = "renderMountHealth",
 			at = @At(
-					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
 					shift = At.Shift.AFTER
 			)
 	)
@@ -239,7 +247,7 @@ class BarAdjustor {
 	@Inject(
 			method = "renderMountJumpBar",
 			at = @At(
-					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
 			)
 	)
 	private void renderMountJumpBarPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
@@ -250,7 +258,7 @@ class BarAdjustor {
 	@Inject(
 			method = "renderMountJumpBar",
 			at = @At(
-					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
 					shift = At.Shift.AFTER
 			)
 	)
@@ -261,7 +269,7 @@ class BarAdjustor {
 	@Inject(
 			method = "renderExperienceBar",
 			at = @At(
-					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
 			)
 	)
 	private void renderExperienceBarPre(DrawContext context, int x, CallbackInfo ci) {
@@ -272,7 +280,7 @@ class BarAdjustor {
 	@Inject(
 			method = "renderExperienceBar",
 			at = @At(
-					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
 					shift = At.Shift.AFTER
 			)
 	)
