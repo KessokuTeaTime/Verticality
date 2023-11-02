@@ -11,7 +11,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ChatHud.class)
 public class ChatHudMixin {
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", shift = At.Shift.AFTER))
+	@Inject(
+			method = "render",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/util/math/MatrixStack;push()V",
+					shift = At.Shift.AFTER
+			)
+	)
 	private void render(DrawContext context, int currentTick, int mouseX, int mouseY, CallbackInfo ci) {
 		double offset = Theory.lerp(
 				Verticality.chat(), Verticality.spectatorMenuHeight(),

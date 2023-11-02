@@ -24,7 +24,14 @@ public class InGameHudMixin {
 
 	@Shadow @Final private static Identifier HOTBAR_OFFHAND_RIGHT_TEXTURE;
 
-	@Inject(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", shift = At.Shift.AFTER))
+	@Inject(
+			method = "renderHotbar",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/util/math/MatrixStack;push()V",
+					shift = At.Shift.AFTER
+			)
+	)
 	private void renderHotbar(float tickDelta, DrawContext context, CallbackInfo ci) {
 		if (Verticality.enabled()) {
 			context.getMatrices().translate(
@@ -272,7 +279,7 @@ class BarAdjustor {
 					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
 			)
 	)
-	private void renderExperienceBarPre(DrawContext context, int x, CallbackInfo ci) {
+	private void renderExperienceBarBackgroundPre(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
 		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
 	}
@@ -284,7 +291,51 @@ class BarAdjustor {
 					shift = At.Shift.AFTER
 			)
 	)
-	private void renderExperienceBarPost(DrawContext context, int x, CallbackInfo ci) {
+	private void renderExperienceBarBackgroundPost(DrawContext context, int x, CallbackInfo ci) {
+		context.getMatrices().pop();
+	}
+
+	@Inject(
+			method = "renderExperienceBar",
+			at = @At(
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIIIIIII)V"
+			)
+	)
+	private void renderExperienceBarProgressPre(DrawContext context, int x, CallbackInfo ci) {
+		context.getMatrices().push();
+		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+	}
+
+	@Inject(
+			method = "renderExperienceBar",
+			at = @At(
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIIIIIII)V",
+					shift = At.Shift.AFTER
+			)
+	)
+	private void renderExperienceBarProgressPost(DrawContext context, int x, CallbackInfo ci) {
+		context.getMatrices().pop();
+	}
+
+	@Inject(
+			method = "renderExperienceBar",
+			at = @At(
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)I"
+			)
+	)
+	private void renderExperienceBarTextPre(DrawContext context, int x, CallbackInfo ci) {
+		context.getMatrices().push();
+		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+	}
+
+	@Inject(
+			method = "renderExperienceBar",
+			at = @At(
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)I",
+					shift = At.Shift.AFTER
+			)
+	)
+	private void renderExperienceBarTextPost(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().pop();
 	}
 
