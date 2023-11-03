@@ -184,6 +184,18 @@ class ItemAdjustor {
 @Mixin(InGameHud.class)
 class BarAdjustor {
 	@Inject(
+			method = "render",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTextBackground(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/font/TextRenderer;III)V",
+					shift = At.Shift.BEFORE
+			)
+	)
+	private void renderOverlay(DrawContext context, float tickDelta, CallbackInfo ci) {
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
+	}
+
+	@Inject(
 			method = "renderStatusBars",
 			at = @At(
 					value = "INVOKE",
