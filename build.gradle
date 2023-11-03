@@ -22,6 +22,11 @@ dependencies {
 	modImplementation include("com.github.KrLite.Equator-v2:Animation:${project.equator_version}-mc1.20")
 
 	modCompileOnly "maven.modrinth:raised:${project.raised_version}"
+	modRuntimeOnly "maven.modrinth:appleskin:${project.appleskin_version}"
+
+	modRuntimeOnly "maven.modrinth:raised:${project.raised_version}"
+	modCompileOnly "maven.modrinth:appleskin:${project.appleskin_version}"
+	modRuntimeOnly "maven.modrinth:modmenu:${project.modmenu_version}"
 }
 
 processResources {

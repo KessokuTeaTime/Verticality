@@ -112,9 +112,17 @@ public class Verticality implements ModInitializer {
 		PREFERENCES.save();
 		Sounds.register();
 
-		if (FabricLoader.getInstance().isModLoaded("raised")) {
+		if (isRaisedLoaded()) {
 			raisedShift = RaisedConfig::getHud;
 		}
+	}
+
+	public static boolean isRaisedLoaded() {
+		return FabricLoader.getInstance().isModLoaded("raised");
+	}
+
+	public static boolean isAppleSkinLoaded() {
+		return FabricLoader.getInstance().isModLoaded("appleskin");
 	}
 
 	public static int raisedShift() {
@@ -202,17 +210,31 @@ public class Verticality implements ModInitializer {
 		PREFERENCES.switchUpsideDown();
 	}
 
+	public static double hotbarShift() {
+		return HOTBAR_HEIGHT + raisedShift();
+	}
+
+	public static double chatHudShift() {
+		return raisedShift();
+	}
+
 	public static void translateIcon(DrawContext context, double y, boolean ignoreOffhand) {
 		if (enabled()) {
 			double offset = -2 * ((y + 8) - height() / 2.0);
 			context.getMatrices().translate(
-					-HOTBAR_HEIGHT * hotbar(),
+					-hotbarShift() * hotbar(),
 					Theory.lerp(0, offset, swap()) + (ignoreOffhand ? 0 : (OFFHAND_WIDTH * offset() / 2)),
+					0
+			);
+			// Make Raised horizontally
+			context.getMatrices().translate(
+					Verticality.raisedShift(),
+					Verticality.raisedShift(),
 					0
 			);
 		}
 		else {
-			context.getMatrices().translate(0, HOTBAR_HEIGHT * hotbar(), 0);
+			context.getMatrices().translate(0, hotbarShift() * hotbar(), 0);
 		}
 	}
 

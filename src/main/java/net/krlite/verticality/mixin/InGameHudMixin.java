@@ -4,7 +4,6 @@ import net.krlite.verticality.Verticality;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -37,16 +36,20 @@ public class InGameHudMixin {
 			context.getMatrices().translate(
 					 Verticality.CENTER_DISTANCE_TO_BORDER
 							 + (Verticality.height() - Verticality.CENTER_DISTANCE_TO_BORDER)
-							 - Verticality.HOTBAR_HEIGHT * Verticality.hotbar(),
-					(
-							Verticality.height() - Verticality.width()
-									+ Verticality.OFFHAND_WIDTH * Verticality.offset()
-					) / 2.0, 0
+							 - Verticality.hotbarShift() * Verticality.hotbar(),
+					(Verticality.height() - Verticality.width() + Verticality.OFFHAND_WIDTH * Verticality.offset()) / 2.0,
+					0
+			);
+			// Make Raised horizontally
+			context.getMatrices().translate(
+					Verticality.raisedShift(),
+					Verticality.raisedShift(),
+					0
 			);
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 		}
 		else {
-			context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.hotbar(), 0);
+			context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.hotbar(), 0);
 		}
 	}
 
@@ -189,7 +192,7 @@ class BarAdjustor {
 	)
 	private void renderStatusBarsPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
@@ -213,7 +216,7 @@ class BarAdjustor {
 	)
 	private void renderHealthBarPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
@@ -237,7 +240,7 @@ class BarAdjustor {
 	)
 	private void renderMountHealthPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
@@ -257,15 +260,37 @@ class BarAdjustor {
 					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
 			)
 	)
-	private void renderMountJumpBarPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
+	private void renderMountJumpBarBackgroundPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
 			method = "renderMountJumpBar",
 			at = @At(
 					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
+					shift = At.Shift.AFTER
+			)
+	)
+	private void renderMountJumpBarBackgroundPost(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
+		context.getMatrices().pop();
+	}
+
+	@Inject(
+			method = "renderMountJumpBar",
+			at = @At(
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIIIIIII)V"
+			)
+	)
+	private void renderMountJumpBarPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
+		context.getMatrices().push();
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
+	}
+
+	@Inject(
+			method = "renderMountJumpBar",
+			at = @At(
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIIIIIII)V",
 					shift = At.Shift.AFTER
 			)
 	)
@@ -281,7 +306,7 @@ class BarAdjustor {
 	)
 	private void renderExperienceBarBackgroundPre(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
@@ -303,7 +328,7 @@ class BarAdjustor {
 	)
 	private void renderExperienceBarProgressPre(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
@@ -325,7 +350,7 @@ class BarAdjustor {
 	)
 	private void renderExperienceBarTextPre(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
@@ -347,7 +372,7 @@ class BarAdjustor {
 	)
 	private void renderHeldItemTooltipPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
