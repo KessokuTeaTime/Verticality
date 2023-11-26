@@ -40,14 +40,14 @@ public abstract class SpectatorHudMixin {
 
 		if (Verticality.enabled()) {
 			context.getMatrices().translate(
-					Verticality.height() - Verticality.HOTBAR_HEIGHT * Verticality.hotbar() + antiAliasingOffset(),
+					Verticality.height() - Verticality.hotbarShift() * Verticality.hotbar() + antiAliasingOffset(),
 					(Verticality.height() - Verticality.width()) / 2.0,
 					0
 			);
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 		}
 		else {
-			context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.hotbar() - antiAliasingOffset(), 0);
+			context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.hotbar() - antiAliasingOffset(), 0);
 		}
 	}
 
@@ -141,7 +141,7 @@ class TextAdjustor {
 	)
 	private void renderPromptPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(

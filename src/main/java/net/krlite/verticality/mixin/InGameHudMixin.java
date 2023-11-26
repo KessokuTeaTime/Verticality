@@ -25,7 +25,7 @@ public class InGameHudMixin {
 			context.getMatrices().translate(
 					 Verticality.CENTER_DISTANCE_TO_BORDER
 							 + (Verticality.height() - Verticality.CENTER_DISTANCE_TO_BORDER)
-							 - Verticality.HOTBAR_HEIGHT * Verticality.hotbar(),
+							 - Verticality.hotbarShift() * Verticality.hotbar(),
 					(
 							Verticality.height() - Verticality.width()
 									+ Verticality.OFFHAND_WIDTH * Verticality.offset()
@@ -34,7 +34,7 @@ public class InGameHudMixin {
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 		}
 		else {
-			context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.hotbar(), 0);
+			context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.hotbar(), 0);
 		}
 	}
 
@@ -177,7 +177,7 @@ class BarAdjustor {
 	)
 	private void renderStatusBarsPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
@@ -201,7 +201,7 @@ class BarAdjustor {
 	)
 	private void renderHealthBarPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
@@ -225,7 +225,7 @@ class BarAdjustor {
 	)
 	private void renderMountHealthPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
@@ -247,7 +247,7 @@ class BarAdjustor {
 	)
 	private void renderMountJumpBarPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
@@ -269,7 +269,7 @@ class BarAdjustor {
 	)
 	private void renderExperienceBarPre(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(
@@ -291,7 +291,7 @@ class BarAdjustor {
 	)
 	private void renderHeldItemTooltipPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.later(), 0);
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
 	}
 
 	@Inject(

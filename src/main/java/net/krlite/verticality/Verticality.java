@@ -1,6 +1,5 @@
 package net.krlite.verticality;
 
-import dev.yurisuika.raised.Raised;
 import dev.yurisuika.raised.client.option.RaisedConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -21,7 +20,6 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Verticality implements ModInitializer {
@@ -79,20 +77,6 @@ public class Verticality implements ModInitializer {
 			}
 		});
 
-		/*Animation.Callbacks.Start.EVENT.register(animation -> {
-			if (animation == hotbar) {
-				hotbar.slice(Slice::reverse);
-				chat.play();
-			}
-		});
-
-		Animation.Callbacks.Complete.EVENT.register(animation -> {
-			if (animation == hotbar && notCompleted()) {
-				PREFERENCES.enabled(enabled);
-				hotbar.play();
-			}
-		});*/
-
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (client.player != null) {
 				// Positive (offset)	: moving downwards
@@ -128,9 +112,17 @@ public class Verticality implements ModInitializer {
 		PREFERENCES.save();
 		Sounds.register();
 
-		if (FabricLoader.getInstance().isModLoaded("raised")) {
+		if (isRaisedLoaded()) {
 			raisedShift = RaisedConfig::getHud;
 		}
+	}
+
+	public static boolean isRaisedLoaded() {
+		return FabricLoader.getInstance().isModLoaded("raised");
+	}
+
+	public static boolean isAppleSkinLoaded() {
+		return FabricLoader.getInstance().isModLoaded("appleskin");
 	}
 
 	public static int raisedShift() {
@@ -218,17 +210,25 @@ public class Verticality implements ModInitializer {
 		PREFERENCES.switchUpsideDown();
 	}
 
+	public static double hotbarShift() {
+		return HOTBAR_HEIGHT + raisedShift();
+	}
+
+	public static double chatHudShift() {
+		return raisedShift();
+	}
+
 	public static void translateIcon(DrawContext context, double y, boolean ignoreOffhand) {
 		if (enabled()) {
 			double offset = -2 * ((y + 8) - height() / 2.0);
 			context.getMatrices().translate(
-					-HOTBAR_HEIGHT * hotbar(),
+					-hotbarShift() * hotbar(),
 					Theory.lerp(0, offset, swap()) + (ignoreOffhand ? 0 : (OFFHAND_WIDTH * offset() / 2)),
 					0
 			);
 		}
 		else {
-			context.getMatrices().translate(0, HOTBAR_HEIGHT * hotbar(), 0);
+			context.getMatrices().translate(0, hotbarShift() * hotbar(), 0);
 		}
 	}
 
