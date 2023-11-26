@@ -226,6 +226,12 @@ public class Verticality implements ModInitializer {
 					Theory.lerp(0, offset, swap()) + (ignoreOffhand ? 0 : (OFFHAND_WIDTH * offset() / 2)),
 					0
 			);
+			// Make Raised horizontally
+			context.getMatrices().translate(
+					Verticality.raisedShift(),
+					Verticality.raisedShift(),
+					0
+			);
 		}
 		else {
 			context.getMatrices().translate(0, hotbarShift() * hotbar(), 0);
