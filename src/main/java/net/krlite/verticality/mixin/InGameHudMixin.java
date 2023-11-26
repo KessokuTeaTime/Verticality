@@ -299,6 +299,28 @@ class BarAdjustor {
 	}
 
 	@Inject(
+			method = "renderExperienceBar",
+			at = @At(
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)I"
+			)
+	)
+	private void renderExperienceBarTextPre(DrawContext context, int x, CallbackInfo ci) {
+		context.getMatrices().push();
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
+	}
+
+	@Inject(
+			method = "renderExperienceBar",
+			at = @At(
+					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)I",
+					shift = At.Shift.AFTER
+			)
+	)
+	private void renderExperienceBarTextPost(DrawContext context, int x, CallbackInfo ci) {
+		context.getMatrices().pop();
+	}
+
+	@Inject(
 			method = "renderHeldItemTooltip",
 			at = @At(
 					value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"
