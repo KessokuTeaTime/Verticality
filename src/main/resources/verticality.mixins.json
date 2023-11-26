@@ -4,17 +4,18 @@
   "package": "net.krlite.verticality.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "appleskin.HudOverlayHandlerMixin"
   ],
   "client": [
-	"BarAdjustor",
-	"ChatHudMixin",
-	"GameMenuScreenMixin",
-	"InGameHudMixin",
-	"ItemAdjustor",
-	"SpectatorHudMixin",
-	"TextAdjustor"
+    "BarAdjustor",
+    "ChatHudMixin",
+    "GameMenuScreenMixin",
+    "InGameHudMixin",
+    "ItemAdjustor",
+    "SpectatorHudMixin",
+    "TextAdjustor"
   ],
   "injectors": {
-	"defaultRequire": 0
+    "defaultRequire": 0
   }
 }

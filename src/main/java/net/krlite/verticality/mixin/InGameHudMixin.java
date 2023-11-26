@@ -26,10 +26,14 @@ public class InGameHudMixin {
 					 Verticality.CENTER_DISTANCE_TO_BORDER
 							 + (Verticality.height() - Verticality.CENTER_DISTANCE_TO_BORDER)
 							 - Verticality.hotbarShift() * Verticality.hotbar(),
-					(
-							Verticality.height() - Verticality.width()
-									+ Verticality.OFFHAND_WIDTH * Verticality.offset()
-					) / 2.0, 0
+					(Verticality.height() - Verticality.width() + Verticality.OFFHAND_WIDTH * Verticality.offset()) / 2.0,
+					0
+			);
+			// Make Raised horizontally
+			context.getMatrices().translate(
+					Verticality.raisedShift(),
+					Verticality.raisedShift(),
+					0
 			);
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 		}
@@ -168,6 +172,18 @@ class ItemAdjustor {
 
 @Mixin(InGameHud.class)
 class BarAdjustor {
+	@Inject(
+			method = "render",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTextBackground(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/font/TextRenderer;III)V",
+					shift = At.Shift.BEFORE
+			)
+	)
+	private void renderOverlay(DrawContext context, float tickDelta, CallbackInfo ci) {
+		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
+	}
+
 	@Inject(
 			method = "renderStatusBars",
 			at = @At(
