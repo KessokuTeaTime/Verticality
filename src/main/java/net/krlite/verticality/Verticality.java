@@ -25,7 +25,10 @@ import java.util.function.Supplier;
 public class Verticality implements ModInitializer {
 	public static final String NAME = "Verticality", ID = "verticality";
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
-	public static final int HOTBAR_HEIGHT = 23, SPECTATOR_BAR_HEIGHT = 22, OFFHAND_WIDTH = 29, CENTER_DISTANCE_TO_BORDER = 11, TOOLTIP_OFFSET = 7;
+	public static final int
+			HOTBAR_HEIGHT = 23, SPECTATOR_BAR_HEIGHT = 22, SINGLE_BAR_HEIGHT = 5, GAP = 2,
+			HOTBAR_WIDTH = 182, OFFHAND_WIDTH = 29,
+			CENTER_DISTANCE_TO_BORDER = 11, TOOLTIP_OFFSET = 7;
 	public static final float SCALAR = 1.5F, FONT_GAP_OFFSET = 0.5F;
 
 	public static class Sounds {
@@ -53,7 +56,7 @@ public class Verticality implements ModInitializer {
 	private static final HotbarPreferences PREFERENCES = new HotbarPreferences();
 	private static final AnimatedDouble
 			transition = new AnimatedDouble(1, 0, 450, Curves.Back.OUT.reverse()),
-			alternativeTransition = new AnimatedDouble(0, 1, 165, Curves.Exponential.Quintic.EASE);
+			alternativeTransition = new AnimatedDouble(0, 1, 175, Curves.Exponential.Quadratic.EASE);
 	private static final InterpolatedDouble
 			offset = new InterpolatedDouble(0, 0.013),
 			swap = new InterpolatedDouble(0, 0.015);
@@ -147,19 +150,23 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static double alternativeTransition() {
-		return alternativeTransition.value();
+		return alternativeLayout ? alternativeTransition.progress() : (alternativeTransition.end() - alternativeTransition.progress());
+	}
+
+	public static double alternativeLayoutOffsetX() {
+		return enabled() ? 0 : -(width() - HOTBAR_WIDTH) / 2.0 * alternativeTransition();
+	}
+
+	public static double alternativeLayoutOffsetY() {
+		return enabled() ? (height() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() : 0;
 	}
 
 	public static double progress() {
 		return notCompleted() ? transition.progress() : (1 - transition.progress());
 	}
 
-	public static double alternativeProgress() {
-		return alternativeLayout ? alternativeTransition.progress() : (1 - alternativeTransition.progress());
-	}
-
 	public static double offset() {
-		return offset.value();
+		return Theory.lerp(offset.value(), 0, alternativeTransition());
 	}
 
 	public static double swap() {
@@ -206,6 +213,10 @@ public class Verticality implements ModInitializer {
 		return !alternativeLayout && !alternativeLayoutEnabled();
 	}
 
+	public static boolean alternativeLayoutPartiallyEnabled() {
+		return alternativeLayout;
+	}
+
 	public static boolean upsideDown() {
 		return PREFERENCES.upsideDown();
 	}
@@ -240,8 +251,9 @@ public class Verticality implements ModInitializer {
 		return HOTBAR_HEIGHT + raisedShift();
 	}
 
-	public static double chatHudShift() {
-		return raisedShift();
+	public static boolean isMainArmLeft() {
+		// Don't use 'MinecraftClient.getInstance().options.getMainArm()' as vanilla doesn't use it neither, otherwise causing the offhand item out-of-phase
+		return MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.getMainArm() == Arm.LEFT;
 	}
 
 	public static void translateIcon(DrawContext context, double y, boolean ignoreOffhand) {
@@ -252,7 +264,8 @@ public class Verticality implements ModInitializer {
 					Theory.lerp(0, offset, swap()) + (ignoreOffhand ? 0 : (OFFHAND_WIDTH * offset() / 2)),
 					0
 			);
-			// Make Raised horizontally
+
+			// Compatibility with Raised
 			context.getMatrices().translate(
 					Verticality.raisedShift(),
 					Verticality.raisedShift(),
@@ -262,6 +275,8 @@ public class Verticality implements ModInitializer {
 		else {
 			context.getMatrices().translate(0, hotbarShift() * transition(), 0);
 		}
+
+		context.getMatrices().translate(alternativeLayoutOffsetX(), alternativeLayoutOffsetY(), 0);
 	}
 
 	public static void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int width, int height) {

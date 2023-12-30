@@ -37,7 +37,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 
     @Inject(method = "render", at = @At("RETURN"))
     private void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        double progress = Math.pow(Verticality.progress(), 2), alternativeProgress = Math.pow(Verticality.alternativeProgress(), 2);
+        double progress = Math.pow(Verticality.progress(), 2);
 
         int alphaHovered = 255, alpha = 75;
         Color colorEnabled = new Color(255, 255, 255,
@@ -64,7 +64,7 @@ public abstract class GameMenuScreenMixin extends Screen {
                 context.getMatrices().push();
                 context.getMatrices().translate(
                         13 * (1 - Verticality.transition()),
-                        Theory.lerp(height / 2.0F, height - (31 + 13), Verticality.alternativeProgress()),
+                        Theory.lerp(height / 2.0F, height - (31 + 13), Verticality.alternativeTransition()),
                         0
                 );
                 context.getMatrices().scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
@@ -86,7 +86,7 @@ public abstract class GameMenuScreenMixin extends Screen {
                 context.getMatrices().push();
                 context.getMatrices().translate(
                         13 + 15 * (1 - Verticality.transition()),
-                        Theory.lerp(height / 2.0F, height - 13, Verticality.alternativeProgress()),
+                        Theory.lerp(height / 2.0F, height - 13, Verticality.alternativeTransition()),
                         500
                 );
                 context.getMatrices().scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
@@ -108,7 +108,7 @@ public abstract class GameMenuScreenMixin extends Screen {
             // 'Enable'
             context.getMatrices().push();
             context.getMatrices().translate(
-                    Theory.lerp(width / 2.0F, 31 + 13, Verticality.alternativeProgress()),
+                    Theory.lerp(width / 2.0F, 31 + 13, Verticality.alternativeTransition()),
                     height - 10 * (1 - Verticality.transition()),
                     0
             );
@@ -136,7 +136,7 @@ public abstract class GameMenuScreenMixin extends Screen {
             );
             context.getMatrices().scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
             context.getMatrices().multiply((Verticality.enabled() ? RotationAxis.POSITIVE_X : RotationAxis.POSITIVE_Y)
-                    .rotationDegrees((float) (180 * alternativeProgress)));
+                    .rotationDegrees((float) (180 * Verticality.alternativeTransition())));
 
             context.getMatrices().translate(
                     Verticality.enabled() ? 0 : Verticality.FONT_GAP_OFFSET,
@@ -217,7 +217,7 @@ public abstract class GameMenuScreenMixin extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (mouseInWidgetEnabled(mouseX, mouseY)) {
             Verticality.Sounds.playGateLatch();
             Verticality.switchEnabled();
@@ -233,6 +233,6 @@ public abstract class GameMenuScreenMixin extends Screen {
             Verticality.switchUpsideDown();
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 }

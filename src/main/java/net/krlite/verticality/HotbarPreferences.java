@@ -45,7 +45,7 @@ class HotbarPreferences extends Pierced {
 
 	@Comment("Whether to flip the vertical hotbar")
 	@Comment
-	@Comment("When using right hand as the main hand, the offhand slot is at:")
+	@Comment("When using right arm as the main arm, the offhand slot is at:")
 	@Comment("	true  - bottom of the hotbar")
 	@Comment("	false - top of the hotbar")
 	private boolean upsideDown = false;

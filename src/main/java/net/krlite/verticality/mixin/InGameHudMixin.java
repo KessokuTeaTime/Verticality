@@ -1,5 +1,6 @@
 package net.krlite.verticality.mixin;
 
+import net.krlite.equator.math.algebra.Theory;
 import net.krlite.verticality.Verticality;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -40,15 +41,18 @@ public class InGameHudMixin {
 					(Verticality.height() - Verticality.width() + Verticality.OFFHAND_WIDTH * Verticality.offset()) / 2.0,
 					0
 			);
-			// Make Raised horizontally
+
+			// Compatibility with Raised
 			context.getMatrices().translate(
 					Verticality.raisedShift(),
 					Verticality.raisedShift(),
 					0
 			);
+
+			context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), Verticality.alternativeLayoutOffsetY(), 0);
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
-		}
-		else {
+		} else {
+			context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), Verticality.alternativeLayoutOffsetY(), 0);
 			context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.transition(), 0);
 		}
 	}
@@ -77,16 +81,47 @@ public class InGameHudMixin {
 			)
 	)
 	private void drawOffhandSlot(DrawContext context, Identifier identifier, int x, int y, int width, int height) {
-		if (Verticality.enabled()) {
-			final boolean offhandLeft = (MinecraftClient.getInstance().options.getMainArm().getValue().getOpposite() == Arm.LEFT) == !Verticality.upsideDown();
+		context.getMatrices().push();
 
-			if (offhandLeft) {
-				context.drawGuiTexture(HOTBAR_OFFHAND_LEFT_TEXTURE, (int) (Verticality.width() / 2.0 - 91 - 29), Verticality.height() - 23, width, height);
+		if (Verticality.enabled()) {
+			if (Verticality.alternativeLayoutPartiallyEnabled()) {
+				context.drawGuiTexture(
+						HOTBAR_OFFHAND_RIGHT_TEXTURE,
+						(int) ((Verticality.width() + Verticality.HOTBAR_WIDTH) / 2.0 - Verticality.OFFHAND_WIDTH),
+						y - (Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.GAP),
+						width, height
+				);
 			} else {
-				context.drawGuiTexture(HOTBAR_OFFHAND_RIGHT_TEXTURE, (int) (Verticality.width() / 2.0 + 91), Verticality.height() - 23, width, height);
+				final boolean offhandLeft = (MinecraftClient.getInstance().options.getMainArm().getValue().getOpposite() == Arm.LEFT) == !Verticality.upsideDown();
+
+				if (offhandLeft) {
+					context.drawGuiTexture(
+							HOTBAR_OFFHAND_LEFT_TEXTURE,
+							(int) (Verticality.width() / 2.0 - 91 - 29), Verticality.height() - 23,
+							width, height
+					);
+				} else {
+					context.drawGuiTexture(
+							HOTBAR_OFFHAND_RIGHT_TEXTURE,
+							(int) (Verticality.width() / 2.0 + 91), Verticality.height() - 23,
+							width, height
+					);
+				}
+			}
+		} else {
+			if (Verticality.alternativeLayoutPartiallyEnabled()) {
+				context.drawGuiTexture(
+						HOTBAR_OFFHAND_LEFT_TEXTURE,
+						(int) ((Verticality.width() - Verticality.HOTBAR_WIDTH) / 2.0),
+						y - (Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.GAP),
+						width, height
+				);
+			} else {
+				context.drawGuiTexture(identifier, x, y, width, height);
 			}
 		}
-		else context.drawGuiTexture(identifier, x, y, width, height);
+
+		context.getMatrices().pop();
 	}
 }
 
@@ -104,15 +139,57 @@ class ItemAdjustor {
 	)
 	private void renderHotbarItem(InGameHud inGameHud, DrawContext context, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed) {
 		if (Verticality.enabled()) {
-			double xRelative = (x + 8) - Verticality.width() / 2.0, yRelative = (y + 8) - (Verticality.height() - Verticality.CENTER_DISTANCE_TO_BORDER);
+			double
+					xRelative = (x + 8) - Verticality.width() / 2.0,
+					yRelative = (y + 8) - (Verticality.height() - Verticality.CENTER_DISTANCE_TO_BORDER);
+
 			renderHotbarItem(
 					context,
-					(int) Math.round(Verticality.CENTER_DISTANCE_TO_BORDER - yRelative) - 8,
-					(int) Math.round(Verticality.height() / 2.0 + xRelative) - 8,
+					(int) (Math.round(Verticality.CENTER_DISTANCE_TO_BORDER - yRelative) - 8),
+					(int) (Math.round(Verticality.height() / 2.0 + xRelative) - 8),
 					tickDelta, player, stack, seed
 			);
 		}
-		else renderHotbarItem(context, x, y, tickDelta, player, stack, seed);
+		else {
+			renderHotbarItem(context, x, y, tickDelta, player, stack, seed);
+		}
+	}
+
+	@Inject(
+			method = "renderHotbar",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbarItem(Lnet/minecraft/client/gui/DrawContext;IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V",
+					shift = At.Shift.BEFORE
+			),
+			slice = @Slice(
+					from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 1),
+					to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V", remap = false)
+			)
+	)
+	private void renderOffhandItemPre(float tickDelta, DrawContext context, CallbackInfo ci) {
+		if (Verticality.alternativeLayoutPartiallyEnabled()) {
+			context.getMatrices().push();
+			context.getMatrices().translate(100, -20, 0);
+		}
+	}
+
+	@Inject(
+			method = "renderHotbar",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbarItem(Lnet/minecraft/client/gui/DrawContext;IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V",
+					shift = At.Shift.AFTER
+			),
+			slice = @Slice(
+					from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 1),
+					to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V", remap = false)
+			)
+	)
+	private void renderOffhandItemPost(float tickDelta, DrawContext context, CallbackInfo ci) {
+		if (Verticality.alternativeLayoutPartiallyEnabled()) {
+			context.getMatrices().pop();
+		}
 	}
 
 	@ModifyArgs(
@@ -127,9 +204,10 @@ class ItemAdjustor {
 			)
 	)
 	private void fixOffhandItem(Args args) {
+		if (Verticality.alternativeLayoutPartiallyEnabled()) return;
+
 		int x = args.get(2);
-		if (MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.getMainArm() == Arm.LEFT && Verticality.enabled())
-			// Don't use 'MinecraftClient.getInstance().options.getMainArm()' as vanilla doesn't use it neither, otherwise causing the offhand item out-of-phase
+		if (Verticality.isMainArmLeft() && Verticality.enabled())
 			args.set(2, (int) Math.round(x - 2 * ((x + 8) - Verticality.width() / 2.0))); // Revert the x-coordinate of the item
 	}
 
