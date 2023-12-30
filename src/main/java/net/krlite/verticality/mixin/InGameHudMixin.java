@@ -1,6 +1,5 @@
 package net.krlite.verticality.mixin;
 
-import net.krlite.equator.math.algebra.Theory;
 import net.krlite.verticality.Verticality;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -88,7 +87,7 @@ public class InGameHudMixin {
 				context.drawGuiTexture(
 						HOTBAR_OFFHAND_RIGHT_TEXTURE,
 						(int) ((Verticality.width() + Verticality.HOTBAR_WIDTH) / 2.0 - Verticality.OFFHAND_WIDTH),
-						y - (Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.GAP),
+						y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.GAP),
 						width, height
 				);
 			} else {
@@ -113,7 +112,7 @@ public class InGameHudMixin {
 				context.drawGuiTexture(
 						HOTBAR_OFFHAND_LEFT_TEXTURE,
 						(int) ((Verticality.width() - Verticality.HOTBAR_WIDTH) / 2.0),
-						y - (Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.GAP),
+						y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.GAP),
 						width, height
 				);
 			} else {
@@ -155,43 +154,6 @@ class ItemAdjustor {
 		}
 	}
 
-	@Inject(
-			method = "renderHotbar",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbarItem(Lnet/minecraft/client/gui/DrawContext;IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V",
-					shift = At.Shift.BEFORE
-			),
-			slice = @Slice(
-					from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 1),
-					to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V", remap = false)
-			)
-	)
-	private void renderOffhandItemPre(float tickDelta, DrawContext context, CallbackInfo ci) {
-		if (Verticality.alternativeLayoutPartiallyEnabled()) {
-			context.getMatrices().push();
-			context.getMatrices().translate(100, -20, 0);
-		}
-	}
-
-	@Inject(
-			method = "renderHotbar",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbarItem(Lnet/minecraft/client/gui/DrawContext;IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V",
-					shift = At.Shift.AFTER
-			),
-			slice = @Slice(
-					from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 1),
-					to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V", remap = false)
-			)
-	)
-	private void renderOffhandItemPost(float tickDelta, DrawContext context, CallbackInfo ci) {
-		if (Verticality.alternativeLayoutPartiallyEnabled()) {
-			context.getMatrices().pop();
-		}
-	}
-
 	@ModifyArgs(
 			method = "renderHotbar",
 			at = @At(
@@ -204,11 +166,16 @@ class ItemAdjustor {
 			)
 	)
 	private void fixOffhandItem(Args args) {
-		if (Verticality.alternativeLayoutPartiallyEnabled()) return;
+		int x = args.get(2), y = args.get(3);
 
-		int x = args.get(2);
-		if (Verticality.isMainArmLeft() && Verticality.enabled())
+		if (Verticality.alternativeLayoutPartiallyEnabled()) {
+			// x
+			args.set(2, (Verticality.width() + Verticality.HOTBAR_WIDTH * (Verticality.enabled() ? 1 : -1)) / 2 - Verticality.HOTBAR_ITEM_GAP * (Verticality.enabled() ? 1 : -1) - Verticality.ITEM_SIZE * (Verticality.enabled() ? 1 : 0));
+			// y
+			args.set(3, y - Verticality.GAP - Verticality.SINGLE_BAR_HEIGHT - Verticality.GAP - Verticality.HOTBAR_FULL_HEIGHT);
+		} else if (Verticality.isMainArmLeft() && Verticality.enabled()) {
 			args.set(2, (int) Math.round(x - 2 * ((x + 8) - Verticality.width() / 2.0))); // Revert the x-coordinate of the item
+		}
 	}
 
 	@Inject(

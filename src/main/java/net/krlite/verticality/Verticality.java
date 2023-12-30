@@ -26,7 +26,8 @@ public class Verticality implements ModInitializer {
 	public static final String NAME = "Verticality", ID = "verticality";
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 	public static final int
-			HOTBAR_HEIGHT = 23, SPECTATOR_BAR_HEIGHT = 22, SINGLE_BAR_HEIGHT = 5, GAP = 2,
+			HOTBAR_FULL_HEIGHT = 24, HOTBAR_HEIGHT = HOTBAR_FULL_HEIGHT - 1, SPECTATOR_BAR_HEIGHT = 22, SINGLE_BAR_HEIGHT = 5,
+			ITEM_SIZE = 16, GAP = 2, HOTBAR_ITEM_GAP = (HOTBAR_FULL_HEIGHT - ITEM_SIZE) / 2 - 1,
 			HOTBAR_WIDTH = 182, OFFHAND_WIDTH = 29,
 			CENTER_DISTANCE_TO_BORDER = 11, TOOLTIP_OFFSET = 7;
 	public static final float SCALAR = 1.5F, FONT_GAP_OFFSET = 0.5F;
