@@ -16,16 +16,18 @@ public class ChatHudMixin {
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/client/util/math/MatrixStack;push()V",
+					ordinal = 0,
 					shift = At.Shift.AFTER
 			)
 	)
 	private void render(DrawContext context, int currentTick, int mouseX, int mouseY, CallbackInfo ci) {
-		double offset = Theory.lerp(
-				Verticality.chat(), Verticality.spectatorMenuHeight(),
+		double offset = Verticality.hotbarShift() * Theory.lerp(
+				Verticality.earlier(),
+				Verticality.spectatorMenuHeightScalar(),
 				Verticality.enabled() && Verticality.isSpectator()
 						? Verticality.later() : 0
 		);
 
-		context.getMatrices().translate((Verticality.CENTER_DISTANCE_TO_BORDER + Verticality.raisedShift() / 2.0) * offset, 0, 0);
+		context.getMatrices().translate(offset, 0, 0);
 	}
 }

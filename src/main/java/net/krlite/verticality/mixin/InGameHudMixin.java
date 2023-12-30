@@ -36,7 +36,7 @@ public class InGameHudMixin {
 			context.getMatrices().translate(
 					 Verticality.CENTER_DISTANCE_TO_BORDER
 							 + (Verticality.height() - Verticality.CENTER_DISTANCE_TO_BORDER)
-							 - Verticality.hotbarShift() * Verticality.hotbar(),
+							 - Verticality.hotbarShift() * Verticality.transition(),
 					(Verticality.height() - Verticality.width() + Verticality.OFFHAND_WIDTH * Verticality.offset()) / 2.0,
 					0
 			);
@@ -49,7 +49,7 @@ public class InGameHudMixin {
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 		}
 		else {
-			context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.hotbar(), 0);
+			context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.transition(), 0);
 		}
 	}
 

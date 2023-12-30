@@ -52,29 +52,32 @@ public class Verticality implements ModInitializer {
 
 	private static final HotbarPreferences PREFERENCES = new HotbarPreferences();
 	private static final AnimatedDouble
-			hotbar = new AnimatedDouble(1, 0, 450, Curves.Back.OUT.reverse()),
-			chat = new AnimatedDouble(1, 0, 710, Curves.Back.ease(3.75).reverse());
+			transition = new AnimatedDouble(1, 0, 450, Curves.Back.OUT.reverse()),
+			alternativeTransition = new AnimatedDouble(0, 1, 165, Curves.Exponential.Quintic.EASE);
 	private static final InterpolatedDouble
 			offset = new InterpolatedDouble(0, 0.013),
 			swap = new InterpolatedDouble(0, 0.015);
 	private static final InterpolatedDouble
 			later = new InterpolatedDouble(0, 0.013),
 			earlier = new InterpolatedDouble(0, 0.013);
-	private static boolean enabled;
-	private static float spectatorMenuHeight = 0;
+	private static boolean enabled, alternativeLayout;
+	private static float spectatorMenuHeightScalar = 0;
 	private static Supplier<Integer> raisedShift = () -> 0;
 
 	static {
-		hotbar.onPlay(() -> {
-			hotbar.slice(Slice::reverse);
-			chat.play();
+		transition.onPlay(() -> {
+			transition.slice(Slice::reverse);
 		});
 
-		hotbar.onTermination(() -> {
+		transition.onTermination(() -> {
 			if (notCompleted()) {
 				PREFERENCES.enabled(enabled);
-				hotbar.play();
+				transition.play();
 			}
+		});
+
+		alternativeTransition.onTermination(() -> {
+			PREFERENCES.alternativeLayout(alternativeLayout);
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -102,9 +105,11 @@ public class Verticality implements ModInitializer {
 			earlier.target(fullyDisabled() ? 0 : 1);
 		});
 
-		hotbar.play();
-		chat.play();
-		enabled = PREFERENCES.enabled();
+		transition.play();
+		alternativeTransition.play();
+
+		enabled = enabled();
+		alternativeLayout = alternativeLayoutEnabled();
 	}
 
 	@Override
@@ -137,16 +142,20 @@ public class Verticality implements ModInitializer {
 		return MinecraftClient.getInstance().getWindow().getScaledWidth();
 	}
 
-	public static double hotbar() {
-		return hotbar.value();
+	public static double transition() {
+		return transition.value();
+	}
+
+	public static double alternativeTransition() {
+		return alternativeTransition.value();
 	}
 
 	public static double progress() {
-		return notCompleted() ? hotbar.progress() : (1 - hotbar.progress());
+		return notCompleted() ? transition.progress() : (1 - transition.progress());
 	}
 
-	public static double chat() {
-		return enabled ? chat.value() : 1 - chat.value();
+	public static double alternativeProgress() {
+		return alternativeLayout ? alternativeTransition.progress() : (1 - alternativeTransition.progress());
 	}
 
 	public static double offset() {
@@ -166,11 +175,11 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static boolean notCompleted() {
-		return PREFERENCES.enabled() != enabled;
+		return enabled() != enabled;
 	}
 
 	public static boolean unavailable() {
-		return !hotbar.isCompleted();
+		return transition.isPlaying() || alternativeTransition.isPlaying();
 	}
 
 	public static boolean enabled() {
@@ -185,6 +194,18 @@ public class Verticality implements ModInitializer {
 		return !enabled() && !enabled;
 	}
 
+	public static boolean alternativeLayoutEnabled() {
+		return PREFERENCES.alternativeLayout();
+	}
+
+	public static boolean alternativeLayoutFullyEnabled() {
+		return alternativeLayout && alternativeLayoutEnabled();
+	}
+
+	public static boolean alternativeLayoutFullyDisabled() {
+		return !alternativeLayout && !alternativeLayoutEnabled();
+	}
+
 	public static boolean upsideDown() {
 		return PREFERENCES.upsideDown();
 	}
@@ -193,17 +214,22 @@ public class Verticality implements ModInitializer {
 		return MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.isSpectator();
 	}
 
-	public static float spectatorMenuHeight() {
-		return spectatorMenuHeight;
+	public static float spectatorMenuHeightScalar() {
+		return spectatorMenuHeightScalar;
 	}
 
-	public static void spectatorMenuHeight(float height) {
-		spectatorMenuHeight = height;
+	public static void spectatorMenuHeightScalar(float scalar) {
+		spectatorMenuHeightScalar = scalar;
 	}
 
 	public static void switchEnabled() {
 		enabled = !enabled;
-		hotbar.play();
+		transition.play();
+	}
+
+	public static void switchAlternativeMode() {
+		alternativeLayout = !alternativeLayout;
+		alternativeTransition.play();
 	}
 
 	public static void switchUpsideDown() {
@@ -222,7 +248,7 @@ public class Verticality implements ModInitializer {
 		if (enabled()) {
 			double offset = -2 * ((y + 8) - height() / 2.0);
 			context.getMatrices().translate(
-					-hotbarShift() * hotbar(),
+					-hotbarShift() * transition(),
 					Theory.lerp(0, offset, swap()) + (ignoreOffhand ? 0 : (OFFHAND_WIDTH * offset() / 2)),
 					0
 			);
@@ -234,7 +260,7 @@ public class Verticality implements ModInitializer {
 			);
 		}
 		else {
-			context.getMatrices().translate(0, hotbarShift() * hotbar(), 0);
+			context.getMatrices().translate(0, hotbarShift() * transition(), 0);
 		}
 	}
 

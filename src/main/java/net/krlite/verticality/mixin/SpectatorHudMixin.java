@@ -5,7 +5,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuState;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,19 +34,19 @@ public abstract class SpectatorHudMixin {
 			)
 	)
 	private void renderSpectatorMenuPre(DrawContext context, float height, int x, int y, SpectatorMenuState state, CallbackInfo ci) {
-		Verticality.spectatorMenuHeight(height);
+		Verticality.spectatorMenuHeightScalar(height);
 		context.getMatrices().push();
 
 		if (Verticality.enabled()) {
 			context.getMatrices().translate(
-					Verticality.height() - Verticality.HOTBAR_HEIGHT * Verticality.hotbar() + antiAliasingOffset(),
+					Verticality.height() - Verticality.HOTBAR_HEIGHT * Verticality.transition() + antiAliasingOffset(),
 					(Verticality.height() - Verticality.width()) / 2.0,
 					0
 			);
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 		}
 		else {
-			context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.hotbar() - antiAliasingOffset(), 0);
+			context.getMatrices().translate(0, Verticality.HOTBAR_HEIGHT * Verticality.transition() - antiAliasingOffset(), 0);
 		}
 	}
 
