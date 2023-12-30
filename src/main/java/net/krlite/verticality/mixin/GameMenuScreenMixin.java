@@ -26,7 +26,7 @@ public abstract class GameMenuScreenMixin extends Screen {
     private static final Text
             leftArrow = Text.of("<"),
             rightArrow = Text.of(">"),
-            upDownArrow = Text.of("⬍"),
+            upDownArrow = Text.of("|"),
             alternativeLayoutArrowWhenEnabled = Text.of("↓"),
             alternativeLayoutArrowWhenDisabled = Text.of("←");
 
@@ -85,7 +85,7 @@ public abstract class GameMenuScreenMixin extends Screen {
             {
                 context.getMatrices().push();
                 context.getMatrices().translate(
-                        13 + 17 * (1 - Verticality.transition()),
+                        13 + 15 * (1 - Verticality.transition()),
                         Theory.lerp(height / 2.0F, height - 13, Verticality.alternativeProgress()),
                         500
                 );
@@ -209,7 +209,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 
         return mouseIn(
                 mouseX, mouseY,
-                13 + 17 + Verticality.raisedShift(),
+                13 + 15 + Verticality.raisedShift(),
                 Verticality.alternativeLayoutEnabled() ? height - (13 - Verticality.FONT_GAP_OFFSET) : height / 2.0F,
                 textRenderer.getWidth(upDownArrow) * Verticality.SCALAR,
                 textRenderer.fontHeight * Verticality.SCALAR
