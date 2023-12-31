@@ -1,5 +1,6 @@
 package net.krlite.verticality;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.yurisuika.raised.client.option.RaisedConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -17,6 +18,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
+import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,7 +153,7 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static double alternativeTransition() {
-		return alternativeLayout ? alternativeTransition.progress() : (alternativeTransition.end() - alternativeTransition.progress());
+		return alternativeLayoutPartiallyEnabled() ? alternativeTransition.progress() : (alternativeTransition.end() - alternativeTransition.progress());
 	}
 
 	public static double alternativeLayoutOffsetX() {
@@ -194,28 +196,32 @@ public class Verticality implements ModInitializer {
 		return PREFERENCES.enabled();
 	}
 
+	public static boolean partiallyEnabled() {
+		return enabled;
+	}
+
 	public static boolean fullyEnabled() {
-		return enabled() && enabled;
+		return partiallyEnabled() && enabled();
 	}
 
 	public static boolean fullyDisabled() {
-		return !enabled() && !enabled;
+		return !partiallyEnabled() && !enabled();
 	}
 
 	public static boolean alternativeLayoutEnabled() {
 		return PREFERENCES.alternativeLayout();
 	}
 
+	public static boolean alternativeLayoutPartiallyEnabled() {
+		return alternativeLayout;
+	}
+
 	public static boolean alternativeLayoutFullyEnabled() {
-		return alternativeLayout && alternativeLayoutEnabled();
+		return alternativeLayoutPartiallyEnabled() && alternativeLayoutEnabled();
 	}
 
 	public static boolean alternativeLayoutFullyDisabled() {
-		return !alternativeLayout && !alternativeLayoutEnabled();
-	}
-
-	public static boolean alternativeLayoutPartiallyEnabled() {
-		return alternativeLayout;
+		return !alternativeLayoutPartiallyEnabled() && !alternativeLayoutEnabled();
 	}
 
 	public static boolean upsideDown() {
@@ -296,5 +302,26 @@ public class Verticality implements ModInitializer {
 		if (enabled()) {
 			context.getMatrices().pop();
 		}
+	}
+
+	private static boolean blendWasEnabled = false;
+
+	public static void verticallyShiftBarPre(DrawContext context, boolean hideInAlternativeLayout) {
+		double transition = alternativeLayoutFullyEnabled() ? transition() : later();
+		context.getMatrices().translate(0, hotbarShift() * transition, 0);
+
+		if (hideInAlternativeLayout || enabled()) {
+			blendWasEnabled = GL11.glIsEnabled(GL11.GL_BLEND);
+			RenderSystem.enableBlend();
+
+			float alpha = (float) (1 - alternativeTransition());
+			context.setShaderColor(1, 1, 1, alpha);
+		}
+	}
+
+	public static void verticallyShiftBarPost(DrawContext context) {
+		context.setShaderColor(1, 1, 1, 1);
+
+		if (!blendWasEnabled) RenderSystem.disableBlend();
 	}
 }

@@ -1,6 +1,5 @@
 package net.krlite.verticality.mixin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.krlite.verticality.Verticality;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -14,7 +13,6 @@ import net.minecraft.util.math.RotationAxis;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
@@ -230,20 +228,6 @@ class ItemAdjustor {
 
 @Mixin(InGameHud.class)
 class BarAdjustor {
-	@Unique
-	private void verticallyShiftPre(DrawContext context) {
-		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
-
-		RenderSystem.enableBlend();
-		float alpha = (float) (1 - Verticality.alternativeTransition());
-		context.setShaderColor(alpha, alpha, alpha, alpha);
-	}
-
-	@Unique
-	private void verticallyShiftPost(DrawContext context) {
-		context.setShaderColor(1, 1, 1, 1);
-	}
-
 	@Inject(
 			method = "render",
 			at = @At(
@@ -265,7 +249,7 @@ class BarAdjustor {
 	)
 	private void renderStatusBarsPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		verticallyShiftPre(context);
+		Verticality.verticallyShiftBarPre(context, true);
 	}
 
 	@Inject(
@@ -277,7 +261,7 @@ class BarAdjustor {
 			)
 	)
 	private void renderStatusBarsPost(DrawContext context, CallbackInfo ci) {
-		verticallyShiftPost(context);
+		Verticality.verticallyShiftBarPost(context);
 		context.getMatrices().pop();
 	}
 
@@ -290,7 +274,7 @@ class BarAdjustor {
 	)
 	private void renderHealthBarPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		verticallyShiftPre(context);
+		Verticality.verticallyShiftBarPre(context, true);
 	}
 
 	@Inject(
@@ -302,7 +286,7 @@ class BarAdjustor {
 			)
 	)
 	private void renderHealthBarPost(DrawContext context, CallbackInfo ci) {
-		verticallyShiftPost(context);
+		Verticality.verticallyShiftBarPost(context);
 		context.getMatrices().pop();
 	}
 
@@ -315,7 +299,7 @@ class BarAdjustor {
 	)
 	private void renderMountHealthPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		verticallyShiftPre(context);
+		Verticality.verticallyShiftBarPre(context, false);
 	}
 
 	@Inject(
@@ -326,7 +310,7 @@ class BarAdjustor {
 			)
 	)
 	private void renderMountHealthPost(DrawContext context, CallbackInfo ci) {
-		verticallyShiftPost(context);
+		Verticality.verticallyShiftBarPost(context);
 		context.getMatrices().pop();
 	}
 
@@ -338,7 +322,7 @@ class BarAdjustor {
 	)
 	private void renderMountJumpBarBackgroundPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
-		verticallyShiftPre(context);
+		Verticality.verticallyShiftBarPre(context, false);
 	}
 
 	@Inject(
@@ -349,7 +333,7 @@ class BarAdjustor {
 			)
 	)
 	private void renderMountJumpBarBackgroundPost(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
-		verticallyShiftPost(context);
+		Verticality.verticallyShiftBarPost(context);
 		context.getMatrices().pop();
 	}
 
@@ -361,7 +345,7 @@ class BarAdjustor {
 	)
 	private void renderMountJumpBarPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
-		verticallyShiftPre(context);
+		Verticality.verticallyShiftBarPre(context, false);
 	}
 
 	@Inject(
@@ -372,7 +356,7 @@ class BarAdjustor {
 			)
 	)
 	private void renderMountJumpBarPost(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
-		verticallyShiftPost(context);
+		Verticality.verticallyShiftBarPost(context);
 		context.getMatrices().pop();
 	}
 
@@ -384,7 +368,7 @@ class BarAdjustor {
 	)
 	private void renderExperienceBarBackgroundPre(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
-		verticallyShiftPre(context);
+		Verticality.verticallyShiftBarPre(context, false);
 	}
 
 	@Inject(
@@ -395,7 +379,7 @@ class BarAdjustor {
 			)
 	)
 	private void renderExperienceBarBackgroundPost(DrawContext context, int x, CallbackInfo ci) {
-		verticallyShiftPost(context);
+		Verticality.verticallyShiftBarPost(context);
 		context.getMatrices().pop();
 	}
 
@@ -407,7 +391,7 @@ class BarAdjustor {
 	)
 	private void renderExperienceBarProgressPre(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
-		verticallyShiftPre(context);
+		Verticality.verticallyShiftBarPre(context, false);
 	}
 
 	@Inject(
@@ -418,7 +402,7 @@ class BarAdjustor {
 			)
 	)
 	private void renderExperienceBarProgressPost(DrawContext context, int x, CallbackInfo ci) {
-		verticallyShiftPost(context);
+		Verticality.verticallyShiftBarPost(context);
 		context.getMatrices().pop();
 	}
 
@@ -430,7 +414,7 @@ class BarAdjustor {
 	)
 	private void renderExperienceBarTextPre(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
-		verticallyShiftPre(context);
+		Verticality.verticallyShiftBarPre(context, true);
 	}
 
 	@Inject(
@@ -441,7 +425,7 @@ class BarAdjustor {
 			)
 	)
 	private void renderExperienceBarTextPost(DrawContext context, int x, CallbackInfo ci) {
-		verticallyShiftPost(context);
+		Verticality.verticallyShiftBarPost(context);
 		context.getMatrices().pop();
 	}
 
