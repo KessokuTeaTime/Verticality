@@ -466,7 +466,7 @@ class BarAdjustor {
 		context.getMatrices().push();
 		context.getMatrices().translate(
 				0,
-				Verticality.hotbarShift() * Verticality.later() + (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP) * Verticality.alternativeTransition(),
+				Verticality.hotbarShift() * Verticality.later() + Verticality.SINGLE_BAR_HEIGHT * Verticality.alternativeTransition(),
 				0
 		);
 	}
