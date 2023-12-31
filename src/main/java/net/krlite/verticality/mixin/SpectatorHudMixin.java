@@ -40,6 +40,13 @@ public abstract class SpectatorHudMixin {
 		Verticality.spectatorMenuHeightScalar(height);
 		context.getMatrices().push();
 
+		// Alternative layout
+		context.getMatrices().translate(
+				Verticality.alternativeLayoutOffsetX(),
+				Verticality.alternativeLayoutOffsetY(),
+				0
+		);
+
 		if (Verticality.enabled()) {
 			context.getMatrices().translate(
 					Verticality.height() - Verticality.hotbarShift() * Verticality.transition() + antiAliasingOffset(),
@@ -53,24 +60,9 @@ public abstract class SpectatorHudMixin {
 					Verticality.raisedShift(),
 					0
 			);
-
-			// Alternative layout
-			context.getMatrices().translate(
-					Verticality.alternativeLayoutOffsetX(),
-					Verticality.alternativeLayoutOffsetY(),
-					0
-			);
-
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 		}
 		else {
-			// Alternative layout
-			context.getMatrices().translate(
-					Verticality.alternativeLayoutOffsetX(),
-					Verticality.alternativeLayoutOffsetY(),
-					0
-			);
-
 			context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.transition() - antiAliasingOffset(), 0);
 		}
 	}

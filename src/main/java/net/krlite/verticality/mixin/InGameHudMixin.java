@@ -33,6 +33,13 @@ public class InGameHudMixin {
 			)
 	)
 	private void renderHotbar(float tickDelta, DrawContext context, CallbackInfo ci) {
+		// Alternative layout
+		context.getMatrices().translate(
+				Verticality.alternativeLayoutOffsetX(),
+				Verticality.alternativeLayoutOffsetY(),
+				0
+		);
+
 		if (Verticality.enabled()) {
 			context.getMatrices().translate(
 					 Verticality.CENTER_DISTANCE_TO_BORDER
@@ -49,22 +56,8 @@ public class InGameHudMixin {
 					0
 			);
 
-			// Alternative layout
-			context.getMatrices().translate(
-					Verticality.alternativeLayoutOffsetX(),
-					Verticality.alternativeLayoutOffsetY(),
-					0
-			);
-
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 		} else {
-			// Alternative layout
-			context.getMatrices().translate(
-					Verticality.alternativeLayoutOffsetX(),
-					Verticality.alternativeLayoutOffsetY(),
-					0
-			);
-
 			context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.transition(), 0);
 		}
 	}
@@ -324,6 +317,8 @@ class BarAdjustor {
 	private void renderMountHealthPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
 		Verticality.verticallyShiftBarPre(context, false);
+
+		context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), 0, 0);
 	}
 
 	@Inject(
@@ -347,6 +342,8 @@ class BarAdjustor {
 	private void renderMountJumpBarBackgroundPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
 		Verticality.verticallyShiftBarPre(context, false);
+
+		context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), 0, 0);
 	}
 
 	@Inject(
@@ -370,6 +367,8 @@ class BarAdjustor {
 	private void renderMountJumpBarPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
 		Verticality.verticallyShiftBarPre(context, false);
+
+		context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), 0, 0);
 	}
 
 	@Inject(
@@ -393,6 +392,8 @@ class BarAdjustor {
 	private void renderExperienceBarBackgroundPre(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
 		Verticality.verticallyShiftBarPre(context, false);
+
+		context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), 0, 0);
 	}
 
 	@Inject(
@@ -416,6 +417,8 @@ class BarAdjustor {
 	private void renderExperienceBarProgressPre(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
 		Verticality.verticallyShiftBarPre(context, false);
+
+		context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), 0, 0);
 	}
 
 	@Inject(

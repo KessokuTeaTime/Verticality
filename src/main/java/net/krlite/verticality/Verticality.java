@@ -163,7 +163,7 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static double alternativeLayoutOffsetY() {
-		return enabled() ? (height() - HOTBAR_WIDTH) / 2.0 - (raisedShift() > 0 ? 1 : 0) * alternativeTransition() : 0;
+		return enabled() ? (height() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() - (raisedShift() > 0 ? 1 : 0) : 0;
 	}
 
 	public static double progress() {
