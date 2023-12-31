@@ -13,6 +13,7 @@ import net.minecraft.util.math.RotationAxis;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
@@ -176,7 +177,12 @@ class ItemAdjustor {
 		} else if (Verticality.isMainArmLeft() && Verticality.enabled()) {
 			args.set(2, (int) Math.round(x - 2 * ((x + 8) - Verticality.width() / 2.0))); // Revert the x-coordinate of the item
 		}
+
+		drawingOffhandItem = true;
 	}
+
+	@Unique
+	private boolean drawingOffhandItem = false;
 
 	@Inject(
 			method = "renderHotbarItem",
@@ -187,7 +193,9 @@ class ItemAdjustor {
 	)
 	private void drawItemPre(DrawContext context, int x, int y, float f, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci) {
 		context.getMatrices().push();
-		Verticality.translateIcon(context, y, false);
+		Verticality.translateIcon(context, y, false, drawingOffhandItem && Verticality.alternativeLayoutPartiallyEnabled());
+
+		drawingOffhandItem = false;
 	}
 
 	@Inject(
@@ -210,7 +218,7 @@ class ItemAdjustor {
 	)
 	private void drawItemInSlotPre(DrawContext context, int x, int y, float f, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci) {
 		context.getMatrices().push();
-		Verticality.translateIcon(context, y, false);
+		Verticality.translateIcon(context, y, false, false);
 	}
 
 	@Inject(
@@ -237,7 +245,11 @@ class BarAdjustor {
 			)
 	)
 	private void renderOverlay(DrawContext context, float tickDelta, CallbackInfo ci) {
-		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
+		context.getMatrices().translate(
+				0,
+				Verticality.hotbarShift() * Verticality.later() + (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP) * Verticality.alternativeTransition(),
+				0
+		);
 	}
 
 	@Inject(
@@ -437,7 +449,11 @@ class BarAdjustor {
 	)
 	private void renderHeldItemTooltipPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.later(), 0);
+		context.getMatrices().translate(
+				0,
+				Verticality.hotbarShift() * Verticality.later() + (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP) * Verticality.alternativeTransition(),
+				0
+		);
 	}
 
 	@Inject(

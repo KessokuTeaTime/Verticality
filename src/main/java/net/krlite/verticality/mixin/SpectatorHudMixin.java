@@ -95,7 +95,7 @@ public abstract class SpectatorHudMixin {
 
 	@Inject(method = "renderSpectatorCommand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V", shift = At.Shift.AFTER))
 	private void renderCommandIcon(DrawContext context, int slot, int x, float y, float height, SpectatorMenuCommand command, CallbackInfo ci) {
-		Verticality.translateIcon(context, y, true);
+		Verticality.translateIcon(context, y, true, false);
 
 		if (Verticality.enabled()) context.getMatrices().translate(antiAliasingOffset(), 0, 0);
 		else context.getMatrices().translate(0, -antiAliasingOffset(), 0);
@@ -110,7 +110,7 @@ public abstract class SpectatorHudMixin {
 	)
 	private void renderCommandTextPre(DrawContext context, int slot, int x, float y, float height, SpectatorMenuCommand command, CallbackInfo ci) {
 		context.getMatrices().push();
-		Verticality.translateIcon(context, y, true);
+		Verticality.translateIcon(context, y, true, false);
 
 		if (Verticality.enabled()) context.getMatrices().translate(antiAliasingOffset(), 0, 0);
 		else context.getMatrices().translate(0, -antiAliasingOffset(), 0);

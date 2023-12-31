@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.RotationAxis;
+import org.joml.Vector2d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,11 +36,56 @@ public abstract class GameMenuScreenMixin extends Screen {
         return Verticality.enabled() ? alternativeLayoutArrowWhenEnabled : alternativeLayoutArrowWhenDisabled;
     }
 
+    @Unique
+    private Vector2d centerWidgetDisableLeft() {
+        return new Vector2d(Verticality.HOTBAR_HEIGHT / 2.0 * (1 - Verticality.transition()), height / 2.0);
+    }
+
+    @Unique
+    private Vector2d centerWidgetDisableLeftBottom() {
+        return new Vector2d(centerWidgetDisableLeft().x(), height - (Verticality.HOTBAR_HEIGHT / 2.0 + Verticality.WIDGET_GAP_LARGE));
+    }
+
+    @Unique
+    private Vector2d centerWidgetUpsideDownLeft() {
+        return new Vector2d(Verticality.HOTBAR_HEIGHT / 2.0 + Verticality.WIDGET_GAP * (1 - Verticality.transition()), height / 2.0);
+    }
+
+    @Unique
+    private Vector2d centerWidgetUpsideDownLeftBottom() {
+        return new Vector2d(centerWidgetUpsideDownLeft().x(), height - Verticality.HOTBAR_HEIGHT / 2.0);
+    }
+
+    @Unique
+    private Vector2d centerWidgetEnableBottom() {
+        return new Vector2d(width / 2.0, height - Verticality.HOTBAR_HEIGHT / 2.0 * (1 - Verticality.transition()));
+    }
+
+    @Unique
+    private Vector2d centerWidgetEnableLeftBottom() {
+        return new Vector2d(Verticality.HOTBAR_HEIGHT / 2.0 + Verticality.WIDGET_GAP_LARGE, centerWidgetEnableBottom().y());
+    }
+
+    @Unique
+    private Vector2d centerWidgetAlternativeLayoutVertical() {
+        return new Vector2d(Verticality.HOTBAR_HEIGHT / 2.0 * (1 - Verticality.transition()), height - Verticality.HOTBAR_HEIGHT / 2.0);
+    }
+
+    @Unique
+    private Vector2d centerWidgetAlternativeLayoutHorizontal() {
+        return new Vector2d(Verticality.HOTBAR_HEIGHT / 2.0, height - Verticality.HOTBAR_HEIGHT / 2.0 * (1 - Verticality.transition()));
+    }
+
+    @Unique
+    private double fontOffset(double scalar, double progress) {
+        return Verticality.FONT_OFFSET * scalar * (1 - progress);
+    }
+
     @Inject(method = "render", at = @At("RETURN"))
     private void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         double progress = Math.pow(Verticality.progress(), 2);
-
         int alphaHovered = 255, alpha = 75;
+
         Color colorEnabled = new Color(255, 255, 255,
                 (int) Math.max(5, (mouseInWidgetEnabled(mouseX, mouseY) ? alphaHovered : alpha) * (1 - progress)));
         Color colorUpsideDown = new Color(255, 255, 255,
@@ -62,17 +108,19 @@ public abstract class GameMenuScreenMixin extends Screen {
             widgetDisable:
             {
                 context.getMatrices().push();
+
                 context.getMatrices().translate(
-                        13 * (1 - Verticality.transition()),
-                        Theory.lerp(height / 2.0F, height - (31 + 13), Verticality.alternativeTransition()),
+                        centerWidgetDisableLeft().x(),
+                        Theory.lerp(centerWidgetDisableLeft().y(), centerWidgetDisableLeftBottom().y(), Verticality.alternativeTransition()),
                         0
                 );
-                context.getMatrices().scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
-                context.getMatrices().translate(0, Verticality.FONT_GAP_OFFSET, 0);
+                context.getMatrices().translate(0, fontOffset(1, 0), 0);
+
+                context.getMatrices().scale(Verticality.FONT_SCALAR, Verticality.FONT_SCALAR, Verticality.FONT_SCALAR);
 
                 context.drawText(
                         textRenderer, rightArrow,
-                        (int) (-textRenderer.getWidth(rightArrow) / 2.0F * (1 - Verticality.transition())),
+                        (int) (-textRenderer.getWidth(rightArrow) / 2.0F),
                         (int) (-(textRenderer.fontHeight - 1) / 2.0F),
                         colorEnabled.getRGB(), false
                 );
@@ -84,20 +132,21 @@ public abstract class GameMenuScreenMixin extends Screen {
             widgetUpsideDown:
             {
                 context.getMatrices().push();
+
                 context.getMatrices().translate(
-                        13 + 15 * (1 - Verticality.transition()),
-                        Theory.lerp(height / 2.0F, height - 13, Verticality.alternativeTransition()),
+                        centerWidgetUpsideDownLeft().x(),
+                        Theory.lerp(centerWidgetUpsideDownLeft().y(), centerWidgetUpsideDownLeftBottom().y(), Verticality.alternativeTransition()),
                         500
                 );
-                context.getMatrices().scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
-                context.getMatrices().multiply(RotationAxis.POSITIVE_X.rotationDegrees((float) (180 * Verticality.swap())));
+                context.getMatrices().translate(0, fontOffset(1, Verticality.swap()), 0);
 
-                context.getMatrices().translate(0, Verticality.FONT_GAP_OFFSET, 0);
+                context.getMatrices().multiply(RotationAxis.POSITIVE_X.rotationDegrees((float) (180 * Verticality.swap())));
+                context.getMatrices().scale(Verticality.FONT_SCALAR, Verticality.FONT_SCALAR, Verticality.FONT_SCALAR);
 
                 context.drawText(
                         textRenderer, upDownArrow,
                         (int) (-textRenderer.getWidth(upDownArrow) / 2.0F),
-                        (int) (-textRenderer.fontHeight / 2.0F * (1 - Verticality.transition())),
+                        (int) (-textRenderer.fontHeight / 2.0F),
                         colorUpsideDown.getRGB(),
                         false
                 );
@@ -107,18 +156,20 @@ public abstract class GameMenuScreenMixin extends Screen {
         } else {
             // 'Enable'
             context.getMatrices().push();
+
             context.getMatrices().translate(
-                    Theory.lerp(width / 2.0F, 31 + 13, Verticality.alternativeTransition()),
-                    height - 10 * (1 - Verticality.transition()),
+                    Theory.lerp(centerWidgetEnableBottom().x(), centerWidgetEnableLeftBottom().x(), Verticality.alternativeTransition()),
+                    centerWidgetEnableBottom().y(),
                     0
             );
-            context.getMatrices().scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
-            context.getMatrices().translate(-Verticality.FONT_GAP_OFFSET, 0, 0);
+            context.getMatrices().translate(0, fontOffset(1, 0), 0);
+
+            context.getMatrices().scale(Verticality.FONT_SCALAR, Verticality.FONT_SCALAR, Verticality.FONT_SCALAR);
 
             context.drawText(
                     textRenderer, leftArrow,
                     (int) (-textRenderer.getWidth(leftArrow) / 2.0F),
-                    (int) (-textRenderer.fontHeight / 2.0F * (1 - Verticality.transition())),
+                    (int) (-textRenderer.fontHeight / 2.0F),
                     colorEnabled.getRGB(), false
             );
 
@@ -129,20 +180,17 @@ public abstract class GameMenuScreenMixin extends Screen {
         widgetAlternativeLayout:
         {
             context.getMatrices().push();
+            
             context.getMatrices().translate(
-                    Verticality.enabled() ? 13 * (1 - Verticality.transition()) : 10,
-                    height - (Verticality.enabled() ? 13 : (10 * (1 - Verticality.transition()))),
+                    Verticality.enabled() ? centerWidgetAlternativeLayoutVertical().x() : centerWidgetAlternativeLayoutHorizontal().x(),
+                    Verticality.enabled() ? centerWidgetAlternativeLayoutVertical().y() : centerWidgetAlternativeLayoutHorizontal().y(),
                     500
             );
-            context.getMatrices().scale(Verticality.SCALAR, Verticality.SCALAR, Verticality.SCALAR);
+            context.getMatrices().translate(0, fontOffset(1, Verticality.enabled() ? Verticality.alternativeTransition() : 0), 0);
+
             context.getMatrices().multiply((Verticality.enabled() ? RotationAxis.POSITIVE_X : RotationAxis.POSITIVE_Y)
                     .rotationDegrees((float) (180 * Verticality.alternativeTransition())));
-
-            context.getMatrices().translate(
-                    Verticality.enabled() ? 0 : Verticality.FONT_GAP_OFFSET,
-                    Verticality.enabled() ? Verticality.FONT_GAP_OFFSET : 0,
-                    0
-            );
+            context.getMatrices().scale(Verticality.FONT_SCALAR, Verticality.FONT_SCALAR, Verticality.FONT_SCALAR);
 
             context.drawText(
                     textRenderer, alternativeLayoutArrow(),
@@ -160,8 +208,11 @@ public abstract class GameMenuScreenMixin extends Screen {
     }
 
     @Unique
-    private boolean mouseIn(double mouseX, double mouseY, double xCentered, double yCentered, double w, double h) {
-        return mouseX >= xCentered - w / 2 && mouseX <= xCentered + w / 2 && mouseY >= yCentered - h / 2 && mouseY <= yCentered + h / 2;
+    private boolean mouseIn(double mouseX, double mouseY, Vector2d center, double width, double height) {
+        return mouseX >= center.x() - width / 2
+                && mouseX <= center.x() + width / 2
+                && mouseY >= center.y() - height / 2
+                && mouseY <= center.y() + height / 2;
     }
 
     @Unique
@@ -172,19 +223,21 @@ public abstract class GameMenuScreenMixin extends Screen {
             // 'Disable'
             return mouseIn(
                     mouseX, mouseY,
-                    13 + Verticality.raisedShift(),
-                    Verticality.alternativeLayoutEnabled() ? height - (31 + 13) : height / 2.0F + Verticality.FONT_GAP_OFFSET,
-                    textRenderer.getWidth(rightArrow) * Verticality.SCALAR,
-                    textRenderer.fontHeight * Verticality.SCALAR
+                    (Verticality.alternativeLayoutEnabled()
+                            ? centerWidgetDisableLeftBottom()
+                            : centerWidgetDisableLeft()).add(Verticality.raisedShift(), 0),
+                    textRenderer.getWidth(rightArrow) * Verticality.FONT_SCALAR,
+                    textRenderer.fontHeight * Verticality.FONT_SCALAR
             );
         } else {
             // 'Enable'
             return mouseIn(
                     mouseX, mouseY,
-                    Verticality.alternativeLayoutEnabled() ? 31 + 13 : width / 2.0F - Verticality.FONT_GAP_OFFSET,
-                    height - (10 + Verticality.raisedShift()),
-                    textRenderer.getWidth(leftArrow) * Verticality.SCALAR,
-                    textRenderer.fontHeight * Verticality.SCALAR
+                    (Verticality.alternativeLayoutEnabled()
+                            ? centerWidgetEnableLeftBottom()
+                            : centerWidgetEnableBottom()).add(0, -Verticality.raisedShift()),
+                    textRenderer.getWidth(leftArrow) * Verticality.FONT_SCALAR,
+                    textRenderer.fontHeight * Verticality.FONT_SCALAR
             );
         }
     }
@@ -195,10 +248,11 @@ public abstract class GameMenuScreenMixin extends Screen {
 
         return mouseIn(
                 mouseX, mouseY,
-                Verticality.enabled() ? 13 + Verticality.raisedShift() : (10 - Verticality.FONT_GAP_OFFSET),
-                height - (Verticality.enabled() ? 13 - Verticality.FONT_GAP_OFFSET : (10 + Verticality.raisedShift())),
-                textRenderer.getWidth(alternativeLayoutArrow()) * Verticality.SCALAR,
-                textRenderer.fontHeight * Verticality.SCALAR
+                Verticality.enabled()
+                        ? centerWidgetAlternativeLayoutVertical().add(Verticality.raisedShift(), 0)
+                        : centerWidgetAlternativeLayoutHorizontal().add(0, -Verticality.raisedShift()),
+                textRenderer.getWidth(alternativeLayoutArrow()) * Verticality.FONT_SCALAR,
+                textRenderer.fontHeight * Verticality.FONT_SCALAR
         );
     }
 
@@ -209,10 +263,11 @@ public abstract class GameMenuScreenMixin extends Screen {
 
         return mouseIn(
                 mouseX, mouseY,
-                13 + 15 + Verticality.raisedShift(),
-                Verticality.alternativeLayoutEnabled() ? height - (13 - Verticality.FONT_GAP_OFFSET) : height / 2.0F,
-                textRenderer.getWidth(upDownArrow) * Verticality.SCALAR,
-                textRenderer.fontHeight * Verticality.SCALAR
+                (Verticality.alternativeLayoutEnabled()
+                        ? centerWidgetUpsideDownLeftBottom()
+                        : centerWidgetUpsideDownLeft()).add(Verticality.raisedShift(), 0),
+                textRenderer.getWidth(upDownArrow) * Verticality.FONT_SCALAR,
+                textRenderer.fontHeight * Verticality.FONT_SCALAR
         );
     }
 

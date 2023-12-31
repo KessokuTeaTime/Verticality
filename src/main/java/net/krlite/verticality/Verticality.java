@@ -30,9 +30,10 @@ public class Verticality implements ModInitializer {
 	public static final int
 			HOTBAR_FULL_HEIGHT = 24, HOTBAR_HEIGHT = HOTBAR_FULL_HEIGHT - 1, SPECTATOR_BAR_HEIGHT = 22, SINGLE_BAR_HEIGHT = 5,
 			ITEM_SIZE = 16, GAP = 2, HOTBAR_ITEM_GAP = (HOTBAR_FULL_HEIGHT - ITEM_SIZE) / 2 - 1,
+			WIDGET_GAP_LARGE = 2 * HOTBAR_HEIGHT, WIDGET_GAP = 15,
 			HOTBAR_WIDTH = 182, OFFHAND_WIDTH = 29,
 			CENTER_DISTANCE_TO_BORDER = 11, TOOLTIP_OFFSET = 7;
-	public static final float SCALAR = 1.5F, FONT_GAP_OFFSET = 0.5F;
+	public static final float FONT_SCALAR = 1.5F, FONT_OFFSET = 1.1F;
 
 	public static class Sounds {
 		public static final SoundEvent GATE_LATCH = SoundEvent.of(new Identifier(ID, "gate_latch"));
@@ -153,7 +154,7 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static double alternativeTransition() {
-		return alternativeLayoutPartiallyEnabled() ? alternativeTransition.progress() : (alternativeTransition.end() - alternativeTransition.progress());
+		return alternativeLayoutPartiallyEnabled() ? alternativeTransition.value() : (alternativeTransition.end() - alternativeTransition.value());
 	}
 
 	public static double alternativeLayoutOffsetX() {
@@ -263,12 +264,12 @@ public class Verticality implements ModInitializer {
 		return MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.getMainArm() == Arm.LEFT;
 	}
 
-	public static void translateIcon(DrawContext context, double y, boolean ignoreOffhand) {
+	public static void translateIcon(DrawContext context, double y, boolean ignoreOffhand, boolean ignoreSwap) {
 		if (enabled()) {
 			double offset = -2 * ((y + 8) - height() / 2.0);
 			context.getMatrices().translate(
 					-hotbarShift() * transition(),
-					Theory.lerp(0, offset, swap()) + (ignoreOffhand ? 0 : (OFFHAND_WIDTH * offset() / 2)),
+					(ignoreSwap ? 0 : Theory.lerp(0, offset, swap())) + (ignoreOffhand ? 0 : (OFFHAND_WIDTH * offset() / 2)),
 					0
 			);
 
