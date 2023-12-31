@@ -12,6 +12,7 @@
     "GameMenuScreenMixin",
     "InGameHudMixin",
     "ItemAdjustor",
+    "SpectatorHudAccessor",
     "SpectatorHudMixin",
     "TextAdjustor"
   ],

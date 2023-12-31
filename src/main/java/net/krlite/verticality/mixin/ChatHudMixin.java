@@ -1,6 +1,5 @@
 package net.krlite.verticality.mixin;
 
-import net.krlite.equator.math.algebra.Theory;
 import net.krlite.verticality.Verticality;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -21,12 +20,10 @@ public class ChatHudMixin {
 			)
 	)
 	private void render(DrawContext context, int currentTick, int mouseX, int mouseY, CallbackInfo ci) {
-		double offset = Verticality.hotbarShift() * Theory.lerp(
-				Verticality.earlier(),
-				Verticality.spectatorMenuHeightScalar(),
-				Verticality.enabled() && Verticality.isSpectator()
-						? Verticality.later() : 0
-		);
+		double offset = Verticality.hotbarShift()
+				* (Verticality.isSpectator()
+				? (Verticality.hasSpectatorMenu() ? Math.min(Verticality.earlier(), Verticality.spectatorMenuHeightScalar()) : 0)
+				: Verticality.earlier());
 
 		context.getMatrices().translate(offset, 0, 0);
 	}

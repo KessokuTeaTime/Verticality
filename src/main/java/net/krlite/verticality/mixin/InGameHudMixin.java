@@ -49,10 +49,22 @@ public class InGameHudMixin {
 					0
 			);
 
-			context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), Verticality.alternativeLayoutOffsetY(), 0);
+			// Alternative layout
+			context.getMatrices().translate(
+					Verticality.alternativeLayoutOffsetX(),
+					Verticality.alternativeLayoutOffsetY(),
+					0
+			);
+
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 		} else {
-			context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), Verticality.alternativeLayoutOffsetY(), 0);
+			// Alternative layout
+			context.getMatrices().translate(
+					Verticality.alternativeLayoutOffsetX(),
+					Verticality.alternativeLayoutOffsetY(),
+					0
+			);
+
 			context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.transition(), 0);
 		}
 	}

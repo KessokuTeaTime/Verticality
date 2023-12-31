@@ -10,6 +10,7 @@ import net.krlite.equator.math.algebra.Theory;
 import net.krlite.equator.visual.animation.Slice;
 import net.krlite.equator.visual.animation.animated.AnimatedDouble;
 import net.krlite.equator.visual.animation.interpolated.InterpolatedDouble;
+import net.krlite.verticality.mixin.SpectatorHudAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -67,7 +68,7 @@ public class Verticality implements ModInitializer {
 	private static final InterpolatedDouble
 			later = new InterpolatedDouble(0, 0.013),
 			earlier = new InterpolatedDouble(0, 0.013);
-	private static boolean enabled, alternativeLayout;
+	private static boolean enabled, alternativeLayoutEnabled;
 	private static float spectatorMenuHeightScalar = 0;
 	private static Supplier<Integer> raisedShift = () -> 0;
 
@@ -84,7 +85,7 @@ public class Verticality implements ModInitializer {
 		});
 
 		alternativeTransition.onTermination(() -> {
-			PREFERENCES.alternativeLayout(alternativeLayout);
+			PREFERENCES.alternativeLayout(alternativeLayoutEnabled);
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -116,7 +117,7 @@ public class Verticality implements ModInitializer {
 		alternativeTransition.play();
 
 		enabled = enabled();
-		alternativeLayout = alternativeLayoutEnabled();
+		alternativeLayoutEnabled = alternativeLayoutEnabled();
 	}
 
 	@Override
@@ -158,11 +159,11 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static double alternativeLayoutOffsetX() {
-		return enabled() ? 0 : -(width() - HOTBAR_WIDTH) / 2.0 * alternativeTransition();
+		return enabled() ? 0 : -(width() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() + (raisedShift() > 0 ? 1 : 0);
 	}
 
 	public static double alternativeLayoutOffsetY() {
-		return enabled() ? (height() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() : 0;
+		return enabled() ? (height() - HOTBAR_WIDTH) / 2.0 - (raisedShift() > 0 ? 1 : 0) * alternativeTransition() : 0;
 	}
 
 	public static double progress() {
@@ -214,7 +215,7 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static boolean alternativeLayoutPartiallyEnabled() {
-		return alternativeLayout;
+		return alternativeLayoutEnabled;
 	}
 
 	public static boolean alternativeLayoutFullyEnabled() {
@@ -233,6 +234,10 @@ public class Verticality implements ModInitializer {
 		return MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.isSpectator();
 	}
 
+	public static boolean hasSpectatorMenu() {
+		return ((SpectatorHudAccessor) MinecraftClient.getInstance().inGameHud.getSpectatorHud()).getSpectatorMenu() != null;
+	}
+
 	public static float spectatorMenuHeightScalar() {
 		return spectatorMenuHeightScalar;
 	}
@@ -247,7 +252,7 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static void switchAlternativeMode() {
-		alternativeLayout = !alternativeLayout;
+		alternativeLayoutEnabled = !alternativeLayoutEnabled;
 		alternativeTransition.play();
 	}
 
