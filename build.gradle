@@ -38,6 +38,10 @@ dependencies {
 	modRuntimeOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 
+loom {
+	accessWidenerPath = file("src/main/resources/verticality.accesswidener")
+}
+
 processResources {
 	inputs.property "version", project.version
 

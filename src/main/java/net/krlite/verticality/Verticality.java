@@ -31,10 +31,10 @@ public class Verticality implements ModInitializer {
 	public static final int
 			HOTBAR_FULL_HEIGHT = 24, HOTBAR_HEIGHT = HOTBAR_FULL_HEIGHT - 1, SPECTATOR_BAR_HEIGHT = 22, SINGLE_BAR_HEIGHT = 5,
 			ITEM_SIZE = 16, GAP = 2, HOTBAR_ITEM_GAP = (HOTBAR_FULL_HEIGHT - ITEM_SIZE) / 2 - 1,
-			WIDGET_GAP_LARGE = 2 * HOTBAR_HEIGHT, WIDGET_GAP = 15,
+			WIDGET_GAP_LARGE = 32, WIDGET_GAP = 16, MAX_INFO_WIDTH = 2 * HOTBAR_FULL_HEIGHT, INFO_ICON_SIZE = 9,
 			HOTBAR_WIDTH = 182, OFFHAND_WIDTH = 29,
 			CENTER_DISTANCE_TO_BORDER = 11, TOOLTIP_OFFSET = 7;
-	public static final float FONT_SCALAR = 1.5F, FONT_OFFSET = 1.1F;
+	public static final float FONT_SCALAR = 1.5F, FONT_OFFSET = 1.2F;
 
 	public static class Sounds {
 		public static final SoundEvent GATE_LATCH = SoundEvent.of(new Identifier(ID, "gate_latch"));

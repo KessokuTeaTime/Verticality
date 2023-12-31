@@ -2,14 +2,17 @@ package net.krlite.verticality.mixin;
 
 import net.krlite.verticality.Verticality;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
+import org.apache.commons.lang3.function.TriConsumer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,10 +22,55 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(InGameHud.class)
-public class InGameHudMixin {
+public abstract class InGameHudMixin {
 	@Shadow @Final private static Identifier HOTBAR_OFFHAND_LEFT_TEXTURE;
 
 	@Shadow @Final private static Identifier HOTBAR_OFFHAND_RIGHT_TEXTURE;
+
+	@Shadow public abstract TextRenderer getTextRenderer();
+
+	@Shadow protected abstract void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half);
+
+	@Unique int stackedInfo = 0;
+
+	@Unique
+	private void drawInfo(
+			DrawContext context,
+			int number, int color,
+			TriConsumer<DrawContext, Integer, Integer> textureDrawer,
+			boolean hasIcon, boolean stickToTail
+	) {
+		Text text = Text.of(String.valueOf(number));
+		int
+				textWidth = getTextRenderer().getWidth(text), totalWidth = textWidth + (hasIcon ? Verticality.GAP + 9 : 0), width = Math.min(totalWidth, Verticality.MAX_INFO_WIDTH),
+				baseX, baseY, offsetX, offsetY;
+
+		if (stickToTail) {
+			baseX = Verticality.enabled()
+					? Verticality.HOTBAR_HEIGHT + Verticality.GAP
+					: (Verticality.width() + Verticality.HOTBAR_WIDTH) / 2;
+			baseY = Verticality.enabled()
+					?
+		} else {
+
+		}
+
+		if (hasIcon) {
+			textureDrawer.accept(context, x, y);
+			context.drawTextWithShadow(getTextRenderer(), text, x + Verticality.GAP + getTextRenderer().getWidth(text), y + 1, color);
+		} else {
+			context.drawTextWithShadow(getTextRenderer(), text, x, y + 1, color);
+		}
+	}
+
+	@Unique
+	private void renderAlternativeLayoutInfo(DrawContext context) {
+		drawInfo(
+				context, 20, 0xFFFFFF,
+				100, 100,
+				(c, x, y) -> drawHeart(c, InGameHud.HeartType.CONTAINER, x, y, false, false, false)
+		);
+	}
 
 	@Inject(
 			method = "renderHotbar",
@@ -39,6 +87,11 @@ public class InGameHudMixin {
 				Verticality.alternativeLayoutOffsetY(),
 				0
 		);
+
+		if (Verticality.alternativeLayoutPartiallyEnabled()) {
+			stackedInfo = 0;
+			renderAlternativeLayoutInfo(context);
+		}
 
 		if (Verticality.enabled()) {
 			context.getMatrices().translate(
@@ -240,7 +293,10 @@ class ItemAdjustor {
 }
 
 @Mixin(InGameHud.class)
+abstract
 class BarAdjustor {
+	@Shadow public abstract TextRenderer getTextRenderer();
+
 	@Inject(
 			method = "render",
 			at = @At(
@@ -316,9 +372,7 @@ class BarAdjustor {
 	)
 	private void renderMountHealthPre(DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
-		Verticality.verticallyShiftBarPre(context, false);
-
-		context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), 0, 0);
+		Verticality.verticallyShiftBarPre(context, true);
 	}
 
 	@Inject(

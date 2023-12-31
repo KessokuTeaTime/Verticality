@@ -25,6 +25,7 @@
   "mixins": [
 	"verticality.mixins.json"
   ],
+  "accessWidener" : "verticality.accesswidener",
 
   "depends": {
     "fabricloader": "*",
