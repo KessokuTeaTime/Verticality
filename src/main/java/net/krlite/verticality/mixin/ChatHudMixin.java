@@ -27,7 +27,7 @@ public class ChatHudMixin {
 
 		double offsetY = Theory.lerp(
 				Verticality.alternativeLayoutPartiallyEnabled() ? -Verticality.HOTBAR_FULL_HEIGHT : 0,
-				Verticality.raisedSync() ? Verticality.raisedHudShift() - 3 * (Verticality.INFO_ICON_SIZE + Verticality.GAP) : 0,
+				(Verticality.raisedSync() ? Verticality.raisedHudShift() : 0) - 3 * (Verticality.INFO_ICON_SIZE + Verticality.GAP),
 				Verticality.earlier()
 		);
 
