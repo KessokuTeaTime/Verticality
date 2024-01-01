@@ -64,6 +64,9 @@ public abstract class InGameHudMixin {
 	@Shadow @Final private static Identifier FOOD_HALF_TEXTURE;
 	@Shadow @Final private static Identifier FOOD_FULL_TEXTURE;
 	@Shadow @Final private Random random;
+	@Shadow @Final private static Identifier VEHICLE_CONTAINER_HEART_TEXTURE;
+	@Shadow @Final private static Identifier VEHICLE_HALF_HEART_TEXTURE;
+	@Shadow @Final private static Identifier VEHICLE_FULL_HEART_TEXTURE;
 	@Unique int stackedInfo = 0;
 
 	@Unique
@@ -114,64 +117,86 @@ public abstract class InGameHudMixin {
 	private void renderAlternativeLayoutInfo(DrawContext context) {
 		stackedInfo = 0;
 		// Experience level (sticking to tail)
-		drawInfo(
-				context, Objects.requireNonNull(client.player).experienceLevel,
-				(c, pos) -> {},
-				(c, pos, text) -> {
-					int offset = Verticality.enabled() ? 1 : -1;
+		experienceLevel:
+		{
+			drawInfo(
+					context, Objects.requireNonNull(client.player).experienceLevel,
+					(c, pos) -> {
+					},
+					(c, pos, text) -> {
+						int offset = Verticality.enabled() ? 1 : -1;
 
-					c.drawText(getTextRenderer(), text, pos.x() + 1 + offset, pos.y() + offset, 0, false);
-					c.drawText(getTextRenderer(), text, pos.x() - 1 + offset, pos.y() + offset, 0, false);
-					c.drawText(getTextRenderer(), text, pos.x() + offset, pos.y() + 1 + offset, 0, false);
-					c.drawText(getTextRenderer(), text, pos.x() + offset, pos.y() - 1 + offset, 0, false);
+						c.drawText(getTextRenderer(), text, pos.x() + 1 + offset, pos.y() + offset, 0, false);
+						c.drawText(getTextRenderer(), text, pos.x() - 1 + offset, pos.y() + offset, 0, false);
+						c.drawText(getTextRenderer(), text, pos.x() + offset, pos.y() + 1 + offset, 0, false);
+						c.drawText(getTextRenderer(), text, pos.x() + offset, pos.y() - 1 + offset, 0, false);
 
-					c.drawText(getTextRenderer(), text, pos.x() + offset, pos.y() + offset, 0x80FF20, false);
-				},
-				false, true
-		);
+						c.drawText(getTextRenderer(), text, pos.x() + offset, pos.y() + offset, 0x80FF20, false);
+					},
+					false, true
+			);
+		}
 
 		// Health
-		drawInfo(
-				context, MathHelper.floor(MathHelper.ceil(client.player.getHealth()) / 2.0),
-				(c, pos) -> {
-					boolean blinking = heartJumpEndTick > (long) ticks && (this.heartJumpEndTick - (long)this.ticks) / 3L % 2L == 1L;
-					boolean hardcore = client.player.getWorld().getLevelProperties().isHardcore();
-
-					InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
-					drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
-					drawHeart(c, heartType, pos.x(), pos.y(), hardcore, blinking, renderHealthValue % 2 == 1);
-				},
-				(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
-				true, false
-		);
-
-		// Food & mount health
-		int foodLevel = client.player.getHungerManager().getFoodLevel();
-		int mountHealth = getHeartCount(getRiddenEntity());
-		if (mountHealth <= 0) {
-			Identifier empty, half, full;
-			if (client.player.hasStatusEffect(StatusEffects.HUNGER)) {
-				empty = FOOD_EMPTY_HUNGER_TEXTURE;
-				half = FOOD_HALF_HUNGER_TEXTURE;
-				full = FOOD_FULL_HUNGER_TEXTURE;
-			} else {
-				empty = FOOD_EMPTY_TEXTURE;
-				half = FOOD_HALF_TEXTURE;
-				full = FOOD_FULL_TEXTURE;
-			}
-
-			int yOffset = client.player.getHungerManager().getSaturationLevel() <= 0 && this.ticks % (foodLevel * 3 + 1) == 0 ? random.nextInt(3) - 1 : 0;
-
+		health:
+		{
 			drawInfo(
-					context, MathHelper.floor(foodLevel / 2.0),
+					context, MathHelper.floor(MathHelper.ceil(client.player.getHealth()) / 2.0),
 					(c, pos) -> {
-						Vector2i ditheredPos = pos.add(0, yOffset);
-						c.drawGuiTexture(empty, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
-						c.drawGuiTexture(foodLevel % 2 == 1 ? half : full, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
+						boolean blinking = heartJumpEndTick > (long) ticks && (this.heartJumpEndTick - (long) this.ticks) / 3L % 2L == 1L;
+						boolean hardcore = client.player.getWorld().getLevelProperties().isHardcore();
+
+						InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
+						drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
+						drawHeart(c, heartType, pos.x(), pos.y(), hardcore, blinking, renderHealthValue % 2 == 1);
 					},
 					(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
 					true, false
 			);
+		}
+
+		// Food & mount health
+		foodAndMountHealth:
+		{
+			int foodLevel = client.player.getHungerManager().getFoodLevel();
+			int mountHealth = getHeartCount(getRiddenEntity());
+			if (mountHealth <= 0) {
+				// Food
+				Identifier empty, half, full;
+				if (client.player.hasStatusEffect(StatusEffects.HUNGER)) {
+					empty = FOOD_EMPTY_HUNGER_TEXTURE;
+					half = FOOD_HALF_HUNGER_TEXTURE;
+					full = FOOD_FULL_HUNGER_TEXTURE;
+				} else {
+					empty = FOOD_EMPTY_TEXTURE;
+					half = FOOD_HALF_TEXTURE;
+					full = FOOD_FULL_TEXTURE;
+				}
+
+				int yOffset = client.player.getHungerManager().getSaturationLevel() <= 0 && this.ticks % (foodLevel * 3 + 1) == 0 ? random.nextInt(3) - 1 : 0;
+
+				drawInfo(
+						context, MathHelper.floor(foodLevel / 2.0),
+						(c, pos) -> {
+							Vector2i ditheredPos = pos.add(0, yOffset);
+							c.drawGuiTexture(empty, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
+							c.drawGuiTexture(foodLevel % 2 == 1 ? half : full, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
+						},
+						(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
+						true, false
+				);
+			} else {
+				// Mount health
+				drawInfo(
+						context, MathHelper.floor(mountHealth / 2.0),
+						(c, pos) -> {
+							c.drawGuiTexture(VEHICLE_CONTAINER_HEART_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
+							c.drawGuiTexture(foodLevel % 2 == 1 ? VEHICLE_HALF_HEART_TEXTURE : VEHICLE_FULL_HEART_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
+						},
+						(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
+						true, false
+				);
+			}
 		}
 	}
 
@@ -260,7 +285,7 @@ public abstract class InGameHudMixin {
 				0
 		);
 
-		if (Verticality.alternativeLayoutPartiallyEnabled()) {
+		if (Verticality.alternativeLayoutPartiallyEnabled() && !client.options.hudHidden && Objects.requireNonNull(client.interactionManager).hasStatusBars()) {
 			context.getMatrices().push();
 			context.getMatrices().translate(
 					Verticality.enabled() ? -Verticality.hotbarShift() * Verticality.transition() : 0,
@@ -722,7 +747,7 @@ class BarAdjustor {
 		context.getMatrices().push();
 		context.getMatrices().translate(
 				0,
-				Verticality.hotbarShift() * Verticality.later() + Verticality.SINGLE_BAR_HEIGHT * Verticality.alternativeTransition(),
+				Verticality.hotbarShift() * Verticality.later(),
 				0
 		);
 	}
