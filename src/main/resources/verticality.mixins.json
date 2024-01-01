@@ -9,6 +9,8 @@
   "client": [
     "BarAdjustor",
     "ChatHudMixin",
+    "DrawContextAccessor",
+    "DrawContextInvoker",
     "GameMenuScreenMixin",
     "InGameHudMixin",
     "ItemAdjustor",

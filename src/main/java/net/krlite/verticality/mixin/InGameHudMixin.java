@@ -5,6 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -176,27 +177,35 @@ public abstract class InGameHudMixin {
 
 	@Unique
 	private void renderUniqueMountJumpBar(JumpingMount mount, DrawContext context, int x) {
-		// TODO: 2024/1/1 Make the bar swappable 
 		int width = (int) (Objects.requireNonNull(this.client.player).getMountJumpStrength() * (Verticality.HOTBAR_WIDTH + 1));
 		int y = Verticality.height() - 32 + 3;
+		int xOffset = Verticality.swapped() ? Verticality.HOTBAR_WIDTH - width : 0;
 
-		context.drawGuiTexture(JUMP_BAR_BACKGROUND_TEXTURE, x, y, Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT);
+		drawGuiTexture(
+				context, JUMP_BAR_BACKGROUND_TEXTURE,
+				Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT, 0, 0,
+				x, y, Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT,
+				Verticality.swapped()
+		);
 		if (mount.getJumpCooldown() > 0) {
-			context.drawGuiTexture(
-					JUMP_BAR_COOLDOWN_TEXTURE,
-					x, y, Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT
+			drawGuiTexture(
+					context, JUMP_BAR_COOLDOWN_TEXTURE,
+					Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT, 0, 0,
+					x + xOffset, y, width, Verticality.SINGLE_BAR_HEIGHT,
+					Verticality.swapped()
 			);
 		} else if (width > 0) {
-			context.drawGuiTexture(
-					JUMP_BAR_PROGRESS_TEXTURE,
+			drawGuiTexture(
+					context, JUMP_BAR_PROGRESS_TEXTURE,
 					Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT, 0, 0,
-                    x, y, width, Verticality.SINGLE_BAR_HEIGHT
+					x + xOffset, y, width, Verticality.SINGLE_BAR_HEIGHT,
+					Verticality.swapped()
 			);
 		}
 	}
 
 	@Unique
-	public void renderUniqueExperienceBar(DrawContext context, int x) {
+	private void renderUniqueExperienceBar(DrawContext context, int x) {
 		int experience = Objects.requireNonNull(this.client.player).getNextLevelExperience();
 
 		if (experience > 0) {
@@ -213,6 +222,26 @@ public abstract class InGameHudMixin {
 				);
 			}
 		}
+	}
+
+	@Unique
+	private void drawGuiTexture(DrawContext context, Identifier texture, int i, int j, int k, int l, int x, int y, int width, int height, boolean flipByX) {
+		Sprite sprite = ((DrawContextAccessor) context).getGuiAtlasManager().getSprite(texture);
+
+		float
+				uBegin = sprite.getFrameU((float) k / i),
+				uEnd = sprite.getFrameU((float) (k + width) / i),
+				vBegin = sprite.getFrameV((float) l / j),
+				vEnd = sprite.getFrameV((float) (l + height) / j);
+
+		((DrawContextInvoker) context).invokeDrawTexturedQuad(
+				sprite.getAtlasId(),
+				x, x + width,
+				y, y + height,
+				0,
+				flipByX ? uEnd : uBegin, flipByX ? uBegin : uEnd,
+				vBegin, vEnd
+		);
 	}
 
 	@Inject(
