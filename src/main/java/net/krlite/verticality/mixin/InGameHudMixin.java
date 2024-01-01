@@ -13,6 +13,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import org.apache.commons.lang3.function.TriConsumer;
+import org.joml.Vector2i;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
@@ -41,78 +43,121 @@ public abstract class InGameHudMixin {
 
 	@Shadow protected abstract void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half);
 
+	@Shadow private long heartJumpEndTick;
+	@Shadow private int ticks;
 	@Unique int stackedInfo = 0;
 
 	@Unique
 	private void drawInfo(
-			DrawContext context,
-			int number, int color,
-			TriConsumer<DrawContext, Integer, Integer> textureDrawer,
+			DrawContext context, int number,
+			BiConsumer<DrawContext, Vector2i> iconDrawer,
+			TriConsumer<DrawContext, Vector2i, Text> textDrawer,
 			boolean hasIcon, boolean stickToTail
 	) {
 		Text text = Text.of(String.valueOf(number));
 		int
 				textWidth = getTextRenderer().getWidth(text), totalWidth = textWidth + (hasIcon ? Verticality.GAP + 9 : 0), width = Math.min(totalWidth, Verticality.INFO_MAX_WIDTH),
-				baseX, baseY, offsetX, offsetY;
+				xBase, yBase, xOffset, yOffset;
 
 		if (stickToTail) {
-			baseX = Verticality.enabled()
-					? Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT
+			xBase = Verticality.enabled()
+					? Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + 1
 					: (Verticality.width() + Verticality.HOTBAR_WIDTH) / 2;
-			baseY = Verticality.enabled()
+			yBase = Verticality.enabled()
 					? (Verticality.height() - Verticality.HOTBAR_WIDTH) / 2
 					: Verticality.height() - (Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.INFO_ICON_SIZE);
-			offsetX = Verticality.enabled() ? 0 : -width;
-			offsetY = 0;
+			xOffset = Verticality.enabled() ? 0 : -width;
+			yOffset = 0;
 		} else {
-			baseX = Verticality.enabled()
-					? Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT
+			xBase = Verticality.enabled()
+					? Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + 1
 					: (Verticality.width() - Verticality.HOTBAR_WIDTH) / 2 + Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP;
-			baseY = Verticality.enabled()
+			yBase = Verticality.enabled()
 					? (Verticality.height() + Verticality.HOTBAR_WIDTH) / 2 - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.INFO_ICON_SIZE)
 					: Verticality.height() - (Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.GAP + Verticality.INFO_ICON_SIZE);
-			offsetX = Verticality.enabled()
+			xOffset = Verticality.enabled()
 					? 0
 					: (stackedInfo / 2) * (Verticality.INFO_MAX_WIDTH);
-			offsetY = Verticality.enabled()
+			yOffset = Verticality.enabled()
 					? stackedInfo * -(Verticality.GAP + Verticality.INFO_ICON_SIZE)
 					: (stackedInfo % 2) * -Verticality.INFO_ICON_SIZE;
 		}
 
-		int x = baseX + offsetX, y = baseY + offsetY;
+		int x = xBase + xOffset, y = yBase + yOffset;
 
-		if (hasIcon) {
-			textureDrawer.accept(context, x, y);
-			context.drawTextWithShadow(getTextRenderer(), text, x + Verticality.INFO_ICON_SIZE + Verticality.GAP , y, color);
-		} else {
-			context.drawTextWithShadow(getTextRenderer(), text, x, y, color);
-		}
+		if (hasIcon) iconDrawer.accept(context, new Vector2i(x, y - 1));
+		textDrawer.accept(context, new Vector2i(x + (hasIcon ? Verticality.INFO_ICON_SIZE + Verticality.GAP : 0), y), text);
 
-		stackedInfo++;
+		stackedInfo += stickToTail ? 0 : 1;
 	}
 
 	@Unique
 	private void renderAlternativeLayoutInfo(DrawContext context) {
 		stackedInfo = 0;
+		// Experience level (sticking to tail)
 		drawInfo(
-				context, 10, 0xFFFFFF,
-				(c, x, y) -> drawHeart(c, InGameHud.HeartType.FROZEN, x, y, true, true, false),
+				context, Objects.requireNonNull(client.player).experienceLevel,
+				(c, pos) -> {},
+				(c, pos, text) -> {
+					int offset = Verticality.enabled() ? 1 : -1;
+
+					c.drawText(getTextRenderer(), text, pos.x() + 1 + offset, pos.y() + offset, 0, false);
+					c.drawText(getTextRenderer(), text, pos.x() - 1 + offset, pos.y() + offset, 0, false);
+					c.drawText(getTextRenderer(), text, pos.x() + offset, pos.y() + 1 + offset, 0, false);
+					c.drawText(getTextRenderer(), text, pos.x() + offset, pos.y() - 1 + offset, 0, false);
+
+					c.drawText(getTextRenderer(), text, pos.x() + offset, pos.y() + offset, 0x80FF20, false);
+				},
+				false, true
+		);
+
+		// Health
+		boolean blinking = heartJumpEndTick > (long) ticks && (this.heartJumpEndTick - (long)this.ticks) / 3L % 2L == 1L;
+		boolean hardcore = client.player.getWorld().getLevelProperties().isHardcore();
+		drawInfo(
+				context, 0,
+				(c, pos) -> {
+					InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
+					drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
+				},
+				(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
 				true, false
 		);
 		drawInfo(
-				context, 11, 0xFFFFFF,
-				(c, x, y) -> drawHeart(c, InGameHud.HeartType.ABSORBING, x, y, true, true, false),
+				context, 1,
+				(c, pos) -> {
+					InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
+					drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
+				},
+				(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
 				true, false
 		);
 		drawInfo(
-				context, 12, 0xFFFFFF,
-				(c, x, y) -> drawHeart(c, InGameHud.HeartType.NORMAL, x, y, true, true, false),
+				context, 2,
+				(c, pos) -> {
+					InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
+					drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
+				},
+				(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
 				true, false
 		);
 		drawInfo(
-				context, 20, 0xFFFFFF,
-				(c, x, y) -> drawHeart(c, InGameHud.HeartType.FROZEN, x, y, true, true, false),
-				true, true
+				context, 3,
+				(c, pos) -> {
+					InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
+					drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
+				},
+				(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
+				true, false
+		);
+		drawInfo(
+				context, 4,
+				(c, pos) -> {
+					InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
+					drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
+				},
+				(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
+				true, false
 		);
 	}
 
@@ -181,6 +226,15 @@ public abstract class InGameHudMixin {
 					Verticality.enabled() ? 0 : Verticality.hotbarShift() * Verticality.transition(),
 					0
 			);
+
+			if (Verticality.enabled()) {
+				// Compatibility with Raised
+				context.getMatrices().translate(
+						Verticality.raisedHudShift(),
+						Verticality.raisedHudShift(),
+						0
+				);
+			}
 
 			renderAlternativeLayoutInfo(context);
 
