@@ -277,6 +277,10 @@ public class Verticality implements ModInitializer {
 		return MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.getMainArm() == Arm.LEFT;
 	}
 
+	public static boolean isOffhandOccupied() {
+		return MinecraftClient.getInstance().player != null && !MinecraftClient.getInstance().player.getOffHandStack().isEmpty();
+	}
+
 	public static void translateIcon(DrawContext context, double y, boolean ignoreOffhand, boolean ignoreSwap) {
 		if (enabled()) {
 			double offset = -2 * ((y + 8) - height() / 2.0);

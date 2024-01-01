@@ -8,7 +8,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -30,6 +29,9 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
@@ -67,6 +69,10 @@ public abstract class InGameHudMixin {
 	@Shadow @Final private static Identifier VEHICLE_CONTAINER_HEART_TEXTURE;
 	@Shadow @Final private static Identifier VEHICLE_HALF_HEART_TEXTURE;
 	@Shadow @Final private static Identifier VEHICLE_FULL_HEART_TEXTURE;
+	@Shadow @Final private static Identifier ARMOR_HALF_TEXTURE;
+	@Shadow @Final private static Identifier ARMOR_FULL_TEXTURE;
+	@Shadow @Final private static Identifier AIR_BURSTING_TEXTURE;
+	@Shadow @Final private static Identifier AIR_TEXTURE;
 	@Unique int stackedInfo = 0;
 
 	@Unique
@@ -93,9 +99,9 @@ public abstract class InGameHudMixin {
 		} else {
 			xBase = Verticality.enabled()
 					? Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + 1
-					: (Verticality.width() - Verticality.HOTBAR_WIDTH) / 2 + Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP;
+					: (Verticality.width() - Verticality.HOTBAR_WIDTH) / 2 + (Verticality.isOffhandOccupied() ? Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP : 0);
 			yBase = Verticality.enabled()
-					? (Verticality.height() + Verticality.HOTBAR_WIDTH) / 2 - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.INFO_ICON_SIZE)
+					? (Verticality.height() + Verticality.HOTBAR_WIDTH) / 2 - (Verticality.isOffhandOccupied() ? Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP : 0) - Verticality.INFO_ICON_SIZE
 					: Verticality.height() - (Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.GAP + Verticality.INFO_ICON_SIZE);
 			xOffset = Verticality.enabled()
 					? 0
@@ -114,25 +120,26 @@ public abstract class InGameHudMixin {
 	}
 
 	@Unique
+	private void drawBorderedText(DrawContext context, Text text, Vector2i pos, int color) {
+		context.drawText(getTextRenderer(), text, pos.x() + 1, pos.y(), 0, false);
+		context.drawText(getTextRenderer(), text, pos.x() - 1, pos.y(), 0, false);
+		context.drawText(getTextRenderer(), text, pos.x(), pos.y() + 1, 0, false);
+		context.drawText(getTextRenderer(), text, pos.x(), pos.y() - 1, 0, false);
+
+		context.drawText(getTextRenderer(), text, pos.x(), pos.y(), color, false);
+	}
+
+	@Unique
 	private void renderAlternativeLayoutInfo(DrawContext context) {
 		stackedInfo = 0;
+		int textOffset = Verticality.enabled() ? 1 : -1;
 		// Experience level (sticking to tail)
 		experienceLevel:
 		{
 			drawInfo(
 					context, Objects.requireNonNull(client.player).experienceLevel,
-					(c, pos) -> {
-					},
-					(c, pos, text) -> {
-						int offset = Verticality.enabled() ? 1 : -1;
-
-						c.drawText(getTextRenderer(), text, pos.x() + 1 + offset, pos.y() + offset, 0, false);
-						c.drawText(getTextRenderer(), text, pos.x() - 1 + offset, pos.y() + offset, 0, false);
-						c.drawText(getTextRenderer(), text, pos.x() + offset, pos.y() + 1 + offset, 0, false);
-						c.drawText(getTextRenderer(), text, pos.x() + offset, pos.y() - 1 + offset, 0, false);
-
-						c.drawText(getTextRenderer(), text, pos.x() + offset, pos.y() + offset, 0x80FF20, false);
-					},
+					(c, pos) -> {},
+					(c, pos, text) -> drawBorderedText(c, text, pos.add(textOffset, textOffset), 0x80FF20),
 					false, true
 			);
 		}
@@ -150,7 +157,7 @@ public abstract class InGameHudMixin {
 						drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
 						drawHeart(c, heartType, pos.x(), pos.y(), hardcore, blinking, renderHealthValue % 2 == 1);
 					},
-					(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
+					(c, pos, text) -> drawBorderedText(c, text, pos, 0xFFFFFF),
 					true, false
 			);
 		}
@@ -174,15 +181,16 @@ public abstract class InGameHudMixin {
 				}
 
 				int yOffset = client.player.getHungerManager().getSaturationLevel() <= 0 && this.ticks % (foodLevel * 3 + 1) == 0 ? random.nextInt(3) - 1 : 0;
+				UnaryOperator<Vector2i> ditheredPosOperator = pos -> pos.add(0, yOffset);
 
 				drawInfo(
 						context, MathHelper.floor(foodLevel / 2.0),
 						(c, pos) -> {
-							Vector2i ditheredPos = pos.add(0, yOffset);
+							Vector2i ditheredPos = ditheredPosOperator.apply(pos);
 							c.drawGuiTexture(empty, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
 							c.drawGuiTexture(foodLevel % 2 == 1 ? half : full, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
 						},
-						(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
+						(c, pos, text) -> drawBorderedText(c, text, ditheredPosOperator.apply(pos), 0xFFFFFF),
 						true, false
 				);
 			} else {
@@ -193,7 +201,36 @@ public abstract class InGameHudMixin {
 							c.drawGuiTexture(VEHICLE_CONTAINER_HEART_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
 							c.drawGuiTexture(foodLevel % 2 == 1 ? VEHICLE_HALF_HEART_TEXTURE : VEHICLE_FULL_HEART_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
 						},
-						(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
+						(c, pos, text) -> drawBorderedText(c, text, pos, 0xFFFFFF),
+						true, false
+				);
+			}
+		}
+
+		// Armor
+		armor:
+		{
+			int armor = client.player.getArmor();
+			drawInfo(
+					context, MathHelper.floor(armor / 2.0),
+					(c, pos) -> c.drawGuiTexture(armor % 2 == 1 ? ARMOR_HALF_TEXTURE : ARMOR_FULL_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE),
+					(c, pos, text) -> drawBorderedText(c, text, pos, 0xFFFFFF),
+					true, false
+			);
+		}
+
+		// Air
+		air:
+		{
+			boolean submerged = client.player.isSubmergedInWater();
+			int maxAir = client.player.getMaxAir(), air = Math.min(client.player.getAir(), maxAir);
+
+			if (submerged || air < maxAir) {
+				int stable = MathHelper.ceil((air - 2) * 10.0 / maxAir), total = MathHelper.ceil(air * 10.0 / maxAir);
+				drawInfo(
+						context, stable,
+						(c, pos) -> c.drawGuiTexture(submerged && stable != total ? AIR_BURSTING_TEXTURE : AIR_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE),
+						(c, pos, text) -> drawBorderedText(c, text, pos, 0xFFFFFF),
 						true, false
 				);
 			}
