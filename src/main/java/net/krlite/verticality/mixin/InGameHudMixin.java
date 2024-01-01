@@ -38,6 +38,9 @@ public abstract class InGameHudMixin {
 	@Shadow @Final private static Identifier JUMP_BAR_PROGRESS_TEXTURE;
 	@Shadow @Final private static Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE;
 	@Shadow @Final private static Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE;
+
+	@Shadow protected abstract void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half);
+
 	@Unique int stackedInfo = 0;
 
 	@Unique
@@ -49,32 +52,68 @@ public abstract class InGameHudMixin {
 	) {
 		Text text = Text.of(String.valueOf(number));
 		int
-				textWidth = getTextRenderer().getWidth(text), totalWidth = textWidth + (hasIcon ? Verticality.GAP + 9 : 0), width = Math.min(totalWidth, Verticality.MAX_INFO_WIDTH),
+				textWidth = getTextRenderer().getWidth(text), totalWidth = textWidth + (hasIcon ? Verticality.GAP + 9 : 0), width = Math.min(totalWidth, Verticality.INFO_MAX_WIDTH),
 				baseX, baseY, offsetX, offsetY;
 
-		/*
 		if (stickToTail) {
 			baseX = Verticality.enabled()
-					? Verticality.HOTBAR_HEIGHT + Verticality.GAP
+					? Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT
 					: (Verticality.width() + Verticality.HOTBAR_WIDTH) / 2;
 			baseY = Verticality.enabled()
-					?
+					? (Verticality.height() - Verticality.HOTBAR_WIDTH) / 2
+					: Verticality.height() - (Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.INFO_ICON_SIZE);
+			offsetX = Verticality.enabled() ? 0 : -width;
+			offsetY = 0;
 		} else {
-
+			baseX = Verticality.enabled()
+					? Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT
+					: (Verticality.width() - Verticality.HOTBAR_WIDTH) / 2 + Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP;
+			baseY = Verticality.enabled()
+					? (Verticality.height() + Verticality.HOTBAR_WIDTH) / 2 - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.INFO_ICON_SIZE)
+					: Verticality.height() - (Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.GAP + Verticality.INFO_ICON_SIZE);
+			offsetX = Verticality.enabled()
+					? 0
+					: (stackedInfo / 2) * (Verticality.INFO_MAX_WIDTH);
+			offsetY = Verticality.enabled()
+					? stackedInfo * -(Verticality.GAP + Verticality.INFO_ICON_SIZE)
+					: (stackedInfo % 2) * -Verticality.INFO_ICON_SIZE;
 		}
+
+		int x = baseX + offsetX, y = baseY + offsetY;
 
 		if (hasIcon) {
 			textureDrawer.accept(context, x, y);
-			context.drawTextWithShadow(getTextRenderer(), text, x + Verticality.GAP + getTextRenderer().getWidth(text), y + 1, color);
+			context.drawTextWithShadow(getTextRenderer(), text, x + Verticality.INFO_ICON_SIZE + Verticality.GAP , y, color);
 		} else {
-			context.drawTextWithShadow(getTextRenderer(), text, x, y + 1, color);
+			context.drawTextWithShadow(getTextRenderer(), text, x, y, color);
 		}
 
-		 */
+		stackedInfo++;
 	}
 
 	@Unique
 	private void renderAlternativeLayoutInfo(DrawContext context) {
+		stackedInfo = 0;
+		drawInfo(
+				context, 10, 0xFFFFFF,
+				(c, x, y) -> drawHeart(c, InGameHud.HeartType.FROZEN, x, y, true, true, false),
+				true, false
+		);
+		drawInfo(
+				context, 11, 0xFFFFFF,
+				(c, x, y) -> drawHeart(c, InGameHud.HeartType.ABSORBING, x, y, true, true, false),
+				true, false
+		);
+		drawInfo(
+				context, 12, 0xFFFFFF,
+				(c, x, y) -> drawHeart(c, InGameHud.HeartType.NORMAL, x, y, true, true, false),
+				true, false
+		);
+		drawInfo(
+				context, 20, 0xFFFFFF,
+				(c, x, y) -> drawHeart(c, InGameHud.HeartType.FROZEN, x, y, true, true, false),
+				true, true
+		);
 	}
 
 	@Unique
@@ -136,8 +175,16 @@ public abstract class InGameHudMixin {
 		);
 
 		if (Verticality.alternativeLayoutPartiallyEnabled()) {
-			stackedInfo = 0;
+			context.getMatrices().push();
+			context.getMatrices().translate(
+					Verticality.enabled() ? -Verticality.hotbarShift() * Verticality.transition() : 0,
+					Verticality.enabled() ? 0 : Verticality.hotbarShift() * Verticality.transition(),
+					0
+			);
+
 			renderAlternativeLayoutInfo(context);
+
+			context.getMatrices().pop();
 		}
 
 		if (Verticality.enabled()) {
