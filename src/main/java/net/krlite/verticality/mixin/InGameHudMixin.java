@@ -6,6 +6,9 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.JumpingMount;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -13,6 +16,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.function.TriConsumer;
 import org.joml.Vector2i;
 import org.spongepowered.asm.mixin.Final;
@@ -47,6 +51,18 @@ public abstract class InGameHudMixin {
 	@Shadow private long heartJumpEndTick;
 	@Shadow private int ticks;
 	@Shadow private int renderHealthValue;
+
+	@Shadow protected abstract int getHeartCount(LivingEntity entity);
+
+	@Shadow protected abstract LivingEntity getRiddenEntity();
+
+	@Shadow @Final private static Identifier FOOD_EMPTY_HUNGER_TEXTURE;
+	@Shadow @Final private static Identifier FOOD_HALF_HUNGER_TEXTURE;
+	@Shadow @Final private static Identifier FOOD_FULL_HUNGER_TEXTURE;
+	@Shadow @Final private static Identifier FOOD_EMPTY_TEXTURE;
+	@Shadow @Final private static Identifier FOOD_HALF_TEXTURE;
+	@Shadow @Final private static Identifier FOOD_FULL_TEXTURE;
+	@Shadow @Final private Random random;
 	@Unique int stackedInfo = 0;
 
 	@Unique
@@ -122,11 +138,40 @@ public abstract class InGameHudMixin {
 
 					InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
 					drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
-					drawHeart(c, heartType, pos.x(), pos.y(), hardcore, blinking, renderHealthValue %2 == 1);
+					drawHeart(c, heartType, pos.x(), pos.y(), hardcore, blinking, renderHealthValue % 2 == 1);
 				},
 				(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
 				true, false
 		);
+
+		// Food & mount health
+		int foodLevel = client.player.getHungerManager().getFoodLevel();
+		int mountHealth = getHeartCount(getRiddenEntity());
+		if (mountHealth <= 0) {
+			Identifier empty, half, full;
+			if (client.player.hasStatusEffect(StatusEffects.HUNGER)) {
+				empty = FOOD_EMPTY_HUNGER_TEXTURE;
+				half = FOOD_HALF_HUNGER_TEXTURE;
+				full = FOOD_FULL_HUNGER_TEXTURE;
+			} else {
+				empty = FOOD_EMPTY_TEXTURE;
+				half = FOOD_HALF_TEXTURE;
+				full = FOOD_FULL_TEXTURE;
+			}
+
+			int yOffset = client.player.getHungerManager().getSaturationLevel() <= 0 && this.ticks % (foodLevel * 3 + 1) == 0 ? random.nextInt(3) - 1 : 0;
+
+			drawInfo(
+					context, foodLevel / 2,
+					(c, pos) -> {
+						Vector2i ditheredPos = pos.add(0, yOffset);
+						c.drawGuiTexture(empty, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
+						c.drawGuiTexture(foodLevel % 2 == 1 ? half : full, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
+					},
+					(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
+					true, false
+			);
+		}
 	}
 
 	@Unique
