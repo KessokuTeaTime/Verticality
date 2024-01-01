@@ -157,7 +157,7 @@ public abstract class InGameHudMixin {
 						drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
 						drawHeart(c, heartType, pos.x(), pos.y(), hardcore, blinking, renderHealthValue % 2 == 1);
 					},
-					(c, pos, text) -> drawBorderedText(c, text, pos, 0xFFFFFF),
+					(c, pos, text) -> drawBorderedText(c, text, pos, 0xFF6262),
 					true, false
 			);
 		}
@@ -190,7 +190,7 @@ public abstract class InGameHudMixin {
 							c.drawGuiTexture(empty, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
 							c.drawGuiTexture(foodLevel % 2 == 1 ? half : full, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
 						},
-						(c, pos, text) -> drawBorderedText(c, text, ditheredPosOperator.apply(pos), 0xFFFFFF),
+						(c, pos, text) -> drawBorderedText(c, text, ditheredPosOperator.apply(pos), 0xE8A264),
 						true, false
 				);
 			} else {
@@ -201,7 +201,7 @@ public abstract class InGameHudMixin {
 							c.drawGuiTexture(VEHICLE_CONTAINER_HEART_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
 							c.drawGuiTexture(foodLevel % 2 == 1 ? VEHICLE_HALF_HEART_TEXTURE : VEHICLE_FULL_HEART_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
 						},
-						(c, pos, text) -> drawBorderedText(c, text, pos, 0xFFFFFF),
+						(c, pos, text) -> drawBorderedText(c, text, pos, 0xE97240),
 						true, false
 				);
 			}
@@ -214,7 +214,7 @@ public abstract class InGameHudMixin {
 			drawInfo(
 					context, MathHelper.floor(armor / 2.0),
 					(c, pos) -> c.drawGuiTexture(armor % 2 == 1 ? ARMOR_HALF_TEXTURE : ARMOR_FULL_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE),
-					(c, pos, text) -> drawBorderedText(c, text, pos, 0xFFFFFF),
+					(c, pos, text) -> drawBorderedText(c, text, pos, 0xE6E6F2),
 					true, false
 			);
 		}
@@ -230,7 +230,7 @@ public abstract class InGameHudMixin {
 				drawInfo(
 						context, stable,
 						(c, pos) -> c.drawGuiTexture(submerged && stable != total ? AIR_BURSTING_TEXTURE : AIR_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE),
-						(c, pos, text) -> drawBorderedText(c, text, pos, 0xFFFFFF),
+						(c, pos, text) -> drawBorderedText(c, text, pos, 0x56B8FF),
 						true, false
 				);
 			}
