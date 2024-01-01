@@ -516,8 +516,6 @@ class ItemAdjustor {
 	private void drawItemPre(DrawContext context, int x, int y, float f, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci) {
 		context.getMatrices().push();
 		Verticality.translateIcon(context, y, false, drawingOffhandItem && Verticality.alternativeLayoutPartiallyEnabled());
-
-		drawingOffhandItem = false;
 	}
 
 	@Inject(
@@ -540,7 +538,9 @@ class ItemAdjustor {
 	)
 	private void drawItemInSlotPre(DrawContext context, int x, int y, float f, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci) {
 		context.getMatrices().push();
-		Verticality.translateIcon(context, y, false, false);
+		Verticality.translateIcon(context, y, false, drawingOffhandItem && Verticality.alternativeLayoutPartiallyEnabled());
+
+		drawingOffhandItem = false;
 	}
 
 	@Inject(
@@ -559,8 +559,6 @@ class ItemAdjustor {
 @Mixin(InGameHud.class)
 abstract
 class BarAdjustor {
-	@Shadow public abstract TextRenderer getTextRenderer();
-
 	@Inject(
 			method = "render",
 			at = @At(
