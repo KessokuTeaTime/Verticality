@@ -131,7 +131,7 @@ public abstract class InGameHudMixin {
 
 		// Health
 		drawInfo(
-				context, MathHelper.ceil(client.player.getHealth()) / 2,
+				context, MathHelper.floor(MathHelper.ceil(client.player.getHealth()) / 2.0),
 				(c, pos) -> {
 					boolean blinking = heartJumpEndTick > (long) ticks && (this.heartJumpEndTick - (long)this.ticks) / 3L % 2L == 1L;
 					boolean hardcore = client.player.getWorld().getLevelProperties().isHardcore();
@@ -162,7 +162,7 @@ public abstract class InGameHudMixin {
 			int yOffset = client.player.getHungerManager().getSaturationLevel() <= 0 && this.ticks % (foodLevel * 3 + 1) == 0 ? random.nextInt(3) - 1 : 0;
 
 			drawInfo(
-					context, foodLevel / 2,
+					context, MathHelper.floor(foodLevel / 2.0),
 					(c, pos) -> {
 						Vector2i ditheredPos = pos.add(0, yOffset);
 						c.drawGuiTexture(empty, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
@@ -176,6 +176,7 @@ public abstract class InGameHudMixin {
 
 	@Unique
 	private void renderUniqueMountJumpBar(JumpingMount mount, DrawContext context, int x) {
+		// TODO: 2024/1/1 Make the bar swappable 
 		int width = (int) (Objects.requireNonNull(this.client.player).getMountJumpStrength() * (Verticality.HOTBAR_WIDTH + 1));
 		int y = Verticality.height() - 32 + 3;
 
@@ -186,12 +187,10 @@ public abstract class InGameHudMixin {
 					x, y, Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT
 			);
 		} else if (width > 0) {
-			double offset = (Verticality.HOTBAR_WIDTH - width) * Verticality.swap();
-
 			context.drawGuiTexture(
 					JUMP_BAR_PROGRESS_TEXTURE,
-					Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT, (int) offset, 0,
-					x + (int) offset, y, width, Verticality.SINGLE_BAR_HEIGHT
+					Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT, 0, 0,
+                    x, y, width, Verticality.SINGLE_BAR_HEIGHT
 			);
 		}
 	}
@@ -210,7 +209,7 @@ public abstract class InGameHudMixin {
 				context.drawGuiTexture(
 						EXPERIENCE_BAR_PROGRESS_TEXTURE,
 						Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT, (int) offset, 0,
-                        x + (int) offset, y, width, Verticality.SINGLE_BAR_HEIGHT
+                        (int) (x + offset), y, width, Verticality.SINGLE_BAR_HEIGHT
 				);
 			}
 		}

@@ -178,6 +178,10 @@ public class Verticality implements ModInitializer {
 		return Theory.lerp(offset.value(), 0, alternativeTransition());
 	}
 
+	public static boolean swapped() {
+		return swap() > 0.5;
+	}
+
 	public static double swap() {
 		return swap.value();
 	}
