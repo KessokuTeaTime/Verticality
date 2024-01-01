@@ -49,7 +49,7 @@ To toggle the function, just press <kbd>Escape</kbd> to access the game menu, th
 
 This video demonstrates how you can toggle **Verticality:**
 
-![Magic!](https://github.com/KrLite/Verticality/blob/artwork/content/v3/magic.mov)
+https://github.com/KrLite/Verticality/assets/68179735/097af445-4613-49a4-a2fc-ca3b9c4ca0b4
 
 ## License
 
