@@ -29,6 +29,30 @@ public class HudOverlayHandlerMixin {
         return (float) (alpha * (1 - Verticality.alternativeTransition()));
     }
 
+    @ModifyArg(
+            method = "drawHealthOverlay(Lnet/minecraft/client/gui/DrawContext;FFLnet/minecraft/client/MinecraftClient;IIF)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V"
+            ),
+            index = 3
+    )
+    private float fadeHealthOverlay(float alpha) {
+        return (float) (alpha * (1 - Verticality.alternativeTransition()));
+    }
+
+    @ModifyArg(
+            method = "drawHungerOverlay(Lnet/minecraft/client/gui/DrawContext;IILnet/minecraft/client/MinecraftClient;IIFZ)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V"
+            ),
+            index = 3
+    )
+    private float fadeHungerOverlay(float alpha) {
+        return (float) (alpha * (1 - Verticality.alternativeTransition()));
+    }
+
     @Inject(
             method = "onRender",
             at = @At("HEAD")

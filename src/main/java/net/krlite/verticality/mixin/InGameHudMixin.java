@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import org.apache.commons.lang3.function.TriConsumer;
 import org.joml.Vector2i;
@@ -45,6 +46,7 @@ public abstract class InGameHudMixin {
 
 	@Shadow private long heartJumpEndTick;
 	@Shadow private int ticks;
+	@Shadow private int renderHealthValue;
 	@Unique int stackedInfo = 0;
 
 	@Unique
@@ -112,49 +114,15 @@ public abstract class InGameHudMixin {
 		);
 
 		// Health
-		boolean blinking = heartJumpEndTick > (long) ticks && (this.heartJumpEndTick - (long)this.ticks) / 3L % 2L == 1L;
-		boolean hardcore = client.player.getWorld().getLevelProperties().isHardcore();
 		drawInfo(
-				context, 0,
+				context, MathHelper.ceil(client.player.getHealth()) / 2,
 				(c, pos) -> {
+					boolean blinking = heartJumpEndTick > (long) ticks && (this.heartJumpEndTick - (long)this.ticks) / 3L % 2L == 1L;
+					boolean hardcore = client.player.getWorld().getLevelProperties().isHardcore();
+
 					InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
 					drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
-				},
-				(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
-				true, false
-		);
-		drawInfo(
-				context, 1,
-				(c, pos) -> {
-					InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
-					drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
-				},
-				(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
-				true, false
-		);
-		drawInfo(
-				context, 2,
-				(c, pos) -> {
-					InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
-					drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
-				},
-				(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
-				true, false
-		);
-		drawInfo(
-				context, 3,
-				(c, pos) -> {
-					InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
-					drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
-				},
-				(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
-				true, false
-		);
-		drawInfo(
-				context, 4,
-				(c, pos) -> {
-					InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
-					drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
+					drawHeart(c, heartType, pos.x(), pos.y(), hardcore, blinking, renderHealthValue %2 == 1);
 				},
 				(c, pos, text) -> c.drawTextWithShadow(getTextRenderer(), text, pos.x(), pos.y(), 0xFFFFFF),
 				true, false
