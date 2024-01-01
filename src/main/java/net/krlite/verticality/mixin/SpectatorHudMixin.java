@@ -3,16 +3,13 @@ package net.krlite.verticality.mixin;
 import net.krlite.verticality.Verticality;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.SpectatorHud;
-import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -56,8 +53,8 @@ public abstract class SpectatorHudMixin {
 
 			// Compatibility with Raised
 			context.getMatrices().translate(
-					Verticality.raisedShift(),
-					Verticality.raisedShift(),
+					Verticality.raisedHudShift(),
+					Verticality.raisedHudShift(),
 					0
 			);
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));

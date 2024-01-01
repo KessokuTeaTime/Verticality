@@ -29,12 +29,12 @@ public class Verticality implements ModInitializer {
 	public static final String NAME = "Verticality", ID = "verticality";
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 	public static final int
-			HOTBAR_FULL_HEIGHT = 24, HOTBAR_HEIGHT = HOTBAR_FULL_HEIGHT - 1, SPECTATOR_BAR_HEIGHT = 22, SINGLE_BAR_HEIGHT = 5,
+			HOTBAR_FULL_HEIGHT = 24, HOTBAR_HEIGHT = 23, SPECTATOR_BAR_HEIGHT = 22, SINGLE_BAR_HEIGHT = 5,
 			ITEM_SIZE = 16, GAP = 2, HOTBAR_ITEM_GAP = (HOTBAR_FULL_HEIGHT - ITEM_SIZE) / 2 - 1,
-			WIDGET_GAP_LARGE = 32, WIDGET_GAP = 16, MAX_INFO_WIDTH = 2 * HOTBAR_FULL_HEIGHT, INFO_ICON_SIZE = 9,
+			MAX_INFO_WIDTH = 2 * HOTBAR_FULL_HEIGHT, INFO_ICON_SIZE = 9,
 			HOTBAR_WIDTH = 182, OFFHAND_WIDTH = 29,
 			CENTER_DISTANCE_TO_BORDER = 11, TOOLTIP_OFFSET = 7;
-	public static final float FONT_SCALAR = 1.5F, FONT_OFFSET = 1.2F;
+	public static final float UI_SCALAR = 1.25F;
 
 	public static class Sounds {
 		public static final SoundEvent GATE_LATCH = SoundEvent.of(new Identifier(ID, "gate_latch"));
@@ -45,15 +45,7 @@ public class Verticality implements ModInitializer {
 			Registry.register(Registries.SOUND_EVENT, LIGHT_SWITCH.getId(), LIGHT_SWITCH);
 		}
 
-		public static void playGateLatch() {
-			play(GATE_LATCH);
-		}
-
-		public static void playLightSwitch() {
-			play(LIGHT_SWITCH);
-		}
-
-		private static void play(SoundEvent sound) {
+		public static void play(SoundEvent sound) {
 			MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(sound, 1.0F));
 		}
 	}
@@ -70,7 +62,8 @@ public class Verticality implements ModInitializer {
 			earlier = new InterpolatedDouble(0, 0.013);
 	private static boolean enabled, alternativeLayoutEnabled;
 	private static float spectatorMenuHeightScalar = 0;
-	private static Supplier<Integer> raisedShift = () -> 0;
+	private static Supplier<Integer> raisedHudShift = () -> 0, raisedChatShift = () -> 0;
+	private static Supplier<Boolean> raisedSync = () -> false;
 
 	static {
 		transition.onPlay(() -> {
@@ -126,7 +119,10 @@ public class Verticality implements ModInitializer {
 		Sounds.register();
 
 		if (isRaisedLoaded()) {
-			raisedShift = RaisedConfig::getHud;
+			raisedHudShift = RaisedConfig::getHud;
+			raisedChatShift = RaisedConfig::getChat;
+
+			raisedSync = RaisedConfig::getSync;
 		}
 	}
 
@@ -138,8 +134,16 @@ public class Verticality implements ModInitializer {
 		return FabricLoader.getInstance().isModLoaded("appleskin");
 	}
 
-	public static int raisedShift() {
-		return raisedShift.get();
+	public static int raisedHudShift() {
+		return raisedHudShift.get();
+	}
+
+	public static int raisedChatShift() {
+		return raisedChatShift.get();
+	}
+
+	public static boolean raisedSync() {
+		return raisedSync.get();
 	}
 
 	public static int height() {
@@ -159,11 +163,11 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static double alternativeLayoutOffsetX() {
-		return enabled() ? 0 : -(width() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() + (raisedShift() > 0 ? 1 : 0);
+		return enabled() ? 0 : -(width() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() + (raisedHudShift() > 0 ? 1 : 0);
 	}
 
 	public static double alternativeLayoutOffsetY() {
-		return enabled() ? (height() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() - (raisedShift() > 0 ? 1 : 0) : 0;
+		return enabled() ? (height() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() - (raisedHudShift() > 0 ? 1 : 0) : 0;
 	}
 
 	public static double progress() {
@@ -261,7 +265,7 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static double hotbarShift() {
-		return HOTBAR_HEIGHT + raisedShift();
+		return HOTBAR_HEIGHT + raisedHudShift();
 	}
 
 	public static boolean isMainArmLeft() {
@@ -280,8 +284,8 @@ public class Verticality implements ModInitializer {
 
 			// Compatibility with Raised
 			context.getMatrices().translate(
-					Verticality.raisedShift(),
-					Verticality.raisedShift(),
+					Verticality.raisedHudShift(),
+					Verticality.raisedHudShift(),
 					0
 			);
 		}
@@ -322,6 +326,7 @@ public class Verticality implements ModInitializer {
 
 			float alpha = (float) (1 - alternativeTransition());
 			context.setShaderColor(1, 1, 1, alpha);
+			RenderSystem.defaultBlendFunc();
 		}
 	}
 

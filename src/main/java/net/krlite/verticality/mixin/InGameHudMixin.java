@@ -21,6 +21,8 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
+import java.util.Objects;
+
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
 	@Shadow @Final private static Identifier HOTBAR_OFFHAND_LEFT_TEXTURE;
@@ -29,8 +31,13 @@ public abstract class InGameHudMixin {
 
 	@Shadow public abstract TextRenderer getTextRenderer();
 
-	@Shadow protected abstract void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half);
+	@Shadow @Final private MinecraftClient client;
 
+	@Shadow @Final private static Identifier JUMP_BAR_BACKGROUND_TEXTURE;
+	@Shadow @Final private static Identifier JUMP_BAR_COOLDOWN_TEXTURE;
+	@Shadow @Final private static Identifier JUMP_BAR_PROGRESS_TEXTURE;
+	@Shadow @Final private static Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE;
+	@Shadow @Final private static Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE;
 	@Unique int stackedInfo = 0;
 
 	@Unique
@@ -45,6 +52,7 @@ public abstract class InGameHudMixin {
 				textWidth = getTextRenderer().getWidth(text), totalWidth = textWidth + (hasIcon ? Verticality.GAP + 9 : 0), width = Math.min(totalWidth, Verticality.MAX_INFO_WIDTH),
 				baseX, baseY, offsetX, offsetY;
 
+		/*
 		if (stickToTail) {
 			baseX = Verticality.enabled()
 					? Verticality.HOTBAR_HEIGHT + Verticality.GAP
@@ -61,15 +69,54 @@ public abstract class InGameHudMixin {
 		} else {
 			context.drawTextWithShadow(getTextRenderer(), text, x, y + 1, color);
 		}
+
+		 */
 	}
 
 	@Unique
 	private void renderAlternativeLayoutInfo(DrawContext context) {
-		drawInfo(
-				context, 20, 0xFFFFFF,
-				100, 100,
-				(c, x, y) -> drawHeart(c, InGameHud.HeartType.CONTAINER, x, y, false, false, false)
-		);
+	}
+
+	@Unique
+	private void renderUniqueMountJumpBar(JumpingMount mount, DrawContext context, int x) {
+		int width = (int) (Objects.requireNonNull(this.client.player).getMountJumpStrength() * (Verticality.HOTBAR_WIDTH + 1));
+		int y = Verticality.height() - 32 + 3;
+
+		context.drawGuiTexture(JUMP_BAR_BACKGROUND_TEXTURE, x, y, Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT);
+		if (mount.getJumpCooldown() > 0) {
+			context.drawGuiTexture(
+					JUMP_BAR_COOLDOWN_TEXTURE,
+					x, y, Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT
+			);
+		} else if (width > 0) {
+			double offset = (Verticality.HOTBAR_WIDTH - width) * Verticality.swap();
+
+			context.drawGuiTexture(
+					JUMP_BAR_PROGRESS_TEXTURE,
+					Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT, (int) offset, 0,
+					x + (int) offset, y, width, Verticality.SINGLE_BAR_HEIGHT
+			);
+		}
+	}
+
+	@Unique
+	public void renderUniqueExperienceBar(DrawContext context, int x) {
+		int experience = Objects.requireNonNull(this.client.player).getNextLevelExperience();
+
+		if (experience > 0) {
+			int width = (int) (client.player.experienceProgress * (Verticality.HOTBAR_WIDTH + 1));
+			int y = Verticality.height() - 32 + 3;
+			double offset = (Verticality.HOTBAR_WIDTH - width) * Verticality.swap();
+
+			context.drawGuiTexture(EXPERIENCE_BAR_BACKGROUND_TEXTURE, x, y, Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT);
+			if (x > 0) {
+				context.drawGuiTexture(
+						EXPERIENCE_BAR_PROGRESS_TEXTURE,
+						Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT, (int) offset, 0,
+                        x + (int) offset, y, width, Verticality.SINGLE_BAR_HEIGHT
+				);
+			}
+		}
 	}
 
 	@Inject(
@@ -104,12 +151,25 @@ public abstract class InGameHudMixin {
 
 			// Compatibility with Raised
 			context.getMatrices().translate(
-					Verticality.raisedShift(),
-					Verticality.raisedShift(),
+					Verticality.raisedHudShift(),
+					Verticality.raisedHudShift(),
 					0
 			);
 
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
+
+			if (Verticality.alternativeLayoutPartiallyEnabled()) {
+				if (client.player != null) {
+					int x = (Verticality.width() - Verticality.HOTBAR_WIDTH) / 2;
+					JumpingMount jumpingMount = client.player.getJumpingMount();
+
+					if (jumpingMount != null) {
+						renderUniqueMountJumpBar(jumpingMount, context, x);
+					} else if (client.interactionManager != null && client.interactionManager.hasExperienceBar()) {
+						renderUniqueExperienceBar(context, x);
+					}
+				}
+			}
 		} else {
 			context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.transition(), 0);
 		}
@@ -146,7 +206,7 @@ public abstract class InGameHudMixin {
 				context.drawGuiTexture(
 						HOTBAR_OFFHAND_RIGHT_TEXTURE,
 						(int) ((Verticality.width() + Verticality.HOTBAR_WIDTH) / 2.0 - Verticality.OFFHAND_WIDTH),
-						y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.GAP),
+						y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT),
 						width, height
 				);
 			} else {
@@ -171,7 +231,7 @@ public abstract class InGameHudMixin {
 				context.drawGuiTexture(
 						HOTBAR_OFFHAND_LEFT_TEXTURE,
 						(int) ((Verticality.width() - Verticality.HOTBAR_WIDTH) / 2.0),
-						y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.GAP),
+						y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT),
 						width, height
 				);
 			} else {
@@ -231,7 +291,7 @@ class ItemAdjustor {
 			// x
 			args.set(2, (Verticality.width() + Verticality.HOTBAR_WIDTH * (Verticality.enabled() ? 1 : -1)) / 2 - Verticality.HOTBAR_ITEM_GAP * (Verticality.enabled() ? 1 : -1) - Verticality.ITEM_SIZE * (Verticality.enabled() ? 1 : 0));
 			// y
-			args.set(3, y - Verticality.GAP - Verticality.SINGLE_BAR_HEIGHT - Verticality.GAP - Verticality.HOTBAR_FULL_HEIGHT);
+			args.set(3, y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT));
 		} else if (Verticality.isMainArmLeft() && Verticality.enabled()) {
 			args.set(2, (int) Math.round(x - 2 * ((x + 8) - Verticality.width() / 2.0))); // Revert the x-coordinate of the item
 		}
