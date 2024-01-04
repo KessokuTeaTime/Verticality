@@ -4,13 +4,13 @@
   "version": "${version}",
 
   "name": "Verticality",
-  "description": "Verticalize Your Hotbar!",
+  "description": "Verticalize your hotbar!",
   "authors": [
     "KrLite"
   ],
   "contact": {
     "homepage": "https://github.com/KrLite",
-    "sources": "https://github.com/KrLite/Verticality"
+    "sources": "https://github.com/KrLite/Mod.Verticality"
   },
 
   "license": "GPL-3.0",
