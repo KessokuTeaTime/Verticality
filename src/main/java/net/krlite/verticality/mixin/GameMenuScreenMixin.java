@@ -95,6 +95,8 @@ public abstract class GameMenuScreenMixin extends Screen {
         RenderSystem.enableDepthTest();
         RenderSystem.disableCull();
 
+        context.getMatrices().push();
+
         if (Verticality.enabled()) {
             // 'Disable'
             widgetDisable:

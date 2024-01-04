@@ -39,8 +39,8 @@ public abstract class SpectatorHudMixin {
 
 		// Alternative layout
 		context.getMatrices().translate(
-				Verticality.alternativeLayoutOffsetX(),
-				Verticality.alternativeLayoutOffsetY(),
+				Verticality.alternativeLayoutOffset().x(),
+				Verticality.alternativeLayoutOffset().y(),
 				0
 		);
 

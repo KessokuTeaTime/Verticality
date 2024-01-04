@@ -19,6 +19,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
+import org.joml.Vector2d;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,12 +163,24 @@ public class Verticality implements ModInitializer {
 		return alternativeLayoutPartiallyEnabled() ? alternativeTransition.value() : (alternativeTransition.end() - alternativeTransition.value());
 	}
 
-	public static double alternativeLayoutOffsetX() {
-		return enabled() ? 0 : -(width() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() + (raisedHudShift() > 0 ? 1 : 0);
+	public static Vector2d alternativeLayoutOffset() {
+		return new Vector2d(
+				enabled() ? 0 : -(width() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() + (raisedHudShift() > 0 ? 1 : 0),
+				enabled() ? (height() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() - (raisedHudShift() > 0 ? 1 : 0) : 0
+		);
 	}
 
-	public static double alternativeLayoutOffsetY() {
-		return enabled() ? (height() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() - (raisedHudShift() > 0 ? 1 : 0) : 0;
+	public static Vector2d chatOffset() {
+		return new Vector2d(
+				isSpectator()
+						? hotbarShift() * (hasSpectatorMenu() ? Math.min(earlier(), spectatorMenuHeightScalar()) : 0)
+						: (hotbarShift() + Theory.lerp(0, GAP + SINGLE_BAR_HEIGHT, alternativeTransition())) * earlier(),
+				Theory.lerp(
+						alternativeLayoutPartiallyEnabled() ? -HOTBAR_FULL_HEIGHT : 0,
+						(raisedSync() ? raisedHudShift() : 0) - 3 * (INFO_ICON_SIZE + GAP),
+						earlier()
+				)
+		);
 	}
 
 	public static double progress() {
@@ -301,7 +314,7 @@ public class Verticality implements ModInitializer {
 			context.getMatrices().translate(0, hotbarShift() * transition(), 0);
 		}
 
-		context.getMatrices().translate(alternativeLayoutOffsetX(), alternativeLayoutOffsetY(), 0);
+		context.getMatrices().translate(alternativeLayoutOffset().x(), alternativeLayoutOffset().y(), 0);
 	}
 
 	public static void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int width, int height) {

@@ -1,5 +1,6 @@
 package net.krlite.verticality.mixin;
 
+import dev.yurisuika.raised.Raised;
 import net.krlite.equator.math.algebra.Theory;
 import net.krlite.verticality.Verticality;
 import net.minecraft.client.gui.DrawContext;
@@ -7,6 +8,7 @@ import net.minecraft.client.gui.hud.ChatHud;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ChatHud.class)
@@ -21,16 +23,36 @@ public class ChatHudMixin {
 			)
 	)
 	private void render(DrawContext context, int currentTick, int mouseX, int mouseY, CallbackInfo ci) {
-		double offsetX = Verticality.isSpectator()
-				? Verticality.hotbarShift() * (Verticality.hasSpectatorMenu() ? Math.min(Verticality.earlier(), Verticality.spectatorMenuHeightScalar()) : 0)
-				: (Verticality.hotbarShift() + Theory.lerp(0, Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT, Verticality.alternativeTransition())) * Verticality.earlier();
+		context.getMatrices().translate(Verticality.chatOffset().x(), Verticality.chatOffset().y(), 0);
+	}
 
-		double offsetY = Theory.lerp(
-				Verticality.alternativeLayoutPartiallyEnabled() ? -Verticality.HOTBAR_FULL_HEIGHT : 0,
-				(Verticality.raisedSync() ? Verticality.raisedHudShift() : 0) - 3 * (Verticality.INFO_ICON_SIZE + Verticality.GAP),
-				Verticality.earlier()
-		);
+	@ModifyVariable(
+			method = "mouseClicked",
+			at = @At(value = "HEAD"),
+			ordinal = 0,
+			argsOnly = true
+	)
+	private double mouseClickedOffsetX(double value) {
+		return value + Verticality.chatOffset().x();
+	}
 
-		context.getMatrices().translate(offsetX, offsetY, 0);
+	@ModifyVariable(
+			method = "mouseClicked",
+			at = @At(value = "HEAD"),
+			ordinal = 1,
+			argsOnly = true
+	)
+	private double mouseClickedOffsetY(double value) {
+		return value + Verticality.chatOffset().y();
+	}
+
+	@ModifyVariable(
+			method = "toChatLineY",
+			at = @At(value = "HEAD"),
+			ordinal = 0,
+			argsOnly = true
+	)
+	private double chatTooltipOffsetY(double value) {
+		return value + Verticality.chatOffset().y();
 	}
 }

@@ -29,8 +29,6 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 @Mixin(InGameHud.class)
@@ -317,8 +315,8 @@ public abstract class InGameHudMixin {
 	private void renderHotbar(float tickDelta, DrawContext context, CallbackInfo ci) {
 		// Alternative layout
 		context.getMatrices().translate(
-				Verticality.alternativeLayoutOffsetX(),
-				Verticality.alternativeLayoutOffsetY(),
+				Verticality.alternativeLayoutOffset().x(),
+				Verticality.alternativeLayoutOffset().y(),
 				0
 		);
 
@@ -659,7 +657,7 @@ class BarAdjustor {
 		context.getMatrices().push();
 		Verticality.verticallyShiftBarPre(context, false);
 
-		context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), 0, 0);
+		context.getMatrices().translate(Verticality.alternativeLayoutOffset().x(), 0, 0);
 	}
 
 	@Inject(
@@ -684,7 +682,7 @@ class BarAdjustor {
 		context.getMatrices().push();
 		Verticality.verticallyShiftBarPre(context, false);
 
-		context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), 0, 0);
+		context.getMatrices().translate(Verticality.alternativeLayoutOffset().x(), 0, 0);
 	}
 
 	@Inject(
@@ -709,7 +707,7 @@ class BarAdjustor {
 		context.getMatrices().push();
 		Verticality.verticallyShiftBarPre(context, false);
 
-		context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), 0, 0);
+		context.getMatrices().translate(Verticality.alternativeLayoutOffset().x(), 0, 0);
 	}
 
 	@Inject(
@@ -734,7 +732,7 @@ class BarAdjustor {
 		context.getMatrices().push();
 		Verticality.verticallyShiftBarPre(context, false);
 
-		context.getMatrices().translate(Verticality.alternativeLayoutOffsetX(), 0, 0);
+		context.getMatrices().translate(Verticality.alternativeLayoutOffset().x(), 0, 0);
 	}
 
 	@Inject(
