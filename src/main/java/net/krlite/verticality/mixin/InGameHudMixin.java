@@ -545,15 +545,19 @@ class ItemAdjustor {
 	)
 	private void drawAttackIndicatorPre(float tickDelta, DrawContext context, CallbackInfo ci) {
 		context.getMatrices().push();
+
+		Verticality.compatibleWithRaised(context);
+		if (Verticality.enabled() && !Verticality.alternativeLayoutEnabled()) context.getMatrices().translate(-Verticality.raisedHudShift(), 0, 0);
+		if (Verticality.alternativeLayoutEnabled() && Verticality.isMainArmLeft()) context.getMatrices().translate(Verticality.HOTBAR_WIDTH + 28, 0, 0);
+
 		context.getMatrices().translate(
 				Verticality.enabled()
-						?  Verticality.alternativeLayoutPartiallyEnabled()
+						? Verticality.alternativeLayoutEnabled()
 								? -(Verticality.width() + Verticality.HOTBAR_WIDTH) / 2.0 + (Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.HOTBAR_FULL_HEIGHT) + Verticality.raisedHudShiftEdge()
 								: 0
 						: Verticality.alternativeLayoutOffset().x(),
 				-Verticality.raisedHudShiftEdge(), 0
 		);
-		Verticality.compatibleWithRaised(context);
 	}
 
 	@Inject(
