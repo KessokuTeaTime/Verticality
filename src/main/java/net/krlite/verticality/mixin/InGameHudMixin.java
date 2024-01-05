@@ -756,8 +756,19 @@ class BarAdjustor {
 	private void renderExperienceBarTextPre(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
 		Verticality.verticallyShiftBarPre(context, true);
+	}
 
-		Verticality.omitImmediatelyFastBatching(true);
+	@Redirect(
+			method = "renderExperienceBar",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)I"
+			)
+	)
+	// In compatibility with ImmediatelyFast
+	private int renderExperienceBarText(DrawContext context, TextRenderer textRenderer, String text, int x, int y, int color, boolean shadow) {
+		if (!Verticality.alternativeLayoutPartiallyEnabled()) return context.drawText(textRenderer, text, x, y, color, shadow);
+		return 0;
 	}
 
 	@Inject(

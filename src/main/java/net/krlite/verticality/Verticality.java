@@ -61,7 +61,7 @@ public class Verticality implements ModInitializer {
 	private static final InterpolatedDouble
 			later = new InterpolatedDouble(0, 0.013),
 			earlier = new InterpolatedDouble(0, 0.013);
-	private static boolean enabled, alternativeLayoutEnabled, omitImmediatelyFastBatching = false;
+	private static boolean enabled, alternativeLayoutEnabled;
 	private static float spectatorMenuHeightScalar = 0;
 	private static Supplier<Integer> raisedHudShift = () -> 0, raisedChatShift = () -> 0;
 	private static Supplier<Boolean> raisedSync = () -> false;
@@ -141,14 +141,6 @@ public class Verticality implements ModInitializer {
 
 	public static boolean raisedSync() {
 		return raisedSync.get();
-	}
-
-	public static boolean omitImmediatelyFastBatching() {
-		return omitImmediatelyFastBatching;
-	}
-
-	public static void omitImmediatelyFastBatching(boolean flag) {
-		omitImmediatelyFastBatching = flag;
 	}
 
 	public static int height() {
@@ -348,10 +340,10 @@ public class Verticality implements ModInitializer {
 		if (hideInAlternativeLayout || enabled()) {
 			blendWasEnabled = GL11.glIsEnabled(GL11.GL_BLEND);
 			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
 
 			float alpha = (float) (1 - alternativeTransition());
 			context.setShaderColor(1, 1, 1, alpha);
-			RenderSystem.defaultBlendFunc();
 		}
 	}
 
