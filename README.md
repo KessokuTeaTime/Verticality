@@ -8,7 +8,7 @@
 
 To toggle the function, just press <kbd>Escape</kbd> to access the game menu, then you'shall see arrows on the hotbar area. Click them to see what happens!
 
-**Verticality** is having good compatibility with **[Raised](https://modrinth.com/mod/raised)** and **[Appleskin.](https://modrinth.com/mod/appleskin)** Try them!
+**Verticality** is having good compatibility with **[Raised,](https://modrinth.com/mod/raised)** **[Appleskin](https://modrinth.com/mod/appleskin)** and **[ImmediatelyFast.](https://modrinth.com/mod/immediatelyfast)** Try them!
 
 ## Hotbar Styles
 
@@ -18,7 +18,7 @@ To toggle the function, just press <kbd>Escape</kbd> to access the game menu, th
   <tr>
     <th>
       <img src="https://github.com/KrLite/Mod.Verticality/blob/artwork/content/v3/disabled.png" />
-      Horizontal
+      Horizontal (Vanilla)
     </th>
     <th>
       <img src="https://github.com/KrLite/Mod.Verticality/blob/artwork/content/v3/enabled.png" />
@@ -40,7 +40,7 @@ To toggle the function, just press <kbd>Escape</kbd> to access the game menu, th
   <tr>
     <th colspan="2">
       <img src="https://github.com/KrLite/Mod.Verticality/blob/artwork/content/v3/spectator_mode.png" />
-      Also Works in Spectator Mode!
+      Also Works in Spectator Mode
     </th>
   </tr>
 </table>
