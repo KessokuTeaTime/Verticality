@@ -47,7 +47,7 @@ To toggle the function, just press <kbd>Escape</kbd> to access the game menu, th
 
 ## User Interface
 
-This video demonstrates how you can toggle **Verticality:**
+This video demonstrates how you can play around with **Verticality:**
 
 https://github.com/KrLite/Verticality/assets/68179735/097af445-4613-49a4-a2fc-ca3b9c4ca0b4
 
