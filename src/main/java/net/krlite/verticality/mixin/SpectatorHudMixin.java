@@ -37,12 +37,8 @@ public abstract class SpectatorHudMixin {
 		Verticality.spectatorMenuHeightScalar(height);
 		context.getMatrices().push();
 
-		// Alternative layout
-		context.getMatrices().translate(
-				Verticality.alternativeLayoutOffset().x(),
-				Verticality.alternativeLayoutOffset().y(),
-				0
-		);
+		Verticality.alternativeLayout(context);
+		Verticality.compatibleWithRaised(context);
 
 		if (Verticality.enabled()) {
 			context.getMatrices().translate(
@@ -51,7 +47,6 @@ public abstract class SpectatorHudMixin {
 					0
 			);
 
-			Verticality.compatibleWithRaised(context);
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 		}
 		else {

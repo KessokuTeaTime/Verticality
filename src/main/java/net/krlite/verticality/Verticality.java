@@ -139,6 +139,10 @@ public class Verticality implements ModInitializer {
 		return raisedChatShift.get();
 	}
 
+	public static int raisedHudShiftEdge() {
+		return raisedHudShift() > 0 ? 1 : 0;
+	}
+
 	public static boolean raisedSync() {
 		return raisedSync.get();
 	}
@@ -290,17 +294,27 @@ public class Verticality implements ModInitializer {
 		return MinecraftClient.getInstance().player != null && !MinecraftClient.getInstance().player.getOffHandStack().isEmpty();
 	}
 
+	public static void alternativeLayout(DrawContext context) {
+		context.getMatrices().translate(
+				alternativeLayoutOffset().x(),
+				alternativeLayoutOffset().y(),
+				0
+		);
+	}
+
 	public static void compatibleWithRaised(DrawContext context) {
 		if (enabled()) {
 			context.getMatrices().translate(
-					Verticality.raisedHudShift(),
-					Verticality.raisedHudShift(),
+					raisedHudShift(),
+					raisedHudShift(),
 					0
 			);
 		}
 	}
 
 	public static void translateIcon(DrawContext context, double y, boolean ignoreOffhand, boolean ignoreSwap) {
+		compatibleWithRaised(context);
+
 		if (enabled()) {
 			double offset = -2 * ((y + 8) - height() / 2.0);
 			context.getMatrices().translate(
@@ -308,8 +322,6 @@ public class Verticality implements ModInitializer {
 					(ignoreSwap ? 0 : Theory.lerp(0, offset, swap())) + (ignoreOffhand ? 0 : (OFFHAND_WIDTH * offset() / 2)),
 					0
 			);
-
-			compatibleWithRaised(context);
 		} else {
 			context.getMatrices().translate(0, hotbarShift() * transition(), 0);
 		}

@@ -36,7 +36,7 @@ public abstract class GameMenuScreenMixin extends Screen {
     private UIRect widgetDisable() {
         return UIRect.fromCenter(
                 widgetAlternativeLayoutVertical().center().x() - 3.25,
-                Theory.lerp(Verticality.height() / 2.0, Verticality.height() - Verticality.HOTBAR_WIDTH / 2.0 - (Verticality.raisedHudShift() > 0 ? 1 : 0), Verticality.alternativeTransition()),
+                Theory.lerp(Verticality.height() / 2.0, Verticality.height() - Verticality.HOTBAR_WIDTH / 2.0 - Verticality.raisedHudShiftEdge(), Verticality.alternativeTransition()),
                 3, 10, DISABLE
         );
     }
@@ -63,7 +63,7 @@ public abstract class GameMenuScreenMixin extends Screen {
     private UIRect widgetAlternativeLayoutVertical() {
         return UIRect.fromCenter(
                 Verticality.hotbarShift() * (1 - Verticality.transition()) - Verticality.HOTBAR_HEIGHT / 2.0,
-                Verticality.height() - Verticality.HOTBAR_HEIGHT / 2.0 - (Verticality.raisedHudShift() > 0 ? 1 : 0),
+                Verticality.height() - Verticality.HOTBAR_HEIGHT / 2.0 - Verticality.raisedHudShiftEdge(),
                 10, 3, ALTERNATIVE_LAYOUT_VERTICAL
         );
     }
@@ -71,7 +71,7 @@ public abstract class GameMenuScreenMixin extends Screen {
     @Unique
     private UIRect widgetAlternativeLayoutHorizontal() {
         return UIRect.fromCenter(
-                Verticality.HOTBAR_HEIGHT / 2.0 + (Verticality.raisedHudShift() > 0 ? 1 : 0),
+                Verticality.HOTBAR_HEIGHT / 2.0 + Verticality.raisedHudShiftEdge(),
                 Verticality.height() - (Verticality.hotbarShift() * (1 - Verticality.transition()) - Verticality.HOTBAR_HEIGHT / 2.0),
                 3, 10, ALTERNATIVE_LAYOUT_HORIZONTAL
         );

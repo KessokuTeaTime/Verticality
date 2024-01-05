@@ -63,7 +63,6 @@ public abstract class InGameHudMixin {
 	@Shadow @Final private static Identifier FOOD_EMPTY_TEXTURE;
 	@Shadow @Final private static Identifier FOOD_HALF_TEXTURE;
 	@Shadow @Final private static Identifier FOOD_FULL_TEXTURE;
-	@Shadow @Final private Random random;
 	@Shadow @Final private static Identifier VEHICLE_CONTAINER_HEART_TEXTURE;
 	@Shadow @Final private static Identifier VEHICLE_HALF_HEART_TEXTURE;
 	@Shadow @Final private static Identifier VEHICLE_FULL_HEART_TEXTURE;
@@ -71,6 +70,8 @@ public abstract class InGameHudMixin {
 	@Shadow @Final private static Identifier ARMOR_FULL_TEXTURE;
 	@Shadow @Final private static Identifier AIR_BURSTING_TEXTURE;
 	@Shadow @Final private static Identifier AIR_TEXTURE;
+	@Shadow @Final private Random random;
+
 	@Unique int stackedInfo = 0;
 
 	@Unique
@@ -313,12 +314,7 @@ public abstract class InGameHudMixin {
 			)
 	)
 	private void renderHotbar(float tickDelta, DrawContext context, CallbackInfo ci) {
-		// Alternative layout
-		context.getMatrices().translate(
-				Verticality.alternativeLayoutOffset().x(),
-				Verticality.alternativeLayoutOffset().y(),
-				0
-		);
+		Verticality.alternativeLayout(context);
 
 		if (Verticality.alternativeLayoutPartiallyEnabled() && !client.options.hudHidden && Objects.requireNonNull(client.interactionManager).hasStatusBars()) {
 			context.getMatrices().push();
@@ -327,12 +323,14 @@ public abstract class InGameHudMixin {
 					Verticality.enabled() ? 0 : Verticality.hotbarShift() * Verticality.transition(),
 					0
 			);
-
 			Verticality.compatibleWithRaised(context);
+
 			renderAlternativeLayoutInfo(context);
 
 			context.getMatrices().pop();
 		}
+
+		Verticality.compatibleWithRaised(context);
 
 		if (Verticality.enabled()) {
 			context.getMatrices().translate(
@@ -343,7 +341,6 @@ public abstract class InGameHudMixin {
 					0
 			);
 
-			Verticality.compatibleWithRaised(context);
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 
 			if (Verticality.alternativeLayoutPartiallyEnabled()) {
@@ -550,14 +547,13 @@ class ItemAdjustor {
 		context.getMatrices().push();
 		context.getMatrices().translate(
 				Verticality.enabled()
-						?  Verticality.alternativeLayoutPartiallyEnabled() ? -((Verticality.width() + Verticality.HOTBAR_WIDTH) / 2.0 + (Verticality.raisedHudShift() > 0 ? 1 : 0)) : 0
+						?  Verticality.alternativeLayoutPartiallyEnabled()
+								? -(Verticality.width() + Verticality.HOTBAR_WIDTH) / 2.0 + (Verticality.HOTBAR_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT + Verticality.HOTBAR_FULL_HEIGHT) + Verticality.raisedHudShiftEdge()
+								: 0
 						: Verticality.alternativeLayoutOffset().x(),
-				0, 0
+				-Verticality.raisedHudShiftEdge(), 0
 		);
-
-		if (Verticality.enabled()) {
-			context.getMatrices().translate();
-		}
+		Verticality.compatibleWithRaised(context);
 	}
 
 	@Inject(
