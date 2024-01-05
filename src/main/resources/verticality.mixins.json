@@ -4,7 +4,8 @@
   "package": "net.krlite.verticality.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "appleskin.HudOverlayHandlerMixin"
+    "appleskin.HudOverlayHandlerMixin",
+    "immediatelyfast.BatchingBuffersMixin"
   ],
   "client": [
     "BarAdjustor",

@@ -23,19 +23,24 @@ dependencies {
 	api include("com.github.KrLite:Pierced:${project.pierced_version}")
 	modImplementation include("com.github.KrLite.Equator-v2:Animation:${project.equator_version}-mc1.20")
 
-	modCompileOnly "maven.modrinth:raised:${project.raised_version}"
-	modCompileOnly "maven.modrinth:appleskin:${project.appleskin_version}"
+	// Compile only
 	modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 
-	modRuntimeOnly "maven.modrinth:raised:${project.raised_version}"
-	modRuntimeOnly "maven.modrinth:appleskin:${project.appleskin_version}"
+	modCompileOnly "maven.modrinth:raised:${project.raised_version}"
+	modCompileOnly "maven.modrinth:appleskin:${project.appleskin_version}"
+	modCompileOnly "maven.modrinth:immediatelyfast:${project.immediatelyfast_version}"
+
+	// Runtime only
 	modRuntimeOnly("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
-
 	modRuntimeOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+	modRuntimeOnly "maven.modrinth:raised:${project.raised_version}"
+	modRuntimeOnly "maven.modrinth:appleskin:${project.appleskin_version}"
+	modRuntimeOnly "maven.modrinth:immediatelyfast:${project.immediatelyfast_version}"
 }
 
 loom {

@@ -756,6 +756,8 @@ class BarAdjustor {
 	private void renderExperienceBarTextPre(DrawContext context, int x, CallbackInfo ci) {
 		context.getMatrices().push();
 		Verticality.verticallyShiftBarPre(context, true);
+
+		Verticality.omitImmediatelyFastBatching(true);
 	}
 
 	@Inject(

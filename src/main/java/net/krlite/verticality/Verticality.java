@@ -61,15 +61,13 @@ public class Verticality implements ModInitializer {
 	private static final InterpolatedDouble
 			later = new InterpolatedDouble(0, 0.013),
 			earlier = new InterpolatedDouble(0, 0.013);
-	private static boolean enabled, alternativeLayoutEnabled;
+	private static boolean enabled, alternativeLayoutEnabled, omitImmediatelyFastBatching = false;
 	private static float spectatorMenuHeightScalar = 0;
 	private static Supplier<Integer> raisedHudShift = () -> 0, raisedChatShift = () -> 0;
 	private static Supplier<Boolean> raisedSync = () -> false;
 
 	static {
-		transition.onPlay(() -> {
-			transition.slice(Slice::reverse);
-		});
+		transition.onPlay(() -> transition.slice(Slice::reverse));
 
 		transition.onTermination(() -> {
 			if (notCompleted()) {
@@ -78,9 +76,7 @@ public class Verticality implements ModInitializer {
 			}
 		});
 
-		alternativeTransition.onTermination(() -> {
-			PREFERENCES.alternativeLayout(alternativeLayoutEnabled);
-		});
+		alternativeTransition.onTermination(() -> PREFERENCES.alternativeLayout(alternativeLayoutEnabled));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (client.player != null) {
@@ -145,6 +141,14 @@ public class Verticality implements ModInitializer {
 
 	public static boolean raisedSync() {
 		return raisedSync.get();
+	}
+
+	public static boolean omitImmediatelyFastBatching() {
+		return omitImmediatelyFastBatching;
+	}
+
+	public static void omitImmediatelyFastBatching(boolean flag) {
+		omitImmediatelyFastBatching = flag;
 	}
 
 	public static int height() {
