@@ -51,12 +51,7 @@ public abstract class SpectatorHudMixin {
 					0
 			);
 
-			// Compatibility with Raised
-			context.getMatrices().translate(
-					Verticality.raisedHudShift(),
-					Verticality.raisedHudShift(),
-					0
-			);
+			Verticality.compatibleWithRaised(context);
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 		}
 		else {

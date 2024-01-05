@@ -328,15 +328,7 @@ public abstract class InGameHudMixin {
 					0
 			);
 
-			if (Verticality.enabled()) {
-				// Compatibility with Raised
-				context.getMatrices().translate(
-						Verticality.raisedHudShift(),
-						Verticality.raisedHudShift(),
-						0
-				);
-			}
-
+			Verticality.compatibleWithRaised(context);
 			renderAlternativeLayoutInfo(context);
 
 			context.getMatrices().pop();
@@ -351,13 +343,7 @@ public abstract class InGameHudMixin {
 					0
 			);
 
-			// Compatibility with Raised
-			context.getMatrices().translate(
-					Verticality.raisedHudShift(),
-					Verticality.raisedHudShift(),
-					0
-			);
-
+			Verticality.compatibleWithRaised(context);
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 
 			if (Verticality.alternativeLayoutPartiallyEnabled()) {
@@ -550,6 +536,39 @@ class ItemAdjustor {
 			)
 	)
 	private void drawItemInSlotPost(DrawContext context, int x, int y, float f, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci) {
+		context.getMatrices().pop();
+	}
+
+	@Inject(
+			method = "renderHotbar",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/option/GameOptions;getAttackIndicator()Lnet/minecraft/client/option/SimpleOption;"
+			)
+	)
+	private void drawAttackIndicatorPre(float tickDelta, DrawContext context, CallbackInfo ci) {
+		context.getMatrices().push();
+		context.getMatrices().translate(
+				Verticality.enabled()
+						?  Verticality.alternativeLayoutPartiallyEnabled() ? -((Verticality.width() + Verticality.HOTBAR_WIDTH) / 2.0 + (Verticality.raisedHudShift() > 0 ? 1 : 0)) : 0
+						: Verticality.alternativeLayoutOffset().x(),
+				0, 0
+		);
+
+		if (Verticality.enabled()) {
+			context.getMatrices().translate();
+		}
+	}
+
+	@Inject(
+			method = "renderHotbar",
+			at = @At(
+					value = "INVOKE",
+					target = "Lcom/mojang/blaze3d/systems/RenderSystem;disableBlend()V"
+			),
+			remap = false
+	)
+	private void drawAttackIndicatorPost(float tickDelta, DrawContext context, CallbackInfo ci) {
 		context.getMatrices().pop();
 	}
 }
