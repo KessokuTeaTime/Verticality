@@ -176,7 +176,7 @@ public class Verticality implements ModInitializer {
 						? hotbarShift() * (hasSpectatorMenu() ? Math.min(earlier(), spectatorMenuHeightScalar()) : 0)
 						: (hotbarShift() + Theory.lerp(0, GAP + SINGLE_BAR_HEIGHT, alternativeTransition())) * earlier(),
 				Theory.lerp(
-						alternativeLayoutPartiallyEnabled() ? -HOTBAR_FULL_HEIGHT : 0,
+						Theory.lerp(0, -HOTBAR_FULL_HEIGHT, alternativeTransition()),
 						(raisedSync() ? raisedHudShift() : 0) - 3 * (INFO_ICON_SIZE + GAP),
 						earlier()
 				)

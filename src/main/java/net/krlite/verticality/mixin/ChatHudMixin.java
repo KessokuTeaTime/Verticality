@@ -1,15 +1,17 @@
 package net.krlite.verticality.mixin;
 
 import dev.yurisuika.raised.Raised;
-import net.krlite.equator.math.algebra.Theory;
 import net.krlite.verticality.Verticality;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.hud.InGameHud;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(ChatHud.class)
 public class ChatHudMixin {
@@ -27,32 +29,42 @@ public class ChatHudMixin {
 	}
 
 	@ModifyVariable(
-			method = "mouseClicked",
-			at = @At(value = "HEAD"),
+			method = "toChatLineX",
+			at = @At("HEAD"),
 			ordinal = 0,
 			argsOnly = true
 	)
-	private double mouseClickedOffsetX(double value) {
+	private double modifyChatTooltipX(double value) {
+		return value - Verticality.chatOffset().x();
+	}
+
+	@ModifyVariable(
+			method = "toChatLineY",
+			at = @At("HEAD"),
+			ordinal = 0,
+			argsOnly = true
+	)
+	private double modifyChatTooltipY(double value) {
+		return value - Verticality.chatOffset().y();
+	}
+
+	@ModifyVariable(
+			method = "mouseClicked",
+			at = @At("HEAD"),
+			ordinal = 0,
+			argsOnly = true
+	)
+	private double modifyMouseClickX(double value) {
 		return value + Verticality.chatOffset().x();
 	}
 
 	@ModifyVariable(
 			method = "mouseClicked",
-			at = @At(value = "HEAD"),
+			at = @At("HEAD"),
 			ordinal = 1,
 			argsOnly = true
 	)
-	private double mouseClickedOffsetY(double value) {
-		return value + Verticality.chatOffset().y();
-	}
-
-	@ModifyVariable(
-			method = "toChatLineY",
-			at = @At(value = "HEAD"),
-			ordinal = 0,
-			argsOnly = true
-	)
-	private double chatTooltipOffsetY(double value) {
+	private double modifyMouseClickY(double value) {
 		return value + Verticality.chatOffset().y();
 	}
 }
