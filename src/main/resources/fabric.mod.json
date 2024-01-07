@@ -9,8 +9,9 @@
     "KrLite"
   ],
   "contact": {
-    "homepage": "https://github.com/KrLite",
-    "sources": "https://github.com/KrLite/Mod.Verticality"
+    "homepage": "https://modrinth.com/mod/verticality",
+    "sources": "https://github.com/KrLite/Mod.Verticality",
+    "issues": "https://github.com/KrLite/Mod.Verticality/issues"
   },
 
   "license": "GPL-3.0",
