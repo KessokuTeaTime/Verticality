@@ -2,6 +2,10 @@ package net.krlite.verticality;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.yurisuika.raised.client.option.RaisedConfig;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.ConfigHolder;
+import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
@@ -26,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.function.Supplier;
 
-public class Verticality implements ModInitializer {
+public class Verticality implements ClientModInitializer {
 	public static final String NAME = "Verticality", ID = "verticality";
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
 	public static final int
@@ -51,7 +55,9 @@ public class Verticality implements ModInitializer {
 		}
 	}
 
-	private static final HotbarPreferences PREFERENCES = new HotbarPreferences();
+	private static final ConfigHolder<HotbarPreferences> CONFIG_HOLDER;
+	private static final HotbarPreferences CONFIG;
+
 	private static final AnimatedDouble
 			transition = new AnimatedDouble(1, 0, 450, Curves.Back.OUT.reverse()),
 			alternativeTransition = new AnimatedDouble(0, 1, 175, Curves.Exponential.Quadratic.EASE);
@@ -67,16 +73,25 @@ public class Verticality implements ModInitializer {
 	private static Supplier<Boolean> raisedSync = () -> false;
 
 	static {
+		AutoConfig.register(HotbarPreferences.class, Toml4jConfigSerializer::new);
+		CONFIG_HOLDER = AutoConfig.getConfigHolder(HotbarPreferences.class);
+		CONFIG = CONFIG_HOLDER.get();
+
 		transition.onPlay(() -> transition.slice(Slice::reverse));
 
 		transition.onTermination(() -> {
 			if (notCompleted()) {
-				PREFERENCES.enabled(enabled);
+				CONFIG.enabled = enabled;
+				CONFIG_HOLDER.save();
+
 				transition.play();
 			}
 		});
 
-		alternativeTransition.onTermination(() -> PREFERENCES.alternativeLayout(alternativeLayoutEnabled));
+		alternativeTransition.onTermination(() -> {
+			CONFIG.alternativeLayoutEnabled = alternativeLayoutEnabled;
+			CONFIG_HOLDER.save();
+		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (client.player != null) {
@@ -111,8 +126,7 @@ public class Verticality implements ModInitializer {
 	}
 
 	@Override
-	public void onInitialize() {
-		PREFERENCES.save();
+	public void onInitializeClient() {
 		Sounds.register();
 
 		if (isRaisedLoaded()) {
@@ -216,7 +230,7 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static boolean enabled() {
-		return PREFERENCES.enabled();
+		return CONFIG.enabled;
 	}
 
 	public static boolean partiallyEnabled() {
@@ -232,7 +246,7 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static boolean alternativeLayoutEnabled() {
-		return PREFERENCES.alternativeLayout();
+		return CONFIG.alternativeLayoutEnabled;
 	}
 
 	public static boolean alternativeLayoutPartiallyEnabled() {
@@ -248,7 +262,7 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static boolean upsideDown() {
-		return PREFERENCES.upsideDown();
+		return CONFIG.upsideDownEnabled;
 	}
 
 	public static boolean isSpectator() {
@@ -278,7 +292,7 @@ public class Verticality implements ModInitializer {
 	}
 
 	public static void switchUpsideDown() {
-		PREFERENCES.switchUpsideDown();
+		CONFIG.switchUpsideDown();
 	}
 
 	public static double hotbarShift() {

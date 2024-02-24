@@ -1,0 +1,38 @@
+[versions]
+maven-group = "net.krlite"
+archives-name = "verticality"
+mod = "4.0.0"
+
+minecraft = "1.20.2"
+yarn = "1.20.2+build.4"
+fabric-loader = "0.15.7"
+fabric-api = "0.91.3+1.20.2"
+fabric-loom = "1.5-SNAPSHOT"
+
+cloth-config = "12.0.109"
+modmenu = "8.0.0-beta.2"
+equator = "2.6.2-mc1.20"
+
+raised = "Fabric-1.20.2-3.1.0"
+appleskin = "JNKPokGG"
+immediatelyfast = "1.2.8+1.20.4-fabric"
+
+[libraries]
+minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
+yarn = { group = "net.fabricmc", name = "yarn", version.ref = "yarn" }
+fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric-loader" }
+fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabric-api" }
+
+cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version.ref = "cloth-config" }
+modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }
+equator = { group = "com.github.KrLite.Equator-v2", name = "Animation", version.ref = "equator" }
+
+raised = { group = "maven.modrinth", name = "raised", version.ref = "raised" }
+appleskin = { group = "maven.modrinth", name = "appleskin", version.ref = "appleskin" }
+immediatelyfast = { group = "maven.modrinth", name = "immediatelyfast", version.ref = "immediatelyfast" }
+
+[plugins]
+fabric-loom = { id = "fabric-loom", version.ref = "fabric-loom" }
+
+[bundles]
+fabric = ["fabric-loader", "fabric-api"]

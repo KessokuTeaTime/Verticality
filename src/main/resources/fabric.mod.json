@@ -19,7 +19,7 @@
 
   "environment": "client",
   "entrypoints": {
-    "main": [
+    "client": [
       "net.krlite.verticality.Verticality"
     ]
   },
@@ -31,7 +31,8 @@
   "depends": {
     "fabricloader": "*",
     "fabric-api": "*",
-    "minecraft": ">=1.20.2"
+    "minecraft": ">=1.20.2",
+    "cloth-config": "*"
   },
   "suggests": {
   }
