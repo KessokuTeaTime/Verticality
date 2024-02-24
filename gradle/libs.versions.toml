@@ -15,7 +15,7 @@ equator = "2.6.2-mc1.20"
 
 raised = "Fabric-1.20.2-3.1.0"
 appleskin = "JNKPokGG"
-immediatelyfast = "1.2.8+1.20.4-fabric"
+immediatelyfast = "1.2.10+1.20.4-fabric"
 
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
