@@ -47,12 +47,12 @@ To toggle the function, just press <kbd>Escape</kbd> to access the game menu, th
 
 ## Compatibility
 
-**Verticality** is having good compatibility with:
+**Verticality** has good compatibility with:
 
 - **[Raised](https://modrinth.com/mod/raised)**
-- **[AppleSkin](https://modrinth.com/mod/appleskin)
+- **[AppleSkin](https://modrinth.com/mod/appleskin)**
 
-[Open a new issue](https://github.com/KrLite/Mod.Verticality/issues/new/choose) if you find an incolpatibility.
+Feel free to [open a new issue](https://github.com/KrLite/Mod.Verticality/issues/new/choose) if you find an incolpatibility.
 
 ## User Interface
 
