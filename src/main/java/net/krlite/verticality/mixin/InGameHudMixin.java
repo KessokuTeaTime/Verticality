@@ -33,29 +33,23 @@ import java.util.function.UnaryOperator;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
-	@Shadow @Final private static Identifier HOTBAR_OFFHAND_LEFT_TEXTURE;
-
-	@Shadow @Final private static Identifier HOTBAR_OFFHAND_RIGHT_TEXTURE;
-
-	@Shadow public abstract TextRenderer getTextRenderer();
-
 	@Shadow @Final private MinecraftClient client;
-
-	@Shadow @Final private static Identifier JUMP_BAR_BACKGROUND_TEXTURE;
-	@Shadow @Final private static Identifier JUMP_BAR_COOLDOWN_TEXTURE;
-	@Shadow @Final private static Identifier JUMP_BAR_PROGRESS_TEXTURE;
-	@Shadow @Final private static Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE;
-	@Shadow @Final private static Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE;
-
-	@Shadow protected abstract void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half);
-
+	@Shadow @Final private Random random;
 	@Shadow private long heartJumpEndTick;
 	@Shadow private int ticks;
 	@Shadow private int renderHealthValue;
 
-	@Shadow protected abstract int getHeartCount(LivingEntity entity);
 
-	@Shadow protected abstract LivingEntity getRiddenEntity();
+
+	@Shadow @Final private static Identifier HOTBAR_OFFHAND_LEFT_TEXTURE;
+	@Shadow @Final private static Identifier HOTBAR_OFFHAND_RIGHT_TEXTURE;
+
+	@Shadow @Final private static Identifier JUMP_BAR_BACKGROUND_TEXTURE;
+	@Shadow @Final private static Identifier JUMP_BAR_COOLDOWN_TEXTURE;
+	@Shadow @Final private static Identifier JUMP_BAR_PROGRESS_TEXTURE;
+
+	@Shadow @Final private static Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE;
+	@Shadow @Final private static Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE;
 
 	@Shadow @Final private static Identifier FOOD_EMPTY_HUNGER_TEXTURE;
 	@Shadow @Final private static Identifier FOOD_HALF_HUNGER_TEXTURE;
@@ -63,14 +57,23 @@ public abstract class InGameHudMixin {
 	@Shadow @Final private static Identifier FOOD_EMPTY_TEXTURE;
 	@Shadow @Final private static Identifier FOOD_HALF_TEXTURE;
 	@Shadow @Final private static Identifier FOOD_FULL_TEXTURE;
+
 	@Shadow @Final private static Identifier VEHICLE_CONTAINER_HEART_TEXTURE;
 	@Shadow @Final private static Identifier VEHICLE_HALF_HEART_TEXTURE;
 	@Shadow @Final private static Identifier VEHICLE_FULL_HEART_TEXTURE;
+
 	@Shadow @Final private static Identifier ARMOR_HALF_TEXTURE;
 	@Shadow @Final private static Identifier ARMOR_FULL_TEXTURE;
+
 	@Shadow @Final private static Identifier AIR_BURSTING_TEXTURE;
 	@Shadow @Final private static Identifier AIR_TEXTURE;
-	@Shadow @Final private Random random;
+
+
+
+	@Shadow public abstract TextRenderer getTextRenderer();
+	@Shadow protected abstract int getHeartCount(LivingEntity entity);
+	@Shadow protected abstract LivingEntity getRiddenEntity();
+	@Shadow protected abstract void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half);
 
 	@Unique int stackedInfo = 0;
 

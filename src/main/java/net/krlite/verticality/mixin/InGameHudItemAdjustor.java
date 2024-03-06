@@ -14,8 +14,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudItemAdjustor {
-    @Shadow
-    protected abstract void renderHotbarItem(DrawContext context, int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed);
+    @Shadow protected abstract void renderHotbarItem(DrawContext context, int x, int y, float tickDelta, PlayerEntity playerEntity, ItemStack itemStack, int seed);
 
     @Redirect(
             method = "renderHotbar",

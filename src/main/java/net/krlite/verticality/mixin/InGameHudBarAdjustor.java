@@ -19,10 +19,11 @@ public abstract class InGameHudBarAdjustor {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTextBackground(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/font/TextRenderer;III)V",
-                    shift = At.Shift.BEFORE
+                    shift = At.Shift.BEFORE,
+                    ordinal = 0
             )
     )
-    private void renderOverlay(DrawContext context, float tickDelta, CallbackInfo ci) {
+    private void renderOverlayMessage(DrawContext context, float tickDelta, CallbackInfo ci) {
         context.getMatrices().translate(
                 0,
                 Verticality.hotbarShift() * Verticality.later() + (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP) * Verticality.alternativeTransition(),
