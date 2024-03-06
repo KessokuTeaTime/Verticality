@@ -1,24 +1,24 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "net.krlite.verticality.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "mixins": [
-    "appleskin.HudOverlayHandlerMixin",
-  ],
-  "client": [
-    "BarAdjustor",
-    "ChatHudMixin",
-    "DrawContextAccessor",
-    "DrawContextInvoker",
-    "GameMenuScreenMixin",
-    "InGameHudMixin",
-    "ItemAdjustor",
-    "SpectatorHudAccessor",
-    "SpectatorHudMixin",
-    "TextAdjustor"
-  ],
-  "injectors": {
-    "defaultRequire": 0
-  }
+	"required": true,
+	"minVersion": "0.8",
+	"package": "net.krlite.verticality.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"appleskin.HudOverlayHandlerMixin"
+	],
+	"client": [
+		"ChatHudMixin",
+		"DrawContextAccessor",
+		"DrawContextInvoker",
+		"GameMenuScreenMixin",
+		"InGameHudBarAdjustor",
+		"InGameHudItemAdjustor",
+		"InGameHudMixin",
+		"SpectatorHudAccessor",
+		"SpectatorHudMixin",
+		"TextAdjustor"
+	],
+	"injectors": {
+		"defaultRequire": 0
+	}
 }
