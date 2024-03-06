@@ -28,13 +28,13 @@ dependencies {
 
 	modApi(libs.cloth.config)
 	modApi(libs.modmenu)
-	modImplementation(libs.equator)?.let {
-		include(it)
-	}
+	modImplementation(libs.equator)
 
 	modImplementation(libs.raised)
 	modImplementation(libs.appleskin)
 	modImplementation(libs.immediatelyfast)
+
+	include(libs.equator)
 }
 
 java {
@@ -42,10 +42,6 @@ java {
 	targetCompatibility = JavaVersion.VERSION_17
 
 	withSourcesJar()
-}
-
-loom {
-	accessWidenerPath = file("src/main/resources/verticality.accesswidener")
 }
 
 tasks {
@@ -58,9 +54,7 @@ tasks {
 	}
 
 	jar {
-		from("LICENSE") {
-			rename { "${it}_${base.archivesName}" }
-		}
+		from("LICENSE")
 	}
 }
 

@@ -73,7 +73,7 @@ public abstract class InGameHudMixin {
 	@Shadow public abstract TextRenderer getTextRenderer();
 	@Shadow protected abstract int getHeartCount(LivingEntity entity);
 	@Shadow protected abstract LivingEntity getRiddenEntity();
-	@Shadow protected abstract void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half);
+	//@Shadow protected abstract void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half);
 
 	@Unique int stackedInfo = 0;
 
@@ -155,9 +155,9 @@ public abstract class InGameHudMixin {
 						boolean blinking = heartJumpEndTick > (long) ticks && (this.heartJumpEndTick - (long) this.ticks) / 3L % 2L == 1L;
 						boolean hardcore = client.player.getWorld().getLevelProperties().isHardcore();
 
-						InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
-						drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
-						drawHeart(c, heartType, pos.x(), pos.y(), hardcore, blinking, renderHealthValue % 2 == 1);
+						//InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
+						//drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
+						//drawHeart(c, heartType, pos.x(), pos.y(), hardcore, blinking, renderHealthValue % 2 == 1);
 					},
 					(c, pos, text) -> drawBorderedText(c, text, pos, 0xFF6262),
 					true, false
