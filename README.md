@@ -16,21 +16,25 @@ To toggle the feature, just press <kbd>Escape</kbd> to access the game menu, the
   <tr>
     <th>
       <img src="https://github.com/KrLite/Mod.Verticality/blob/artwork/content/v3/disabled.png" />
+      <br />
       Horizontal (Vanilla)
     </th>
     <th>
       <img src="https://github.com/KrLite/Mod.Verticality/blob/artwork/content/v3/enabled.png" />
+      <br />
       Vertical
     </th>
   </tr>
   <tr>
     <th>
       <img src="https://github.com/KrLite/Mod.Verticality/blob/artwork/content/v3/alternative_layout.png" />
+      <br />
       Horizontal<br />
       <sub>Alternative Layout</sub>
     </th>
     <th>
       <img src="https://github.com/KrLite/Mod.Verticality/blob/artwork/content/v3/enabled_alternative_layout.png" />
+      <br />
       Vertical<br />
       <sub>Alternative Layout</sub>
     </th>
@@ -38,6 +42,7 @@ To toggle the feature, just press <kbd>Escape</kbd> to access the game menu, the
   <tr>
     <th colspan="2">
       <img src="https://github.com/KrLite/Mod.Verticality/blob/artwork/content/v3/spectator_mode.png" />
+      <br />
       Also Works in Spectator Mode
     </th>
   </tr>
