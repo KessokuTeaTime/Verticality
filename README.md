@@ -43,7 +43,7 @@ To toggle the feature, just press <kbd>Escape</kbd> to access the game menu, the
     <th colspan="2">
       <img src="https://github.com/KrLite/Mod.Verticality/blob/artwork/content/v3/spectator_mode.png" />
       <br />
-      Also Works in Spectator Mode
+      Also works in Spectator Mode.
     </th>
   </tr>
 </table>
