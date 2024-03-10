@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 public class Verticality implements ClientModInitializer {
 	public static final String NAME = "Verticality", ID = "verticality";
 	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
+
 	public static final int
 			HOTBAR_FULL_HEIGHT = 24, HOTBAR_HEIGHT = 23, SPECTATOR_BAR_HEIGHT = 22, SINGLE_BAR_HEIGHT = 5,
 			ITEM_SIZE = 16, GAP = 2, HOTBAR_ITEM_GAP = (HOTBAR_FULL_HEIGHT - ITEM_SIZE) / 2 - 1,
@@ -54,8 +55,7 @@ public class Verticality implements ClientModInitializer {
 		}
 	}
 
-	private static final ConfigHolder<HotbarPreferences> CONFIG_HOLDER;
-	private static final HotbarPreferences CONFIG;
+	private static final ConfigHolder<HotbarPreferences> CONFIG;
 
 	private static final AnimatedDouble
 			transition = new AnimatedDouble(1, 0, 450, Curves.Back.OUT.reverse()),
@@ -73,23 +73,22 @@ public class Verticality implements ClientModInitializer {
 
 	static {
 		AutoConfig.register(HotbarPreferences.class, Toml4jConfigSerializer::new);
-		CONFIG_HOLDER = AutoConfig.getConfigHolder(HotbarPreferences.class);
-		CONFIG = CONFIG_HOLDER.get();
+		CONFIG = AutoConfig.getConfigHolder(HotbarPreferences.class);
 
 		transition.onPlay(() -> transition.slice(Slice::reverse));
 
 		transition.onTermination(() -> {
 			if (notCompleted()) {
-				CONFIG.enabled = enabled;
-				CONFIG_HOLDER.save();
+				CONFIG.get().enabled = enabled;
+				CONFIG.save();
 
 				transition.play();
 			}
 		});
 
 		alternativeTransition.onTermination(() -> {
-			CONFIG.alternativeLayoutEnabled = alternativeLayoutEnabled;
-			CONFIG_HOLDER.save();
+			CONFIG.get().alternativeLayoutEnabled = alternativeLayoutEnabled;
+			CONFIG.save();
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -229,7 +228,7 @@ public class Verticality implements ClientModInitializer {
 	}
 
 	public static boolean enabled() {
-		return CONFIG.enabled;
+		return CONFIG.get().enabled;
 	}
 
 	public static boolean partiallyEnabled() {
@@ -245,7 +244,7 @@ public class Verticality implements ClientModInitializer {
 	}
 
 	public static boolean alternativeLayoutEnabled() {
-		return CONFIG.alternativeLayoutEnabled;
+		return CONFIG.get().alternativeLayoutEnabled;
 	}
 
 	public static boolean alternativeLayoutPartiallyEnabled() {
@@ -261,7 +260,7 @@ public class Verticality implements ClientModInitializer {
 	}
 
 	public static boolean upsideDown() {
-		return CONFIG.upsideDownEnabled;
+		return CONFIG.get().upsideDownEnabled;
 	}
 
 	public static boolean isSpectator() {
@@ -291,7 +290,7 @@ public class Verticality implements ClientModInitializer {
 	}
 
 	public static void switchUpsideDown() {
-		CONFIG.switchUpsideDown();
+		CONFIG.get().switchUpsideDown();
 	}
 
 	public static double hotbarShift() {
