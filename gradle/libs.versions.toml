@@ -11,7 +11,7 @@ fabric-loom = "1.5-SNAPSHOT"
 
 cloth-config = "12.0.109"
 modmenu = "8.0.0-beta.2"
-equator = "2.6.2-mc1.20"
+equator = "2.6.4-mc1.20"
 
 raised = "Fabric-1.20.2-3.1.0"
 appleskin = "JNKPokGG"
@@ -25,7 +25,10 @@ fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.r
 
 cloth-config = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version.ref = "cloth-config" }
 modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }
-equator = { group = "com.github.KrLite.Equator-v2", name = "Animation", version.ref = "equator" }
+
+equator-animation = { group = "com.github.KrLite.Equator-v2", name = "Animation", version.ref = "equator" }
+equator-visual = { group = "com.github.KrLite.Equator-v2", name = "Visual", version.ref = "equator" }
+equator-math = { group = "com.github.KrLite.Equator-v2", name = "Math", version.ref = "equator" }
 
 raised = { group = "maven.modrinth", name = "raised", version.ref = "raised" }
 appleskin = { group = "maven.modrinth", name = "appleskin", version.ref = "appleskin" }
@@ -36,3 +39,4 @@ fabric-loom = { id = "fabric-loom", version.ref = "fabric-loom" }
 
 [bundles]
 fabric = ["fabric-loader", "fabric-api"]
+equator = ["equator-animation", "equator-visual", "equator-math"]

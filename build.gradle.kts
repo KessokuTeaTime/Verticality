@@ -28,13 +28,13 @@ dependencies {
 
 	modApi(libs.cloth.config)
 	modApi(libs.modmenu)
-	modImplementation(libs.equator)
+	modImplementation(libs.bundles.equator)
 
 	modImplementation(libs.raised)
 	modImplementation(libs.appleskin)
 	modImplementation(libs.immediatelyfast)
 
-	include(libs.equator)
+	include(libs.bundles.equator)
 }
 
 java {
