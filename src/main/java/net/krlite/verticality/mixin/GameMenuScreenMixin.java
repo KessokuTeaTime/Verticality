@@ -1,7 +1,7 @@
 package net.krlite.verticality.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-//import net.krlite.equator.math.algebra.Theory;
+import net.krlite.equator.math.algebra.Theory;
 import net.krlite.verticality.UIRect;
 import net.krlite.verticality.Verticality;
 import net.minecraft.client.gui.DrawContext;
