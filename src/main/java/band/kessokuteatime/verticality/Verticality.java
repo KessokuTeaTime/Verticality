@@ -1,4 +1,4 @@
-package net.krlite.verticality;
+package band.kessokuteatime.verticality;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.yurisuika.raised.client.option.RaisedConfig;
@@ -13,7 +13,7 @@ import net.krlite.equator.math.algebra.Theory;
 import net.krlite.equator.visual.animation.Slice;
 import net.krlite.equator.visual.animation.animated.AnimatedDouble;
 import net.krlite.equator.visual.animation.interpolated.InterpolatedDouble;
-import net.krlite.verticality.mixin.SpectatorHudAccessor;
+import band.kessokuteatime.verticality.mixin.SpectatorHudAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;

@@ -1,4 +1,4 @@
-package net.krlite.verticality.mixin;
+package band.kessokuteatime.verticality.mixin;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.GuiAtlasManager;

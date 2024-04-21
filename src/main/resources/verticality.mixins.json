@@ -1,7 +1,7 @@
 {
 	"required": true,
 	"minVersion": "0.8",
-	"package": "net.krlite.verticality.mixin",
+	"package": "band.kessokuteatime.verticality.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"appleskin.HudOverlayHandlerMixin"

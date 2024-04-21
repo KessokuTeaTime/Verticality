@@ -1,6 +1,6 @@
-package net.krlite.verticality.mixin;
+package band.kessokuteatime.verticality.mixin;
 
-import net.krlite.verticality.Verticality;
+import band.kessokuteatime.verticality.Verticality;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;

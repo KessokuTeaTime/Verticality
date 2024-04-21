@@ -1,6 +1,6 @@
-### <p align=right>[`→` Modrinth](https://modrinth.com/mod/verticality)</p>
+### <p align=right>[`→` CurseForge](https://www.curseforge.com/minecraft/mc-mods/verticality-hotbar)&ensp;[`→` Modrinth](https://modrinth.com/mod/verticality)</p>
 
-![Magic Happens!](https://github.com/KrLite/Mod.Verticality/blob/artwork/content/v1/magic.png)
+![magic happens!](https://github.com/KrLite/Mod.Verticality/blob/artwork/content/v1/magic.png)
 
 # Verticality
 

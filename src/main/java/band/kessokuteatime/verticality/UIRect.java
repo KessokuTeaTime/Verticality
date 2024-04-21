@@ -1,4 +1,4 @@
-package net.krlite.verticality;
+package band.kessokuteatime.verticality;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;

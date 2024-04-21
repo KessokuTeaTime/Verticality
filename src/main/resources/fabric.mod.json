@@ -3,15 +3,16 @@
   "id": "verticality",
   "version": "${version}",
 
-  "name": "Verticality",
+  "name": "${display.name}",
   "description": "Verticalize your hotbar!",
   "authors": [
+    "Kessoku Tea Time",
     "KrLite"
   ],
   "contact": {
     "homepage": "https://modrinth.com/mod/verticality",
-    "sources": "https://github.com/KrLite/Mod.Verticality",
-    "issues": "https://github.com/KrLite/Mod.Verticality/issues"
+    "sources": "https://github.com/KessokuTeaTime/Verticality",
+    "issues": "https://github.com/KessokuTeaTime/Verticality/issues"
   },
 
   "license": "GPL-3.0",
@@ -20,7 +21,7 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "net.krlite.verticality.Verticality"
+      "band.kessokuteatime.verticality.Verticality"
     ]
   },
   "mixins": [

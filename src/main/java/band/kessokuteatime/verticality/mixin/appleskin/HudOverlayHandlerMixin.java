@@ -1,6 +1,6 @@
-package net.krlite.verticality.mixin.appleskin;
+package band.kessokuteatime.verticality.mixin.appleskin;
 
-import net.krlite.verticality.Verticality;
+import band.kessokuteatime.verticality.Verticality;
 import net.minecraft.client.gui.DrawContext;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

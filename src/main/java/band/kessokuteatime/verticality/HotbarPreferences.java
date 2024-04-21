@@ -1,4 +1,4 @@
-package net.krlite.verticality;
+package band.kessokuteatime.verticality;
 
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;

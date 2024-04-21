@@ -1,4 +1,4 @@
-package net.krlite.verticality.mixin;
+package band.kessokuteatime.verticality.mixin;
 
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenu;

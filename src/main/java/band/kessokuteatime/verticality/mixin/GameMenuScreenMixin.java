@@ -1,9 +1,9 @@
-package net.krlite.verticality.mixin;
+package band.kessokuteatime.verticality.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.krlite.equator.math.algebra.Theory;
-import net.krlite.verticality.UIRect;
-import net.krlite.verticality.Verticality;
+import band.kessokuteatime.verticality.UIRect;
+import band.kessokuteatime.verticality.Verticality;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
