@@ -52,15 +52,15 @@ public abstract class InGameHudItemAdjustor {
             )
     )
     private void fixOffhandItem(Args args) {
-        int x = args.get(2), y = args.get(3);
+        int x = args.get(1), y = args.get(2);
 
         if (Verticality.alternativeLayoutPartiallyEnabled()) {
             // x
-            args.set(2, (Verticality.width() + Verticality.HOTBAR_WIDTH * (Verticality.enabled() ? 1 : -1)) / 2 - Verticality.HOTBAR_ITEM_GAP * (Verticality.enabled() ? 1 : -1) - Verticality.ITEM_SIZE * (Verticality.enabled() ? 1 : 0));
+            args.set(1, (Verticality.width() + Verticality.HOTBAR_WIDTH * (Verticality.enabled() ? 1 : -1)) / 2 - Verticality.HOTBAR_ITEM_GAP * (Verticality.enabled() ? 1 : -1) - Verticality.ITEM_SIZE * (Verticality.enabled() ? 1 : 0));
             // y
-            args.set(3, y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT));
+            args.set(2, y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT));
         } else if (Verticality.isMainArmLeft() && Verticality.enabled()) {
-            args.set(2, (int) Math.round(x - 2 * ((x + 8) - Verticality.width() / 2.0))); // Revert the x-coordinate of the item
+            args.set(1, (int) Math.round(x - 2 * ((x + 8) - Verticality.width() / 2.0))); // Revert the x-coordinate of the item
         }
 
         drawingOffhandItem = true;
