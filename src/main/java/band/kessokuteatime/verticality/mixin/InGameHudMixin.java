@@ -37,7 +37,6 @@ public abstract class InGameHudMixin {
 	@Shadow @Final private Random random;
 	@Shadow private long heartJumpEndTick;
 	@Shadow private int ticks;
-	@Shadow private int renderHealthValue;
 
 
 
