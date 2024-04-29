@@ -57,6 +57,10 @@ java {
 	withSourcesJar()
 }
 
+loom {
+	accessWidenerPath.set(file("src/main/resources/verticality.accesswidener"))
+}
+
 tasks {
 	processResources {
 		filesMatching("fabric.mod.json") {
