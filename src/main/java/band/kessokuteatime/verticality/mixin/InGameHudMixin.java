@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
-import org.apache.commons.lang3.function.TriConsumer;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.joml.Vector2i;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,19 +38,65 @@ public abstract class InGameHudMixin {
 	@Shadow private long heartJumpEndTick;
 	@Shadow private int ticks;
 
+	@Shadow @Final private static Identifier WIDGETS_TEXTURE;
+	@Shadow @Final private static Identifier ICONS;
 
 
-	@Shadow @Final private static Identifier HOTBAR_OFFHAND_LEFT_TEXTURE;
-	@Shadow @Final private static Identifier HOTBAR_OFFHAND_RIGHT_TEXTURE;
 
-	@Shadow @Final private static Identifier JUMP_BAR_BACKGROUND_TEXTURE;
-	@Shadow @Final private static Identifier JUMP_BAR_COOLDOWN_TEXTURE;
-	@Shadow @Final private static Identifier JUMP_BAR_PROGRESS_TEXTURE;
+	@Unique
+	private static void drawHotbarOffhandLeftTexture(DrawContext context, int x, int y) {
+		context.drawTexture(WIDGETS_TEXTURE, x, y, 24, 22, 29, 24);
+	}
 
-	@Shadow @Final private static Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE;
-	@Shadow @Final private static Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE;
+	@Unique
+	private static void drawHotbarOffhandRightTexture(DrawContext context, int x, int y) {
+		context.drawTexture(WIDGETS_TEXTURE, x, y, 53, 22, 29, 24);
+	}
 
-	@Shadow @Final private static Identifier FOOD_EMPTY_HUNGER_TEXTURE;
+
+
+	@Unique
+	private static void drawJumpBarBackgroundTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 0, 84, 182, 5);
+	}
+
+	@Unique
+	private static void drawJumpBarCooldownTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 0, 74, 182, 5);
+	}
+
+	@Unique
+	private static void drawJumpBarProgressTexture(DrawContext context, int x, int y, float progress) {
+		context.drawTexture(ICONS, x, y, 0, 89, (int) (progress * 183), 5);
+	}
+
+
+	@Unique
+	private static void drawExperienceBarBackgroundTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 0, 64, 182, 5);
+	}
+
+	@Unique
+	private static void drawExperienceBarProgressTexture(DrawContext context, int x, int y, float progress) {
+		context.drawTexture(ICONS, x, y, 0, 69, (int) (progress * 183), 5);
+	}
+
+
+
+	@Unique
+	private static void drawArmorFullTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 34, 9, 9, 9);
+	}
+
+	@Unique
+	private static void drawArmorHalfTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 25, 9, 9, 9);
+	}
+
+
+
+	@Unique
+
 	@Shadow @Final private static Identifier FOOD_HALF_HUNGER_TEXTURE;
 	@Shadow @Final private static Identifier FOOD_FULL_HUNGER_TEXTURE;
 	@Shadow @Final private static Identifier FOOD_EMPTY_TEXTURE;
@@ -60,9 +106,6 @@ public abstract class InGameHudMixin {
 	@Shadow @Final private static Identifier VEHICLE_CONTAINER_HEART_TEXTURE;
 	@Shadow @Final private static Identifier VEHICLE_HALF_HEART_TEXTURE;
 	@Shadow @Final private static Identifier VEHICLE_FULL_HEART_TEXTURE;
-
-	@Shadow @Final private static Identifier ARMOR_HALF_TEXTURE;
-	@Shadow @Final private static Identifier ARMOR_FULL_TEXTURE;
 
 	@Shadow @Final private static Identifier AIR_BURSTING_TEXTURE;
 	@Shadow @Final private static Identifier AIR_TEXTURE;

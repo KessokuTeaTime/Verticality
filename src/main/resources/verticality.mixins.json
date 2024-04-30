@@ -8,7 +8,6 @@
 	],
 	"client": [
 		"ChatHudMixin",
-		"DrawContextAccessor",
 		"DrawContextInvoker",
 		"GameMenuScreenMixin",
 		"InGameHudBarAdjustor",
