@@ -85,7 +85,7 @@ public abstract class InGameHudMixin {
 
 	@Unique
 	private static void drawArmorFullTexture(DrawContext context, int x, int y) {
-		context.drawTexture(ICONS, x, y, 34, 9, 9, 9);
+		context.drawTexture(ICONS, x, y, 25 + 9, 9, 9, 9);
 	}
 
 	@Unique
@@ -96,30 +96,73 @@ public abstract class InGameHudMixin {
 
 
 	@Unique
+	private static void drawFoodEmptyHungerTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 16 + 9 * 13, 27, 9, 9);
+	}
 
-	@Shadow @Final private static Identifier FOOD_HALF_HUNGER_TEXTURE;
-	@Shadow @Final private static Identifier FOOD_FULL_HUNGER_TEXTURE;
-	@Shadow @Final private static Identifier FOOD_EMPTY_TEXTURE;
-	@Shadow @Final private static Identifier FOOD_HALF_TEXTURE;
-	@Shadow @Final private static Identifier FOOD_FULL_TEXTURE;
+	@Unique
+	private static void drawFoodHalfHungerTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 16 + 9 * 8, 27, 9, 9);
+	}
 
-	@Shadow @Final private static Identifier VEHICLE_CONTAINER_HEART_TEXTURE;
-	@Shadow @Final private static Identifier VEHICLE_HALF_HEART_TEXTURE;
-	@Shadow @Final private static Identifier VEHICLE_FULL_HEART_TEXTURE;
+	@Unique
+	private static void drawFoodFullHungerTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 16 + 9 * 9, 27, 9, 9);
+	}
 
-	@Shadow @Final private static Identifier AIR_BURSTING_TEXTURE;
-	@Shadow @Final private static Identifier AIR_TEXTURE;
+	@Unique
+	private static void drawFoodEmptyTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 16, 27, 9, 9);
+	}
+
+	@Unique
+	private static void drawFoodHalfTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 16 + 9 * 4, 27, 9, 9);
+	}
+
+	@Unique
+	private static void drawFoodFullTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 16 + 9 * 5, 27, 9, 9);
+	}
+
+
+
+	@Unique
+	private static void drawVehicleContainerHeartTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 52, 9, 9, 9);
+	}
+
+	@Unique
+	private static void drawVehicleFullHeartTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 88, 9, 9, 9);
+	}
+
+	@Unique
+	private static void drawVehicleHalfHeartTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 88 + 9, 9, 9, 9);
+	}
+
+
+
+	@Unique
+	private static void drawAirTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 16, 18, 9, 9);
+	}
+
+	@Unique
+	private static void drawAirBurstingTexture(DrawContext context, int x, int y) {
+		context.drawTexture(ICONS, x, y, 16 + 9, 18, 9, 9);
+	}
 
 
 
 	@Shadow public abstract TextRenderer getTextRenderer();
 	@Shadow protected abstract int getHeartCount(LivingEntity entity);
 	@Shadow protected abstract LivingEntity getRiddenEntity();
-	//@Shadow protected abstract void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half);
-
-	@Shadow protected abstract void drawHeart(DrawContext drawContext, InGameHud.HeartType heartType, int i, int j, boolean bl, boolean bl2, boolean bl3);
+	@Shadow protected abstract void drawHeart(DrawContext drawContext, InGameHud.HeartType heartType, int x, int y, int v, boolean blinking, boolean half);
 
 	@Shadow private int renderHealthValue;
+
 	@Unique int stackedInfo = 0;
 
 	@Unique
