@@ -47,8 +47,8 @@ public abstract class InGameHudMixin {
 	@Shadow @Final private static Identifier JUMP_BAR_COOLDOWN_TEXTURE;
 	@Shadow @Final private static Identifier JUMP_BAR_PROGRESS_TEXTURE;
 
-	@Shadow @Final private static Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE;
 	@Shadow @Final private static Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE;
+	@Shadow @Final private static Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE;
 
 	@Shadow @Final private static Identifier FOOD_EMPTY_HUNGER_TEXTURE;
 	@Shadow @Final private static Identifier FOOD_HALF_HUNGER_TEXTURE;
@@ -72,9 +72,7 @@ public abstract class InGameHudMixin {
 	@Shadow public abstract TextRenderer getTextRenderer();
 	@Shadow protected abstract int getHeartCount(LivingEntity entity);
 	@Shadow protected abstract LivingEntity getRiddenEntity();
-	//@Shadow protected abstract void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half);
-
-	@Shadow protected abstract void drawHeart(DrawContext drawContext, InGameHud.HeartType heartType, int i, int j, boolean bl, boolean bl2, boolean bl3);
+	@Shadow protected abstract void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half);
 
 	@Shadow private int renderHealthValue;
 	@Unique int stackedInfo = 0;
@@ -137,6 +135,7 @@ public abstract class InGameHudMixin {
 	private void renderAlternativeLayoutInfo(DrawContext context) {
 		stackedInfo = 0;
 		int textOffset = Verticality.enabled() ? 1 : -1;
+		
 		// Experience level (sticking to tail)
 		experienceLevel:
 		{
