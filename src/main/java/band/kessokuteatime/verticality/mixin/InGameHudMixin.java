@@ -58,14 +58,14 @@ public abstract class InGameHudMixin {
 	@Shadow @Final private static Identifier FOOD_FULL_TEXTURE;
 
 	@Shadow @Final private static Identifier VEHICLE_CONTAINER_HEART_TEXTURE;
-	@Shadow @Final private static Identifier VEHICLE_HALF_HEART_TEXTURE;
 	@Shadow @Final private static Identifier VEHICLE_FULL_HEART_TEXTURE;
+	@Shadow @Final private static Identifier VEHICLE_HALF_HEART_TEXTURE;
 
-	@Shadow @Final private static Identifier ARMOR_HALF_TEXTURE;
 	@Shadow @Final private static Identifier ARMOR_FULL_TEXTURE;
+	@Shadow @Final private static Identifier ARMOR_HALF_TEXTURE;
 
-	@Shadow @Final private static Identifier AIR_BURSTING_TEXTURE;
 	@Shadow @Final private static Identifier AIR_TEXTURE;
+	@Shadow @Final private static Identifier AIR_BURSTING_TEXTURE;
 
 
 
