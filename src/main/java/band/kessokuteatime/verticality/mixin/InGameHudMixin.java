@@ -54,36 +54,6 @@ public abstract class InGameHudMixin {
 
 
 
-	/*
-	@Unique
-	private static void drawJumpBarBackgroundTexture(DrawContext context, int x, int y) {
-		context.drawTexture(ICONS, x, y, 0, 84, 182, 5);
-	}
-
-	@Unique
-	private static void drawJumpBarCooldownTexture(DrawContext context, int x, int y) {
-		context.drawTexture(ICONS, x, y, 0, 74, 182, 5);
-	}
-
-	@Unique
-	private static void drawJumpBarProgressTexture(DrawContext context, int x, int y, float progress) {
-		context.drawTexture(ICONS, x, y, 0, 89, (int) (progress * 183), 5);
-	}
-	 */
-
-
-	@Unique
-	private static void drawExperienceBarBackgroundTexture(DrawContext context, int x, int y) {
-		context.drawTexture(ICONS, x, y, 0, 64, 182, 5);
-	}
-
-	@Unique
-	private static void drawExperienceBarProgressTexture(DrawContext context, int x, int y, float progress) {
-		context.drawTexture(ICONS, x, y, 0, 69, (int) (progress * 183), 5);
-	}
-
-
-
 	@Unique
 	private static void drawArmorFullTexture(DrawContext context, int x, int y) {
 		context.drawTexture(ICONS, x, y, 25 + 9, 9, 9, 9);
@@ -395,7 +365,7 @@ public abstract class InGameHudMixin {
 				// Experience bar progress
 				context.drawTexture(
 						ICONS,
-						x, y, 0, 69,
+                        (int) (x + offset), y, (int) offset, 69,
 						width, Verticality.SINGLE_BAR_HEIGHT
 				);
 			}
