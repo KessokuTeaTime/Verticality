@@ -177,8 +177,8 @@ public class Verticality implements ClientModInitializer {
 
 	public static Vector2d alternativeLayoutOffset() {
 		return new Vector2d(
-				enabled() ? 0 : -(width() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() + (raisedHudShift() > 0 ? 1 : 0),
-				enabled() ? (height() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() - (raisedHudShift() > 0 ? 1 : 0) : 0
+				enabled() ? 0 : -(width() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() + raisedHudShiftEdge(),
+				enabled() ? (height() - HOTBAR_WIDTH) / 2.0 * alternativeTransition() - raisedHudShiftEdge() : 0
 		);
 	}
 
