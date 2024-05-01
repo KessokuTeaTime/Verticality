@@ -375,6 +375,12 @@ public class Verticality implements ClientModInitializer {
 		}
 	}
 
+	public static void horizontallyShiftBarByEdge(DrawContext context) {
+		if (!alternativeLayoutPartiallyEnabled() && !enabled()) {
+			context.getMatrices().translate(-raisedHudShiftEdge(), 0, 0);
+		}
+	}
+
 	public static void verticallyShiftBarPost(DrawContext context) {
 		context.setShaderColor(1, 1, 1, 1);
 

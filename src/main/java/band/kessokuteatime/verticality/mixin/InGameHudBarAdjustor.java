@@ -80,6 +80,7 @@ public abstract class InGameHudBarAdjustor {
     private void renderMountHealthPre(DrawContext context, CallbackInfo ci) {
         context.getMatrices().push();
         Verticality.verticallyShiftBarPre(context, true);
+        Verticality.horizontallyShiftBarByEdge(context);
     }
 
     @Inject(
@@ -112,6 +113,7 @@ public abstract class InGameHudBarAdjustor {
     private void renderMountJumpBarBackgroundPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
         context.getMatrices().push();
         Verticality.verticallyShiftBarPre(context, false);
+        Verticality.horizontallyShiftBarByEdge(context);
 
         context.getMatrices().translate(Verticality.alternativeLayoutOffset().x(), 0, 0);
     }
@@ -147,6 +149,7 @@ public abstract class InGameHudBarAdjustor {
     private void renderMountJumpBarProgressPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
         context.getMatrices().push();
         Verticality.verticallyShiftBarPre(context, false);
+        Verticality.horizontallyShiftBarByEdge(context);
 
         context.getMatrices().translate(Verticality.alternativeLayoutOffset().x(), 0, 0);
     }
@@ -176,6 +179,7 @@ public abstract class InGameHudBarAdjustor {
     private void renderExperienceBarBackgroundPre(DrawContext context, int x, CallbackInfo ci) {
         context.getMatrices().push();
         Verticality.verticallyShiftBarPre(context, false);
+        Verticality.horizontallyShiftBarByEdge(context);
 
         context.getMatrices().translate(Verticality.alternativeLayoutOffset().x(), 0, 0);
     }
@@ -205,6 +209,7 @@ public abstract class InGameHudBarAdjustor {
     private void renderExperienceBarProgressPre(DrawContext context, int x, CallbackInfo ci) {
         context.getMatrices().push();
         Verticality.verticallyShiftBarPre(context, false);
+        Verticality.horizontallyShiftBarByEdge(context);
 
         context.getMatrices().translate(Verticality.alternativeLayoutOffset().x(), 0, 0);
     }

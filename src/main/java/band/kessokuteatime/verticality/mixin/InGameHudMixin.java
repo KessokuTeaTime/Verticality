@@ -442,6 +442,7 @@ public abstract class InGameHudMixin {
 					(Verticality.height() - Verticality.width() + Verticality.OFFHAND_WIDTH * Verticality.offset()) / 2.0,
 					0
 			);
+			context.getMatrices().translate(0, Verticality.raisedHudShiftEdge() * (1 - Verticality.alternativeTransition()), 0);
 
 			context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 
@@ -459,6 +460,7 @@ public abstract class InGameHudMixin {
 			}
 		} else {
 			context.getMatrices().translate(0, Verticality.hotbarShift() * Verticality.transition(), 0);
+			context.getMatrices().translate(-Verticality.raisedHudShiftEdge() * (1 - Verticality.alternativeTransition()), 0, 0);
 		}
 	}
 
