@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
@@ -99,6 +100,13 @@ public abstract class InGameHudBarAdjustor {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
+            ),
+            slice = @Slice(
+                    to = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+                            ordinal = 2
+                    )
             )
     )
     private void renderMountJumpBarBackgroundPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
@@ -114,6 +122,13 @@ public abstract class InGameHudBarAdjustor {
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
                     shift = At.Shift.AFTER
+            ),
+            slice = @Slice(
+                    to = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+                            ordinal = 2
+                    )
             )
     )
     private void renderMountJumpBarBackgroundPost(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
@@ -125,10 +140,11 @@ public abstract class InGameHudBarAdjustor {
             method = "renderMountJumpBar",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+                    ordinal = 2
             )
     )
-    private void renderMountJumpBarPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
+    private void renderMountJumpBarProgressPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
         context.getMatrices().push();
         Verticality.verticallyShiftBarPre(context, false);
 
@@ -140,10 +156,11 @@ public abstract class InGameHudBarAdjustor {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+                    ordinal = 2,
                     shift = At.Shift.AFTER
             )
     )
-    private void renderMountJumpBarPost(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
+    private void renderMountJumpBarProgressPost(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
         Verticality.verticallyShiftBarPost(context);
         context.getMatrices().pop();
     }
@@ -152,7 +169,8 @@ public abstract class InGameHudBarAdjustor {
             method = "renderExperienceBar",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+                    ordinal = 0
             )
     )
     private void renderExperienceBarBackgroundPre(DrawContext context, int x, CallbackInfo ci) {
@@ -167,6 +185,7 @@ public abstract class InGameHudBarAdjustor {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+                    ordinal = 0,
                     shift = At.Shift.AFTER
             )
     )
@@ -179,7 +198,8 @@ public abstract class InGameHudBarAdjustor {
             method = "renderExperienceBar",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+                    ordinal = 1
             )
     )
     private void renderExperienceBarProgressPre(DrawContext context, int x, CallbackInfo ci) {
@@ -194,6 +214,7 @@ public abstract class InGameHudBarAdjustor {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+                    ordinal = 1,
                     shift = At.Shift.AFTER
             )
     )
