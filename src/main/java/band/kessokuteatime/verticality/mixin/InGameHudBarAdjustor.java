@@ -105,7 +105,7 @@ public abstract class InGameHudBarAdjustor {
                     to = @At(
                             value = "INVOKE",
                             target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
-                            ordinal = 2
+                            ordinal = 1
                     )
             )
     )
