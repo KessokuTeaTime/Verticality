@@ -350,22 +350,25 @@ public abstract class InGameHudMixin {
 		int y = Verticality.height() - 32 + 3;
 		int xOffset = Verticality.swapped() ? Verticality.HOTBAR_WIDTH - width : 0;
 
-		drawGuiTexture(
-				context, ICONS, // Jump bar background
+		// Jump bar background
+		drawTexture(
+				context, ICONS,
 				x, y, 0, 84,
 				Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT,
 				Verticality.swapped()
 		);
 		if (mount.getJumpCooldown() > 0) {
-			drawGuiTexture(
-					context, ICONS, // Jump bar cooldown
+			// Jump bar cooldown
+			drawTexture(
+					context, ICONS,
 					x + xOffset, y, 0, 74,
 					width, Verticality.SINGLE_BAR_HEIGHT,
 					Verticality.swapped()
 			);
 		} else if (width > 0) {
-			drawGuiTexture(
-					context, ICONS, // Jump bar progress
+			// Jump bar progress
+			drawTexture(
+					context, ICONS,
 					x + xOffset, y, 0, 89,
 					width, Verticality.SINGLE_BAR_HEIGHT,
 					Verticality.swapped()
@@ -382,15 +385,25 @@ public abstract class InGameHudMixin {
 			int y = Verticality.height() - 32 + 3;
 			double offset = (Verticality.HOTBAR_WIDTH - width) * Verticality.swap();
 
-			drawExperienceBarBackgroundTexture(context, x, y);
+			// Experience bar background
+			context.drawTexture(
+					ICONS,
+					x, y, 0, 64,
+					Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT
+			);
 			if (x > 0) {
-				drawExperienceBarProgressTexture(context, (int) (x + offset), y, (float) (offset / 183));
+				// Experience bar progress
+				context.drawTexture(
+						ICONS,
+						x, y, 0, 69,
+						width, Verticality.SINGLE_BAR_HEIGHT
+				);
 			}
 		}
 	}
 
 	@Unique
-	private void drawGuiTexture(DrawContext context, Identifier texture, int x, int y, int u, int v, int width, int height, boolean flipByX) {
+	private void drawTexture(DrawContext context, Identifier texture, int x, int y, int u, int v, int width, int height, boolean flipByX) {
 		float
 				uBegin = u / 256.0F,
 				uEnd = (u + width) / 256.0F,
