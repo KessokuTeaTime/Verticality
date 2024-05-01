@@ -35,7 +35,7 @@ public abstract class InGameHudBarAdjustor {
             method = "renderStatusBars",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
             )
     )
     private void renderStatusBarsPre(DrawContext context, CallbackInfo ci) {
@@ -47,7 +47,7 @@ public abstract class InGameHudBarAdjustor {
             method = "renderStatusBars",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
                     shift = At.Shift.AFTER
             )
     )
@@ -85,7 +85,7 @@ public abstract class InGameHudBarAdjustor {
             method = "renderMountHealth",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
             )
     )
     private void renderMountHealthPre(DrawContext context, CallbackInfo ci) {
@@ -96,7 +96,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderMountHealth",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
                     shift = At.Shift.AFTER
             )
     )
@@ -108,7 +109,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderMountJumpBar",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
             )
     )
     private void renderMountJumpBarBackgroundPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
@@ -121,7 +123,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderMountJumpBar",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
                     shift = At.Shift.AFTER
             )
     )
@@ -133,7 +136,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderMountJumpBar",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIIIIIII)V"
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
             )
     )
     private void renderMountJumpBarPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
@@ -146,7 +150,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderMountJumpBar",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIIIIIII)V",
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
                     shift = At.Shift.AFTER
             )
     )
@@ -158,7 +163,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderExperienceBar",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
             )
     )
     private void renderExperienceBarBackgroundPre(DrawContext context, int x, CallbackInfo ci) {
@@ -171,7 +177,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderExperienceBar",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
                     shift = At.Shift.AFTER
             )
     )
@@ -183,7 +190,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderExperienceBar",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIIIIIII)V"
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
             )
     )
     private void renderExperienceBarProgressPre(DrawContext context, int x, CallbackInfo ci) {
@@ -196,7 +204,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderExperienceBar",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIIIIIII)V",
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
                     shift = At.Shift.AFTER
             )
     )
@@ -208,7 +217,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderExperienceBar",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)I"
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)I"
             )
     )
     private void renderExperienceBarTextPre(DrawContext context, int x, CallbackInfo ci) {
@@ -233,7 +243,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderExperienceBar",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)I",
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)I",
                     shift = At.Shift.AFTER
             )
     )
@@ -245,7 +256,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderHeldItemTooltip",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"
             )
     )
     private void renderHeldItemTooltipPre(DrawContext context, CallbackInfo ci) {
@@ -260,7 +272,8 @@ public abstract class InGameHudBarAdjustor {
     @Inject(
             method = "renderHeldItemTooltip",
             at = @At(
-                    value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I",
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I",
                     shift = At.Shift.AFTER
             )
     )
@@ -268,7 +281,13 @@ public abstract class InGameHudBarAdjustor {
         context.getMatrices().pop();
     }
 
-    @Inject(method = "renderHeldItemTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V"))
+    @Inject(
+            method = "renderHeldItemTooltip",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V"
+            )
+    )
     private void fixHelpItemTooltipPre(DrawContext context, CallbackInfo ci) {
         if (MinecraftClient.getInstance().interactionManager != null && !MinecraftClient.getInstance().interactionManager.hasStatusBars()) {
             context.getMatrices().push();
@@ -276,7 +295,14 @@ public abstract class InGameHudBarAdjustor {
         }
     }
 
-    @Inject(method = "renderHeldItemTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V", shift = At.Shift.AFTER))
+    @Inject(
+            method = "renderHeldItemTooltip",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V",
+                    shift = At.Shift.AFTER
+            )
+    )
     private void fixHelpItemTooltipPost(DrawContext context, CallbackInfo ci) {
         if (MinecraftClient.getInstance().interactionManager != null && !MinecraftClient.getInstance().interactionManager.hasStatusBars()) {
             context.getMatrices().pop();
