@@ -5,8 +5,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
@@ -244,11 +242,11 @@ public abstract class InGameHudMixin {
 					context, MathHelper.floor(MathHelper.ceil(client.player.getHealth()) / 2.0),
 					(c, pos) -> {
 						boolean blinking = heartJumpEndTick > (long) ticks && (this.heartJumpEndTick - (long) this.ticks) / 3L % 2L == 1L;
-						boolean hardcore = client.player.getWorld().getLevelProperties().isHardcore();
+						int v = 9 * (client.player.getWorld().getLevelProperties().isHardcore() ? 5 : 0);
 
 						InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(client.player);
-						drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), hardcore, blinking, false);
-						drawHeart(c, heartType, pos.x(), pos.y(), hardcore, blinking, renderHealthValue % 2 == 1);
+						drawHeart(c, InGameHud.HeartType.CONTAINER, pos.x(), pos.y(), v, blinking, false);
+						drawHeart(c, heartType, pos.x(), pos.y(), v, blinking, renderHealthValue % 2 == 1);
 					},
 					(c, pos, text) -> drawBorderedText(c, text, pos, 0xFF6262),
 					true, false
