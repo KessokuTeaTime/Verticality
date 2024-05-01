@@ -229,7 +229,6 @@ public abstract class InGameHudBarAdjustor {
     private void renderExperienceBarTextPre(DrawContext context, int x, CallbackInfo ci) {
         context.getMatrices().push();
         Verticality.verticallyShiftBarPre(context, true);
-        Verticality.horizontallyShiftBarByEdge(context);
     }
 
     @Redirect(
