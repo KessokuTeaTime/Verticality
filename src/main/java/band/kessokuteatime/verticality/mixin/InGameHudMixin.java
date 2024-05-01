@@ -151,7 +151,7 @@ public abstract class InGameHudMixin {
 		health:
 		{
 			drawInfo(
-					context, MathHelper.floor(MathHelper.ceil(client.player.getHealth()) / 2.0),
+					context, MathHelper.ceil(MathHelper.ceil(client.player.getHealth()) / 2.0),
 					(c, pos) -> {
 						boolean blinking = heartJumpEndTick > (long) ticks && (this.heartJumpEndTick - (long) this.ticks) / 3L % 2L == 1L;
 						boolean hardcore = client.player.getWorld().getLevelProperties().isHardcore();
@@ -187,7 +187,7 @@ public abstract class InGameHudMixin {
 				UnaryOperator<Vector2i> ditheredPosOperator = pos -> pos.add(0, yOffset);
 
 				drawInfo(
-						context, MathHelper.floor(foodLevel / 2.0),
+						context, MathHelper.ceil(foodLevel / 2.0),
 						(c, pos) -> {
 							Vector2i ditheredPos = ditheredPosOperator.apply(pos);
 							c.drawGuiTexture(empty, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
@@ -199,7 +199,7 @@ public abstract class InGameHudMixin {
 			} else {
 				// Mount health
 				drawInfo(
-						context, MathHelper.floor(mountHealth / 2.0),
+						context, MathHelper.ceil(mountHealth / 2.0),
 						(c, pos) -> {
 							c.drawGuiTexture(VEHICLE_CONTAINER_HEART_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
 							c.drawGuiTexture(foodLevel % 2 == 1 ? VEHICLE_HALF_HEART_TEXTURE : VEHICLE_FULL_HEART_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
@@ -215,7 +215,7 @@ public abstract class InGameHudMixin {
 		{
 			int armor = client.player.getArmor();
 			drawInfo(
-					context, MathHelper.floor(armor / 2.0),
+					context, MathHelper.ceil(armor / 2.0),
 					(c, pos) -> c.drawGuiTexture(armor % 2 == 1 ? ARMOR_HALF_TEXTURE : ARMOR_FULL_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE),
 					(c, pos, text) -> drawBorderedText(c, text, pos, 0xE6E6F2),
 					true, false
