@@ -341,7 +341,7 @@ public class Verticality implements ClientModInitializer {
 		context.getMatrices().translate(alternativeLayoutOffset().x(), alternativeLayoutOffset().y(), 0);
 	}
 
-	public static void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int width, int height) {
+	public static void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int u, int v, int width, int height) {
 		if (enabled()) {
 			double offset = -2 * ((x + width / 2.0) - (int) (width() / 2.0));
 
@@ -352,7 +352,7 @@ public class Verticality implements ClientModInitializer {
 			);
 		}
 
-		context.drawGuiTexture(identifier, x, y, width, height);
+		context.drawTexture(identifier, x, y, u, v, width, height);
 
 		if (enabled()) {
 			context.getMatrices().pop();

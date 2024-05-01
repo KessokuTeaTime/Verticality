@@ -6,6 +6,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
@@ -55,6 +56,7 @@ public abstract class InGameHudMixin {
 
 
 
+	/*
 	@Unique
 	private static void drawJumpBarBackgroundTexture(DrawContext context, int x, int y) {
 		context.drawTexture(ICONS, x, y, 0, 84, 182, 5);
@@ -69,6 +71,7 @@ public abstract class InGameHudMixin {
 	private static void drawJumpBarProgressTexture(DrawContext context, int x, int y, float progress) {
 		context.drawTexture(ICONS, x, y, 0, 89, (int) (progress * 183), 5);
 	}
+	 */
 
 
 	@Unique
@@ -259,15 +262,15 @@ public abstract class InGameHudMixin {
 			int mountHealth = getHeartCount(getRiddenEntity());
 			if (mountHealth <= 0) {
 				// Food
-				Identifier empty, half, full;
+				BiConsumer<Integer, Integer> empty, half, full;
 				if (client.player.hasStatusEffect(StatusEffects.HUNGER)) {
-					empty = FOOD_EMPTY_HUNGER_TEXTURE;
-					half = FOOD_HALF_HUNGER_TEXTURE;
-					full = FOOD_FULL_HUNGER_TEXTURE;
+					empty = (x, y) -> drawFoodEmptyHungerTexture(context, x, y);
+					half = (x, y) -> drawFoodHalfHungerTexture(context, x, y);
+					full = (x, y) -> drawFoodFullHungerTexture(context, x, y);
 				} else {
-					empty = FOOD_EMPTY_TEXTURE;
-					half = FOOD_HALF_TEXTURE;
-					full = FOOD_FULL_TEXTURE;
+					empty = (x, y) -> drawFoodEmptyTexture(context, x, y);
+					half = (x, y) -> drawFoodHalfTexture(context, x, y);
+					full = (x, y) -> drawFoodFullTexture(context, x, y);
 				}
 
 				int yOffset = client.player.getHungerManager().getSaturationLevel() <= 0 && this.ticks % (foodLevel * 3 + 1) == 0 ? random.nextInt(3) - 1 : 0;
@@ -277,8 +280,8 @@ public abstract class InGameHudMixin {
 						context, MathHelper.floor(foodLevel / 2.0),
 						(c, pos) -> {
 							Vector2i ditheredPos = ditheredPosOperator.apply(pos);
-							c.drawGuiTexture(empty, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
-							c.drawGuiTexture(foodLevel % 2 == 1 ? half : full, ditheredPos.x(), ditheredPos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
+							empty.accept(ditheredPos.x(), ditheredPos.y());
+							(foodLevel % 2 == 1 ? half : full).accept(ditheredPos.x(), ditheredPos.y());
 						},
 						(c, pos, text) -> drawBorderedText(c, text, ditheredPosOperator.apply(pos), 0xE8A264),
 						true, false
@@ -288,8 +291,12 @@ public abstract class InGameHudMixin {
 				drawInfo(
 						context, MathHelper.floor(mountHealth / 2.0),
 						(c, pos) -> {
-							c.drawGuiTexture(VEHICLE_CONTAINER_HEART_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
-							c.drawGuiTexture(foodLevel % 2 == 1 ? VEHICLE_HALF_HEART_TEXTURE : VEHICLE_FULL_HEART_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE);
+							drawVehicleContainerHeartTexture(c, pos.x(), pos.y());
+							if (foodLevel % 2 == 1) {
+								drawVehicleHalfHeartTexture(c, pos.x(), pos.y());
+							} else {
+								drawVehicleFullHeartTexture(c, pos.x(), pos.y());
+							}
 						},
 						(c, pos, text) -> drawBorderedText(c, text, pos, 0xE97240),
 						true, false
@@ -303,7 +310,13 @@ public abstract class InGameHudMixin {
 			int armor = client.player.getArmor();
 			drawInfo(
 					context, MathHelper.floor(armor / 2.0),
-					(c, pos) -> c.drawGuiTexture(armor % 2 == 1 ? ARMOR_HALF_TEXTURE : ARMOR_FULL_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE),
+					(c, pos) -> {
+						if (armor % 2 == 1) {
+							drawArmorHalfTexture(c, pos.x(), pos.y());
+						} else {
+							drawArmorFullTexture(c, pos.x(), pos.y());
+						}
+					},
 					(c, pos, text) -> drawBorderedText(c, text, pos, 0xE6E6F2),
 					true, false
 			);
@@ -319,7 +332,13 @@ public abstract class InGameHudMixin {
 				int stable = MathHelper.ceil((air - 2) * 10.0 / maxAir), total = MathHelper.ceil(air * 10.0 / maxAir);
 				drawInfo(
 						context, stable,
-						(c, pos) -> c.drawGuiTexture(submerged && stable != total ? AIR_BURSTING_TEXTURE : AIR_TEXTURE, pos.x(), pos.y(), Verticality.INFO_ICON_SIZE, Verticality.INFO_ICON_SIZE),
+						(c, pos) -> {
+							if (submerged && stable != total) {
+								drawAirBurstingTexture(c, pos.x(), pos.y());
+							} else {
+								drawAirTexture(c, pos.x(), pos.y());
+							}
+						},
 						(c, pos, text) -> drawBorderedText(c, text, pos, 0x56B8FF),
 						true, false
 				);
@@ -334,23 +353,23 @@ public abstract class InGameHudMixin {
 		int xOffset = Verticality.swapped() ? Verticality.HOTBAR_WIDTH - width : 0;
 
 		drawGuiTexture(
-				context, JUMP_BAR_BACKGROUND_TEXTURE,
-				Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT, 0, 0,
-				x, y, Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT,
+				context, ICONS, // Jump bar background
+				x, y, 0, 84,
+				Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT,
 				Verticality.swapped()
 		);
 		if (mount.getJumpCooldown() > 0) {
 			drawGuiTexture(
-					context, JUMP_BAR_COOLDOWN_TEXTURE,
-					Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT, 0, 0,
-					x + xOffset, y, width, Verticality.SINGLE_BAR_HEIGHT,
+					context, ICONS, // Jump bar cooldown
+					x + xOffset, y, 0, 74,
+					width, Verticality.SINGLE_BAR_HEIGHT,
 					Verticality.swapped()
 			);
 		} else if (width > 0) {
 			drawGuiTexture(
-					context, JUMP_BAR_PROGRESS_TEXTURE,
-					Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT, 0, 0,
-					x + xOffset, y, width, Verticality.SINGLE_BAR_HEIGHT,
+					context, ICONS, // Jump bar progress
+					x + xOffset, y, 0, 89,
+					width, Verticality.SINGLE_BAR_HEIGHT,
 					Verticality.swapped()
 			);
 		}
@@ -365,29 +384,23 @@ public abstract class InGameHudMixin {
 			int y = Verticality.height() - 32 + 3;
 			double offset = (Verticality.HOTBAR_WIDTH - width) * Verticality.swap();
 
-			context.drawGuiTexture(EXPERIENCE_BAR_BACKGROUND_TEXTURE, x, y, Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT);
+			drawExperienceBarBackgroundTexture(context, x, y);
 			if (x > 0) {
-				context.drawGuiTexture(
-						EXPERIENCE_BAR_PROGRESS_TEXTURE,
-						Verticality.HOTBAR_WIDTH, Verticality.SINGLE_BAR_HEIGHT, (int) offset, 0,
-                        (int) (x + offset), y, width, Verticality.SINGLE_BAR_HEIGHT
-				);
+				drawExperienceBarProgressTexture(context, (int) (x + offset), y, (float) (offset / 183));
 			}
 		}
 	}
 
 	@Unique
-	private void drawGuiTexture(DrawContext context, Identifier texture, int i, int j, int k, int l, int x, int y, int width, int height, boolean flipByX) {
-		Sprite sprite = ((DrawContextAccessor) context).getGuiAtlasManager().getSprite(texture);
-
+	private void drawGuiTexture(DrawContext context, Identifier texture, int x, int y, int u, int v, int width, int height, boolean flipByX) {
 		float
-				uBegin = sprite.getFrameU((float) k / i),
-				uEnd = sprite.getFrameU((float) (k + width) / i),
-				vBegin = sprite.getFrameV((float) l / j),
-				vEnd = sprite.getFrameV((float) (l + height) / j);
+				uBegin = u / 256.0F,
+				uEnd = (u + width) / 256.0F,
+				vBegin = v / 256.0F,
+				vEnd = (v + height) / 256.0F;
 
 		((DrawContextInvoker) context).invokeDrawTexturedQuad(
-				sprite.getAtlasId(),
+				texture,
 				x, x + width,
 				y, y + height,
 				0,
@@ -455,63 +468,53 @@ public abstract class InGameHudMixin {
 			method = "renderHotbar",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
+					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
 					ordinal = 1
 			)
 	)
-	private void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int width, int height) {
-		Verticality.drawSelectedSlot(context, identifier, x, y, width, height);
+	private void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int u, int v, int width, int height) {
+		Verticality.drawSelectedSlot(context, identifier, x, y, u, v, width, height);
 	}
 
 	@Redirect(
 			method = "renderHotbar",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
+					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
 			),
 			slice = @Slice(
 					from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 0),
 					to = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V")
 			)
 	)
-	private void drawOffhandSlot(DrawContext context, Identifier identifier, int x, int y, int width, int height) {
+	private void drawOffhandSlot(DrawContext context, Identifier identifier, int x, int y, int u, int v, int width, int height) {
 		context.getMatrices().push();
 
 		if (Verticality.enabled()) {
 			if (Verticality.alternativeLayoutPartiallyEnabled()) {
-				context.drawGuiTexture(
-						HOTBAR_OFFHAND_RIGHT_TEXTURE,
+				drawHotbarOffhandRightTexture(
+						context,
 						(int) ((Verticality.width() + Verticality.HOTBAR_WIDTH) / 2.0 - Verticality.OFFHAND_WIDTH),
-						y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT),
-						width, height
+						y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT)
 				);
 			} else {
 				final boolean offhandLeft = (MinecraftClient.getInstance().options.getMainArm().getValue().getOpposite() == Arm.LEFT) == !Verticality.upsideDown();
 
 				if (offhandLeft) {
-					context.drawGuiTexture(
-							HOTBAR_OFFHAND_LEFT_TEXTURE,
-							(int) (Verticality.width() / 2.0 - 91 - 29), Verticality.height() - 23,
-							width, height
-					);
+					drawHotbarOffhandLeftTexture(context, (int) (Verticality.width() / 2.0 - 91 - 29), Verticality.height() - 23);
 				} else {
-					context.drawGuiTexture(
-							HOTBAR_OFFHAND_RIGHT_TEXTURE,
-							(int) (Verticality.width() / 2.0 + 91), Verticality.height() - 23,
-							width, height
-					);
+					drawHotbarOffhandRightTexture(context, (int) (Verticality.width() / 2.0 + 91), Verticality.height() - 23);
 				}
 			}
 		} else {
 			if (Verticality.alternativeLayoutPartiallyEnabled()) {
-				context.drawGuiTexture(
-						HOTBAR_OFFHAND_LEFT_TEXTURE,
+				drawHotbarOffhandLeftTexture(
+						context,
 						(int) ((Verticality.width() - Verticality.HOTBAR_WIDTH) / 2.0),
-						y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT),
-						width, height
+						y - (Verticality.HOTBAR_FULL_HEIGHT + Verticality.GAP + Verticality.SINGLE_BAR_HEIGHT)
 				);
 			} else {
-				context.drawGuiTexture(identifier, x, y, width, height);
+				context.drawTexture(identifier, x, y, u, v, width, height);
 			}
 		}
 
