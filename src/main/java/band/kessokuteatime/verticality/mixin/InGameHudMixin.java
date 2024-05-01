@@ -239,7 +239,7 @@ public abstract class InGameHudMixin {
 		health:
 		{
 			drawInfo(
-					context, MathHelper.floor(MathHelper.ceil(client.player.getHealth()) / 2.0),
+					context, MathHelper.ceil(MathHelper.ceil(client.player.getHealth()) / 2.0),
 					(c, pos) -> {
 						boolean blinking = heartJumpEndTick > (long) ticks && (this.heartJumpEndTick - (long) this.ticks) / 3L % 2L == 1L;
 						int v = 9 * (client.player.getWorld().getLevelProperties().isHardcore() ? 5 : 0);
@@ -275,7 +275,7 @@ public abstract class InGameHudMixin {
 				UnaryOperator<Vector2i> ditheredPosOperator = pos -> pos.add(0, yOffset);
 
 				drawInfo(
-						context, MathHelper.floor(foodLevel / 2.0),
+						context, MathHelper.ceil(foodLevel / 2.0),
 						(c, pos) -> {
 							Vector2i ditheredPos = ditheredPosOperator.apply(pos);
 							empty.accept(ditheredPos.x(), ditheredPos.y());
@@ -287,7 +287,7 @@ public abstract class InGameHudMixin {
 			} else {
 				// Mount health
 				drawInfo(
-						context, MathHelper.floor(mountHealth / 2.0),
+						context, MathHelper.ceil(mountHealth / 2.0),
 						(c, pos) -> {
 							drawVehicleContainerHeartTexture(c, pos.x(), pos.y());
 							if (foodLevel % 2 == 1) {
@@ -307,7 +307,7 @@ public abstract class InGameHudMixin {
 		{
 			int armor = client.player.getArmor();
 			drawInfo(
-					context, MathHelper.floor(armor / 2.0),
+					context, MathHelper.ceil(armor / 2.0),
 					(c, pos) -> {
 						if (armor % 2 == 1) {
 							drawArmorHalfTexture(c, pos.x(), pos.y());
