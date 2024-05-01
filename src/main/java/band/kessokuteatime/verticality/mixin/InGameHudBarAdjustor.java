@@ -128,7 +128,7 @@ public abstract class InGameHudBarAdjustor {
                     target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIIIIIII)V"
             )
     )
-    private void renderMountJumpBarPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
+    private void renderMountJumpBarProgressPre(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
         context.getMatrices().push();
         Verticality.verticallyShiftBarPre(context, false);
 
@@ -143,7 +143,7 @@ public abstract class InGameHudBarAdjustor {
                     shift = At.Shift.AFTER
             )
     )
-    private void renderMountJumpBarPost(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
+    private void renderMountJumpBarProgressPost(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
         Verticality.verticallyShiftBarPost(context);
         context.getMatrices().pop();
     }
