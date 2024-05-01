@@ -33,10 +33,16 @@ public abstract class InGameHudBarAdjustor {
 
     @Inject(
             method = "renderStatusBars",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
-            )
+            at = {
+                    @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
+                    ),
+                    @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHealthBar(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/entity/player/PlayerEntity;IIIIFIIIZ)V"
+                    )
+            }
     )
     private void renderStatusBarsPre(DrawContext context, CallbackInfo ci) {
         context.getMatrices().push();
@@ -45,38 +51,20 @@ public abstract class InGameHudBarAdjustor {
 
     @Inject(
             method = "renderStatusBars",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
-                    shift = At.Shift.AFTER
-            )
+            at = {
+                    @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
+                            shift = At.Shift.AFTER
+                    ),
+                    @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHealthBar(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/entity/player/PlayerEntity;IIIIFIIIZ)V",
+                            shift = At.Shift.AFTER
+                    )
+            }
     )
     private void renderStatusBarsPost(DrawContext context, CallbackInfo ci) {
-        Verticality.verticallyShiftBarPost(context);
-        context.getMatrices().pop();
-    }
-
-    @Inject(
-            method = "renderStatusBars",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHealthBar(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/entity/player/PlayerEntity;IIIIFIIIZ)V"
-            )
-    )
-    private void renderHealthBarPre(DrawContext context, CallbackInfo ci) {
-        context.getMatrices().push();
-        Verticality.verticallyShiftBarPre(context, true);
-    }
-
-    @Inject(
-            method = "renderStatusBars",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHealthBar(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/entity/player/PlayerEntity;IIIIFIIIZ)V",
-                    shift = At.Shift.AFTER
-            )
-    )
-    private void renderHealthBarPost(DrawContext context, CallbackInfo ci) {
         Verticality.verticallyShiftBarPost(context);
         context.getMatrices().pop();
     }
