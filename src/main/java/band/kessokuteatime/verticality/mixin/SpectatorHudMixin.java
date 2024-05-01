@@ -30,7 +30,7 @@ public abstract class SpectatorHudMixin {
 			method = "renderSpectatorMenu(Lnet/minecraft/client/gui/DrawContext;FIILnet/minecraft/client/gui/hud/spectator/SpectatorMenuState;)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"
+					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"
 			)
 	)
 	private void renderSpectatorMenuPre(DrawContext context, float height, int x, int y, SpectatorMenuState state, CallbackInfo ci) {
@@ -58,7 +58,7 @@ public abstract class SpectatorHudMixin {
 			method = "renderSpectatorMenu(Lnet/minecraft/client/gui/DrawContext;FIILnet/minecraft/client/gui/hud/spectator/SpectatorMenuState;)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
+					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
 					shift = At.Shift.AFTER
 			)
 	)
@@ -70,18 +70,19 @@ public abstract class SpectatorHudMixin {
 			method = "renderSpectatorMenu(Lnet/minecraft/client/gui/DrawContext;FIILnet/minecraft/client/gui/hud/spectator/SpectatorMenuState;)V",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V",
+					target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V",
 					ordinal = 1
 			)
 	)
-	private void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int width, int height) {
-		Verticality.drawSelectedSlot(context, identifier, x, y, width, height);
+	private void drawSelectedSlot(DrawContext context, Identifier identifier, int x, int y, int u, int v, int width, int height) {
+		Verticality.drawSelectedSlot(context, identifier, x, y, u, v, width, height);
 	}
 
 	@Redirect(
 			method = "renderSpectatorMenu(Lnet/minecraft/client/gui/DrawContext;FIILnet/minecraft/client/gui/hud/spectator/SpectatorMenuState;)V",
 			at = @At(
-					value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/SpectatorHud;renderSpectatorCommand(Lnet/minecraft/client/gui/DrawContext;IIFFLnet/minecraft/client/gui/hud/spectator/SpectatorMenuCommand;)V"
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/gui/hud/SpectatorHud;renderSpectatorCommand(Lnet/minecraft/client/gui/DrawContext;IIFFLnet/minecraft/client/gui/hud/spectator/SpectatorMenuCommand;)V"
 			)
 	)
 	private void renderSpectatorCommandIcon(SpectatorHud spectatorHud, DrawContext context, int slot, int x, float y, float height, SpectatorMenuCommand command) {
@@ -97,7 +98,14 @@ public abstract class SpectatorHudMixin {
 		else renderSpectatorCommand(context, slot, x, y, height, command);
 	}
 
-	@Inject(method = "renderSpectatorCommand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V", shift = At.Shift.AFTER))
+	@Inject(
+			method = "renderSpectatorCommand",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V",
+					shift = At.Shift.AFTER
+			)
+	)
 	private void renderCommandIcon(DrawContext context, int slot, int x, float y, float height, SpectatorMenuCommand command, CallbackInfo ci) {
 		Verticality.translateIcon(context, y, true, false);
 
